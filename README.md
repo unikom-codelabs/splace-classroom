@@ -85,8 +85,8 @@ You can access the demo at https://aicroom.azurewebsites.net
 | **Role** | **Username**| **Password** |
 | :---: | :-----------: | :----------------------: |
 | Admin| SplaceRoom | admin |
-| Student | Student  | password |
-| Instructor | Asifa  | password |
+| Student | student  | password |
+| Teacher | teacher  | password |
 
 ## How to Use the Project
 
