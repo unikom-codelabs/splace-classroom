@@ -1,0 +1,116 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+enum TypeQuiz {
+  Multiple
+  Essay
+  Mixed
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  name      String?
+  role      Role     @default(STUDENT)
+  class_id  Int?
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  class     Classes? @relation(fields: [class_id], references: [id])
+  user_course User_course[]
+  user_quiz User_quiz[]
+
+}
+
+model Course {
+  id        Int      @id @default(autoincrement())
+  name      String
+  
+  azure_index_name String  
+  azure_indexer_name String
+  azure_container_name String
+  azure_datasource_name String
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  resource Resource[]
+  quiz Quiz[]
+  user_course User_course[]
+
+}
+
+model Resource {
+  id                Int      @id @default(autoincrement())
+  name              String
+  description       String
+  path              String
+  user_id           Int
+  course_id         Int
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  deletedAt         DateTime?
+  course            Course @relation(fields: [course_id], references: [id])
+}
+model Quiz {
+  id        Int      @id @default(autoincrement())
+  name      String
+  type      TypeQuiz 
+  course_id Int
+  question  Json @default("[]")
+  answer    Json @default("[]")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  course   Course @relation(fields: [course_id], references: [id])
+  user_quiz User_quiz[]
+
+}
+model Classes {
+  id        Int      @id @default(autoincrement())
+  name      String    @unique
+  users    User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+}
+model User_course {
+  id        Int      @id @default(autoincrement())
+  user_id   Int
+  course_id Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  users    User @relation(fields: [user_id], references: [id])
+  course   Course @relation(fields: [course_id], references: [id])
+
+}
+model User_quiz {
+  id        Int      @id @default(autoincrement())
+  user_id   Int
+  quiz_id   Int
+  score     Int
+  answer    Json @default("[]")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  users    User @relation(fields: [user_id], references: [id])
+  quiz   Quiz @relation(fields: [quiz_id], references: [id])
+
+}

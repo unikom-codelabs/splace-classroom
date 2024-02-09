@@ -1,0 +1,10 @@
+{
+  "extends": "next/core-web-vitals",
+  "no-unused-vars": "warn",
+  "no-console": "warn",
+  "no-debugger": "warn",
+  "no-undef": "warn",
+  "no-unescaped-entities": true
+}
+
+            // eslint-disable-next-line react/no-unescaped-entities
