@@ -51,7 +51,7 @@ export default  function Users() {
 
           <Select label="Teacher" placeholder="Select Teacher" onChange={(e: any) =>setInstructorId(e.target.value)} >
             {users.map((user : any, index) => (
-              <SelectItem value={user.id} key={user.id}>{user.username}</SelectItem>
+              <SelectItem value={user.id} key={user.id}>{user.name}</SelectItem>
             ))}
           </Select>
             </div>

@@ -81,7 +81,7 @@ export default function page({params}:any) {
                 <h1 className='text-sm md:text-2xl'>Get Started a task and chat for your question.</h1>
               </div>
               <div className='md:grid hidden md:grid-cols-[300px_300px] gap-2'>
-                <Card shadow='sm' className='border-gray-200 border-1 px-4 py-2'>
+                <Card shadow='sm' className='border-gray-200 border-1 px-4'>
                   <CardHeader className='my-1'>
                     <Icon icon='quill:chat' className='text-dark-blue text-3xl'/>
                     <h1 className='mx-2 text-xl'>Example</h1>
@@ -98,7 +98,7 @@ export default function page({params}:any) {
                     </p>
                   </CardBody>
                 </Card>
-                <Card shadow='sm' className='border-gray-200 border-1 px-4 py-2'>
+                <Card shadow='sm' className='border-gray-200 border-1 px-4'>
                   <CardHeader>
                     <Icon icon='ph:warning-light' className='text-dark-blue text-3xl'/>
                     <h1 className='mx-2 text-xl'>Limitations</h1>
@@ -124,7 +124,7 @@ export default function page({params}:any) {
             </CardBody>
           </Card>}
         </section>
-        <section className='pb-4 pt-4 px-6'>
+        <section className='pt-4 px-6'>
           <form onSubmit={handleSubmitChat} className='flex gap-4'> 
             <Input
               isRequired

@@ -18,7 +18,7 @@ export default async function fetchApi(
     const response = await axios(url, options);
     return response.data;
   } catch (error:any) {
-    console.log(error);
+    console.error(error);
     return error.response.data;
   }
 }

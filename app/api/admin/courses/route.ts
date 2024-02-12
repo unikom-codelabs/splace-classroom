@@ -51,10 +51,11 @@ export async function POST(req: Request) {
     }
   })).map(item=>item.id)
   
-  const indexName = `${new Date().getTime()}-${name}-index`.toLowerCase()
-  const containerName = `${new Date().getTime()}-${name}-container`.toLowerCase()
-  const dataSourceName = `${new Date().getTime()}-${name}-datasource`.toLowerCase()
-  const indexerName = `${new Date().getTime()}-${name}-indexer`.toLowerCase()
+  const newName =  name.split(' ').join('-')
+  const indexName = `${new Date().getTime()}-${newName}-index`.toLowerCase()
+  const containerName = `${new Date().getTime()}-${newName}-container`.toLowerCase()
+  const dataSourceName = `${new Date().getTime()}-${newName}-datasource`.toLowerCase()
+  const indexerName = `${new Date().getTime()}-${newName}-indexer`.toLowerCase()
   
   await createIndex(indexName)
   await createContainer(containerName)

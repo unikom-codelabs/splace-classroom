@@ -168,11 +168,13 @@ export default function page() {
           isOpen={modal1.isOpen} 
           onOpenChange={modal1.onOpenChange}
           btnActionTitle='Generate'
+          submit={handleSubmitQuizManual}
         >
           <FormQuizAI 
             courses={courses} 
             questionTypes={questionTypes} 
             modules={modules}
+            handleChange={handleChange}
           />
         </Modal>
         {/* CREATE QUIZ MANUAL */}

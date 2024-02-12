@@ -36,7 +36,6 @@ export default function page({params}:any) {
     setLoadingSubmit(true)
     const formData = new FormData(e.target);
     formData.append('course_id', params.id);
-    console.log(formData)
     const res = await fetch(`/api/resources`, {
       method: 'POST',
       body: formData,

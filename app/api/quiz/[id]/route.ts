@@ -28,7 +28,6 @@ export async function POST(req: Request, { params }: any) {
   answerKeys.forEach((answerKey: Answer,index:number) => {
     const answer = answers.find((answer: Answer) => answer.title === answerKey.title)
     if (answer?.answer.sort().toString() === answerKey.answer.sort().toString()) countTrueAnswer++
-    console.log(answer?.answer.sort().toString())
   });
   const score = countTrueAnswer / questionLength * 100
 

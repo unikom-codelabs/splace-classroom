@@ -34,7 +34,7 @@ export default function Page({
         title: 'Oops...',
         text: 'Something went wrong!',
       })
-      console.log(error)
+      console.error(error)
     }
     setLoading(false);
   }
