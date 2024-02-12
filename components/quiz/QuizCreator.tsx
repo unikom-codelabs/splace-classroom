@@ -8,6 +8,7 @@ import { faXmark, faPlus, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Swal from 'sweetalert2';
 import { Spinner } from '@nextui-org/react';
+
 interface QuizProps {
   courseId: any;
   quizName: string;
@@ -156,7 +157,7 @@ export const QuizCreator = ({ courseId,quizName,onSubmit,loadingSubmit, type}:Qu
   };
 
   const handleSubmit = (e:any) => {
-    if (!courseId || !quizName || questions.some(q => !q.title || q.choices?.some(c => !c)) || answers.some(a => !a.answer)) {
+    if (!courseId || !quizName || questions.some((q:any) => !q.title || q.choices?.some((c:any) => !c)) || answers.some((a:any) => !a.answer)) {
       Swal.fire({
         icon: 'error',
         title: 'Oops...',

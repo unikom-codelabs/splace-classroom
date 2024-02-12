@@ -7,7 +7,6 @@ import fetchApi from "@/utils/fetchApi";
 import EmptyCourse from "@/components/course/emptyCourse";
 import { Spinner } from "@nextui-org/react";
 import { useContext } from "react";
-import { MenuContext } from "./context/MenuContext";
 import Layout from "@/layouts/layout";
 export default function Home() {
 	const [data, setData] = useState([]);
