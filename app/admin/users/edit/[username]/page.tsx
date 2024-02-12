@@ -11,7 +11,7 @@ export default function Users({params}:any) {
   const [role, setRole] = useState("");
   const [classId, setClassId] = useState(0);
   const [classes, setClasses] = useState([]);
-  const roles = ['STUDENT', 'INSTRUCTOR', 'ADMIN'];
+  const roles = ['STUDENT', 'TEACHER', 'ADMIN'];
   const router = useRouter();
 
   const [isError, setIsError] = useState(false);

@@ -19,7 +19,7 @@ const Register = () => {
       username,
       password,
     })
-    if (!registered) console.log('error')
+    if (!registered) console.error('error')
     router.push('/auth/login')
   };
 

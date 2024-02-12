@@ -156,7 +156,7 @@ export const QuizCreator = ({ courseId,quizName,onSubmit,loadingSubmit, type}:Qu
   };
 
   const handleSubmit = (e:any) => {
-    if (!courseId || !quizName || questions.some((q:any) => !q.title || q.choices?.some((c:any) => !c)) || answers.some(a => !a.answer)) {
+    if (!courseId || !quizName || questions.some(q => !q.title || q.choices?.some(c => !c)) || answers.some(a => !a.answer)) {
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
@@ -171,7 +171,6 @@ export const QuizCreator = ({ courseId,quizName,onSubmit,loadingSubmit, type}:Qu
       answer: answers,
       type:type
     };
-    console.log(quizData);
     onSubmit(e,quizData);
   };
   if (loadingComponent) return <Spinner className='text-center flex'/>

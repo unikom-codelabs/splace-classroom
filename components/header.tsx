@@ -12,8 +12,6 @@ import { siteConfig } from "@/config/site";
 import NextLink from "next/link";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { SearchIcon} from "@/components/icons";
-import { useContext, useEffect } from "react";
-import { MenuContext } from "@/app/context/MenuContext";
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dropdown,DropdownItem, DropdownMenu,DropdownTrigger,Avatar,AvatarIcon } from "@nextui-org/react";
@@ -22,9 +20,8 @@ import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { User } from "@/types";
-export const Header = () => {
+export const Header = ({toggle}:any) => {
 	const router = useRouter()
-	const { toggle  } = useContext(MenuContext);
 	const { data: session } = useSession();
   const userData = session?.user as User
 	const path = usePathname();
@@ -33,12 +30,12 @@ export const Header = () => {
 	}
 
 	return (
-		<NextUINavbar disableAnimation isBordered maxWidth="full" position="sticky" className="h-[10vh] z-30 bg-white">
+		<NextUINavbar disableAnimation isBordered maxWidth="full" className="bg-white">
 			<NavbarContent className="basis-1/5 sm:basis-full" justify="start">
 				<FontAwesomeIcon icon={faBars} onClick={toggle} className="fa-lg"/>
 				<NavbarBrand as="li" className="gap-3 max-w-fit">
 					<NextLink className="flex justify-start items-center gap-1" href="/">
-						<p className="font-bold text-inherit">{siteConfig.name}</p>
+						<p className="font-bold text-inherit text-lg">{siteConfig.name}</p>
 					</NextLink>
 				</NavbarBrand>
 			</NavbarContent>

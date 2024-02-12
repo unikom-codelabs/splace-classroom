@@ -1,6 +1,6 @@
 import React from 'react'
 import { Input, Select, SelectItem } from '@nextui-org/react'
-export default function FormQuizAI({courses, modules, questionTypes}: {courses: any, modules: any, questionTypes: any}) {
+export default function FormQuizAI({courses, modules, questionTypes,handleChange}: {courses: any, modules: any, questionTypes: any, handleChange: any}) {
   return (
     <>
       <Input
@@ -10,6 +10,7 @@ export default function FormQuizAI({courses, modules, questionTypes}: {courses: 
         variant='bordered'
         labelPlacement='outside'
         radius='sm'
+        onChange={handleChange}
       />
     <div className='flex gap-5'>
       <Select
@@ -19,6 +20,7 @@ export default function FormQuizAI({courses, modules, questionTypes}: {courses: 
         labelPlacement='outside' 
         radius='sm'
         placeholder='Choose Course'
+        onChange={handleChange}
       >
         {courses.map((course:any) => (
           <SelectItem key={course.id} value={course.name}>
@@ -33,6 +35,7 @@ export default function FormQuizAI({courses, modules, questionTypes}: {courses: 
         labelPlacement='outside' 
         radius='sm'
         placeholder='Choose Module'
+        onChange={handleChange}
       >
         {modules.map((module:any) => (
           <SelectItem key={module.id} value={module.name}>
@@ -49,6 +52,7 @@ export default function FormQuizAI({courses, modules, questionTypes}: {courses: 
         labelPlacement='outside' 
         radius='sm'
         placeholder='Choose Type'
+        onChange={handleChange}
       >
         {questionTypes.map((type:any) => (
           <SelectItem key={type.name} value={type.name}>
@@ -63,6 +67,7 @@ export default function FormQuizAI({courses, modules, questionTypes}: {courses: 
         variant='bordered'
         labelPlacement='outside'
         radius='sm'
+        onChange={handleChange}
       />
     </div>
     </>

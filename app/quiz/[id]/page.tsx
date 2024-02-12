@@ -52,7 +52,6 @@ export default function page({params: { id }}: {params: { id: any }}) {
   }, []);
   async function handleSubmit(e: any) {
     e.preventDefault();
-    console.log(formData);
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",

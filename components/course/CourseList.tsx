@@ -5,7 +5,6 @@ export const CourseList = ({data}:any) => {
 	return (
     <section className="flex flex-wrap gap-5">
       {data.map((course:any) =>{
-        console.log(course)
         return (
           <NextLink href={`/course/${course.id}`} key={course.id}>
             <CourseItem course={course}/>
