@@ -8,13 +8,22 @@ import EmptyCourse from "@/components/course/emptyCourse";
 import { Spinner } from "@nextui-org/react";
 import { useContext } from "react";
 import Layout from "@/layouts/layout";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 export default function Home() {
 	const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+	const { data: session } = useSession();
+  const router = useRouter();
 	async function  getData() {
     const courses = (await fetchApi('/courses', 'GET'));
     return courses.data;
   }
+  useEffect(() => {
+    if (!session) {
+      router.push('auth/login');
+    }
+  },[session])
   useEffect(()=>{
     getData().then((res)=>{
       setData(res)
