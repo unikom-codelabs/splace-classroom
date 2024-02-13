@@ -1,4 +1,4 @@
-import { OpenAIClient,AzureKeyCredential as Credential } from "@azure/openai";
+import { OpenAIClient } from "@azure/openai";
 import { SearchIndexClient,SearchIndexerClient } from '@azure/search-documents';
 import { BlobServiceClient, BlockBlobClient } from '@azure/storage-blob';
 import { AzureKeyCredential } from "@azure/core-auth";
