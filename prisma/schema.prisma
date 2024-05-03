@@ -34,6 +34,12 @@ model User {
   class     Classes? @relation(fields: [class_id], references: [id])
   user_course User_course[]
   user_quiz User_quiz[]
+  discustions Discustions[]
+  vote      Vote[]
+  comments  Comments[]
+  like_comments LikeComments[]
+  discustion_bookmark DiscustionBookmark[]
+  
 
 }
 
@@ -114,3 +120,65 @@ model User_quiz {
   quiz   Quiz @relation(fields: [quiz_id], references: [id])
 
 }
+
+model Discustions {
+  id        Int      @id @default(autoincrement())
+  user_id   Int
+  tags      String
+  content   String
+  shere_count Int
+  type      String
+  attachments String
+  updated_at DateTime @updatedAt
+  created_at DateTime @default(now())
+  user      User @relation(fields: [user_id], references: [id])
+  vote      Vote[]
+  comments  Comments[]
+  discustion_bookmark DiscustionBookmark[]
+}
+
+model Vote {
+  id        Int      @id @default(autoincrement())
+  user_id   Int
+  discustion_id Int
+  type      String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user      User @relation(fields: [user_id], references: [id])
+  discustions Discustions @relation(fields: [discustion_id], references: [id])
+}
+
+model Comments {
+  id        Int      @id @default(autoincrement())
+  discustion_id Int
+  user_id   Int
+  content   String
+  reply_id  Int
+  is_pin    Boolean
+  created_at DateTime @default(now())
+  deleted_at DateTime?
+  user      User @relation(fields: [user_id], references: [id])
+  discustions Discustions @relation(fields: [discustion_id], references: [id])
+  like_comments LikeComments[]
+}
+
+model LikeComments {
+  id        Int      @id @default(autoincrement())
+  user_id   Int
+  comment_id Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user      User @relation(fields: [user_id], references: [id])
+  comments Comments @relation(fields: [comment_id], references: [id])
+}
+
+model DiscustionBookmark {
+  id        Int      @id @default(autoincrement())
+  user_id   Int
+  discustion_id Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user      User @relation(fields: [user_id], references: [id])
+  discustions Discustions @relation(fields: [discustion_id], references: [id])
+}
+
