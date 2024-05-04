@@ -161,13 +161,15 @@ model Comments {
   discustion_id Int
   user_id   Int
   content   String
-  reply_id  Int
-  is_pin    Boolean
+  reply_id  Int? @unique
+  is_pin    Boolean @default(false)
   created_at DateTime @default(now())
   deleted_at DateTime?
   user      User @relation(fields: [user_id], references: [id])
   discustions Discustions @relation(fields: [discustion_id], references: [id])
   like_comments LikeComments[]
+  reply Comments? @relation("repliesComments", fields: [reply_id], references: [id])
+  replies Comments[] @relation("repliesComments")
 }
 
 model LikeComments {
