@@ -69,6 +69,8 @@ export async function POST(req: Request ,{params}: any) {
 }
 
 export async function DELETE(req: Request, { params }: any) {
+  try {
+    
   const course = await prisma.course.findUnique({
     where: {
       id: +params.id
@@ -91,5 +93,9 @@ export async function DELETE(req: Request, { params }: any) {
       id: +params.id
     }
   })
-  return getResponse(course, 'success get all class', 200);
+    return getResponse(courseDeleted, "success get all class", 200);
+  } catch(err) {
+    return getResponse(err, "INTERNAL SERVER ERROR", 500);
+  }
+    
 }
