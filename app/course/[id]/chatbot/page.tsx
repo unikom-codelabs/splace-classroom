@@ -52,8 +52,9 @@ export default function page({params}:any) {
     <section className='w-full bg-white flex justify-center items-center '>
       <section className='max-w-4xl w-full rounded-lg flex flex-col h-[80vh]'>
         <section className='flex-grow overflow-auto py-2 px-4'>
-          {data.length != 0 ? (data.map((message: any,index:number) => {
-            const parsedMessage = JSON.parse(message.context?.messages[0]?.content || '{}')?.citations
+          {data.length != 0 ? (data.map((message: any, index: number) => {
+            const parsedMessage = message?.context?.citations
+            console.log(message.role,parsedMessage)
             return (
               <Card key={index} shadow='sm' className={`mb-4 w-fit ${message.role == 'user'?"ms-auto bg-blue-400 text-white":''}`}>
                 <CardBody>
@@ -62,11 +63,12 @@ export default function page({params}:any) {
                 <CardFooter className={`flex flex-wrap gap-3 ${(!parsedMessage  || parsedMessage.length == 0) && 'hidden'}`}>
                   <h3 className='font-semibold'>Reference :</h3>
                   {(message.role == 'assistant' && parsedMessage) &&
-                    parsedMessage.map((item: any,index:number) => {
-                      if (!item.title) return null
+                    parsedMessage.map((item: any, index: number) => {
+                      console.log(item.title)
+                      if (!item.url) return null
                       return (
                         <Link key={index} href={item.url || ''} target='_blank' className='text-blue-500 hover:underline bg-blue-100 dark:bg-blue-950 px-2 rounded-lg'>
-                          {index+1}. {item.title}
+                          {index+1}. {item.title || 'No Title'}
                         </Link>
                       )
                     })
