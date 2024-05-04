@@ -120,15 +120,19 @@ model User_quiz {
   quiz   Quiz @relation(fields: [quiz_id], references: [id])
 
 }
-
+enum DISCUSTION_TYPE {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
 model Discustions {
   id        Int      @id @default(autoincrement())
   user_id   Int
-  tags      String
+  tags      Json @default("[]")
   content   String
-  shere_count Int
-  type      String
-  attachments String
+  shere_count Int @default(0)
+  type      DISCUSTION_TYPE @default(DRAFT)
+  attachments Json @default("[]")
   updated_at DateTime @updatedAt
   created_at DateTime @default(now())
   user      User @relation(fields: [user_id], references: [id])
@@ -137,11 +141,15 @@ model Discustions {
   discustion_bookmark DiscustionBookmark[]
 }
 
+enum VOTE_TYPE {
+  UPVOTE
+  DOWNVOTE
+}
 model Vote {
   id        Int      @id @default(autoincrement())
   user_id   Int
   discustion_id Int
-  type      String
+  type      VOTE_TYPE @default(UPVOTE)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   user      User @relation(fields: [user_id], references: [id])

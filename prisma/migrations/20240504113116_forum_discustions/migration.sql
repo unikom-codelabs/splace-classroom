@@ -2,11 +2,11 @@
 CREATE TABLE `Discustions` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `user_id` INTEGER NOT NULL,
-    `tags` VARCHAR(191) NOT NULL,
+    `tags` JSON NOT NULL,
     `content` VARCHAR(191) NOT NULL,
-    `shere_count` INTEGER NOT NULL,
-    `type` VARCHAR(191) NOT NULL,
-    `attachments` VARCHAR(191) NOT NULL,
+    `shere_count` INTEGER NOT NULL DEFAULT 0,
+    `type` ENUM('DRAFT', 'PUBLISHED', 'ARCHIVED') NOT NULL DEFAULT 'DRAFT',
+    `attachments` JSON NOT NULL,
     `updated_at` DATETIME(3) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
@@ -18,7 +18,7 @@ CREATE TABLE `Vote` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `user_id` INTEGER NOT NULL,
     `discustion_id` INTEGER NOT NULL,
-    `type` VARCHAR(191) NOT NULL,
+    `type` ENUM('UPVOTE', 'DOWNVOTE') NOT NULL DEFAULT 'UPVOTE',
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 
