@@ -26,6 +26,6 @@ export const config = {
     '/auth/register',
     '/course/(.*)',
     '/quiz/(.*)',
-    '/api/discustions/(.*)',
+    // '/api/discustions/(.*)',
   ]
 }
