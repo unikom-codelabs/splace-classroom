@@ -7,8 +7,8 @@ import React from "react";
 export default function CardUser({ data }: any) {
   const { name } = data || {};
   return (
-    <div className="flex flex-col gap-2">
-      <Card className="min-w-[300px]">
+    <div className="flex flex-col gap-2 w-full lg:max-w-[300px]">
+      <Card className="">
         <CardBody className="flex flex-col gap-5 items-center">
           <Avatar
             as="button"
