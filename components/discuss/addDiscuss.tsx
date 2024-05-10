@@ -21,6 +21,7 @@ import fetchApi from "@/utils/fetchApi";
 import ImagePreview from "./ImagePreview";
 import dynamic from "next/dynamic";
 import Swal from "sweetalert2";
+import { mutate } from "swr";
 
 export default function AddDiscuss({
   isOpen,
@@ -91,6 +92,8 @@ export default function AddDiscuss({
         text: "Something went wrong!",
       });
     }
+
+    mutate("/discustions");
 
     setUploading(false);
   };
