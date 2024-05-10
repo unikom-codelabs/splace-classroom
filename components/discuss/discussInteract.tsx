@@ -8,17 +8,17 @@ import {
   faShareNodes,
 } from "@fortawesome/free-solid-svg-icons";
 
-const DiscussInteract = () => {
+const DiscussInteract = ({ data }: any) => {
   return (
     <div className="flex gap-4">
-      <UpDownVote />
+      <UpDownVote data={data} />
       <button className="flex items-center gap-2 text-gray-500">
         <FontAwesomeIcon icon={faComments} />
-        <span>0</span>
+        <span>{data.comments.length}</span>
       </button>
       <button className="flex items-center gap-2 text-gray-500">
         <FontAwesomeIcon icon={faShareNodes} />
-        <span>0</span>
+        <span>{data.shere_count}</span>
       </button>
     </div>
   );
