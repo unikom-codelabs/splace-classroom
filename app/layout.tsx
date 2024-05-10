@@ -9,41 +9,40 @@ import { config } from "@fortawesome/fontawesome-svg-core";
 import { ThemeSwitch } from "@/components/theme-switch";
 config.autoAddCss = false;
 
-
 export const metadata: Metadata = {
-	title: {
-		default: siteConfig.name,
-		template: `%s - ${siteConfig.name}`,
-	},
-	themeColor: [
-		// { media: "(prefers-color-scheme: light)", color: "white" },
-		// { media: "(prefers-color-scheme: dark)", color: "black" },
-	],
-	icons: {
-		icon: "/favicon.ico",
-		shortcut: "/favicon-16x16.png",
-		apple: "/apple-touch-icon.png",
-	},
+  title: {
+    default: siteConfig.name,
+    template: `%s - ${siteConfig.name}`,
+  },
+  // themeColor: [
+  // 	// { media: "(prefers-color-scheme: light)", color: "white" },
+  // 	// { media: "(prefers-color-scheme: dark)", color: "black" },
+  // ],
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon-16x16.png",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export default function RootLayout({
-	children,
+  children,
 }: {
-	children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-	return (
-		<html lang="en" suppressHydrationWarning={true}>
-			<head />
-			<body
-				className={clsx(
-					"min-h-screen bg-background font-sans antialiased",
-					fontSans.variable
-				)} 
-			>
-				<Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-					{children}
-				</Providers>
-			</body>
-		</html>
-	);
+  return (
+    <html lang="en" suppressHydrationWarning={true}>
+      <head />
+      <body
+        className={clsx(
+          "min-h-screen bg-background font-sans antialiased",
+          fontSans.variable
+        )}
+      >
+        <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
+          {children}
+        </Providers>
+      </body>
+    </html>
+  );
 }
