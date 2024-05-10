@@ -7,9 +7,14 @@ import Label from "../atom/label";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookmark } from "@fortawesome/free-regular-svg-icons";
 import DiscussInteract from "./discussInteract";
+import moment from "moment";
 
 export default function DiscussItem({ data }: any) {
-  const { name } = data || {};
+  const TimeAgo = () => {
+    const timeAgo = moment(data.created_at).fromNow();
+    return timeAgo;
+  };
+  console.log(data);
   return (
     <Card className="w-full">
       <CardBody className="flex flex-col gap-5 p-4">
@@ -24,25 +29,21 @@ export default function DiscussItem({ data }: any) {
               }}
             />
             <div className="flex flex-row gap-1 justify-center items-center">
-              <span className="text-lg font-semibold">John Doe</span>{" "}
+              <span className="text-lg font-semibold">{data.user.name}</span>{" "}
               <span>•</span>
-              <span className=" text-xs text-gray-500">Just Now</span>
+              <span className=" text-xs text-gray-500">{TimeAgo()}</span>
             </div>
-            <Label text="Algorithm" />
+            <Label text={data.tags} />
           </div>
           <div className="flex gap-2 items-center justify-center">
             <FontAwesomeIcon icon={faBookmark} size="lg" />
           </div>
         </div>
         <div className="text-base font-base text-gray-600">
-          An algorithm is a procedure or formula for solving a problem, based on
-          conducting a sequence of specified actions. A computer program can be
-          viewed as an elaborate algorithm. In mathematics and computer science,
-          an algorithm usually means a small procedure that solves a recurrent
-          problem.
-          <br />
-          <br />
-          Cheers!
+          <div
+            className="discuss-post-content"
+            dangerouslySetInnerHTML={{ __html: data.content }}
+          />
         </div>
 
         <DiscussInteract />
