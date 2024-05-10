@@ -1,12 +1,12 @@
-import getResponse from '@/utils/getResponse';
-import getSessionUser from '@/utils/session';
-import { PrismaClient } from '@prisma/client';
+import getResponse from "@/utils/getResponse";
+import getSessionUser from "@/utils/session";
+import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 export async function POST(req: Request, { params }: any) {
   const { id } = params;
   const { vote } = await req.json();
-  if (!vote) return getResponse(null, 'vote is required', 400);
+  if (!vote) return getResponse(null, "vote is required", 400);
   if (["UPVOTE", "DOWNVOTE"].includes(vote) === false) {
     return getResponse(400, "Invalid vote");
   }
@@ -15,27 +15,38 @@ export async function POST(req: Request, { params }: any) {
       id: +id,
     },
     include: {
-      votes: true
-    }
+      votes: true,
+    },
   });
   if (!discustion) return getResponse(null, "Discustion not found", 404);
   const user = await getSessionUser();
-  const voteExist = discustion.votes && discustion.votes.find((v: any) => v.user_id === 1 && v.type === vote);
+  const voteExist =
+    discustion.votes &&
+    discustion.votes.find(
+      (v: any) => v.user_id === user?.id && v.discustion_id === +id
+    );
+  if (voteExist && voteExist.type === vote) {
+    await prisma.vote.delete({
+      where: {
+        id: voteExist.id,
+      },
+    });
+    return getResponse(discustion, "Discustion vote removed", 200);
+  }
+
   if (voteExist) {
     await prisma.vote.delete({
       where: {
-        id: voteExist.id
-      }
+        id: voteExist.id,
+      },
     });
-    return getResponse(voteExist, "Discustion vote removed", 200);
   }
   await prisma.vote.create({
     data: {
-      user_id:1,
+      user_id: user?.id || 1,
       discustion_id: +id,
       type: vote,
-
-    }
+    },
   });
 
   return getResponse(discustion, "Discustion voted", 200);

@@ -14,7 +14,7 @@ export default function DiscussItem({ data }: any) {
     const timeAgo = moment(data.created_at).fromNow();
     return timeAgo;
   };
-  console.log(data);
+
   return (
     <Card className="w-full">
       <CardBody className="flex flex-col gap-5 p-4">
@@ -45,8 +45,7 @@ export default function DiscussItem({ data }: any) {
             dangerouslySetInnerHTML={{ __html: data.content }}
           />
         </div>
-
-        <DiscussInteract />
+        <DiscussInteract data={data} />
       </CardBody>
     </Card>
   );
