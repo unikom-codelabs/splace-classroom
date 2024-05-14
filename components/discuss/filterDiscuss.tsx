@@ -1,15 +1,18 @@
 import { faBookmark, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Input } from "@nextui-org/input";
-import {
-  Autocomplete,
-  AutocompleteItem,
-  DateRangePicker,
-  Divider,
-} from "@nextui-org/react";
+import { Autocomplete, AutocompleteItem, Divider } from "@nextui-org/react";
 import React from "react";
 
-const FilterDiscuss = () => {
+const FilterDiscuss = ({ filter, setFilter }: any) => {
+  const handleCategoryChange = (value: string) => {
+    setFilter({ ...filter, category: value });
+  };
+
+  const handleSortChange = (value: string) => {
+    setFilter({ ...filter, sort: value });
+  };
+
   return (
     <div className="flex flex-col w-full gap-5">
       <div className="flex flex-row w-full gap-2 max-h-[250px]">
@@ -27,11 +30,17 @@ const FilterDiscuss = () => {
           placeholder="Select Category"
           labelPlacement="outside"
           label="Category"
+          defaultSelectedKey={"all"}
+          onSelectionChange={(value: any) => handleCategoryChange(value)}
+          value={filter.category}
         >
-          <AutocompleteItem key={0} value="Algorithm">
+          <AutocompleteItem key="all" value="All">
+            All Category
+          </AutocompleteItem>
+          <AutocompleteItem key={"Algorithm"} value="Algorithm">
             Algorithm
           </AutocompleteItem>
-          <AutocompleteItem key={1} value="Data Structure">
+          <AutocompleteItem key={"data"} value="Data Structure">
             Data Structure
           </AutocompleteItem>
           <AutocompleteItem key={2} value="JavaScript">
@@ -41,11 +50,23 @@ const FilterDiscuss = () => {
             Python
           </AutocompleteItem>
         </Autocomplete>
-        <DateRangePicker
-          label="Time Period"
+        <Autocomplete
+          placeholder="Sort By"
           labelPlacement="outside"
-          className=" justify-between"
-        />
+          label="Sort By"
+          defaultSelectedKey={"newest"}
+          onSelectionChange={(value: any) => handleSortChange(value)}
+        >
+          <AutocompleteItem key="newest" value="Newest">
+            Newest
+          </AutocompleteItem>
+          <AutocompleteItem key="oldest" value="Oldest">
+            Oldest
+          </AutocompleteItem>
+          <AutocompleteItem key="most-voted" value="Most Voted">
+            Most Voted
+          </AutocompleteItem>
+        </Autocomplete>
       </div>
     </div>
   );
