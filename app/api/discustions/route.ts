@@ -94,7 +94,7 @@ export async function GET(req: Request) {
     } else if (filter_by === "id") {
       discustionsFiltered = discustions.filter((discustion: any) => discustion.id === +filter_value);
     } else if (filter_by === "user") {
-      discustionsFiltered = discustions.filter((discustion: any) => discustion.user.id === filter_value);
+      discustionsFiltered = discustions.filter((discustion: any) => discustion.user.id === +filter_value);
     } else if (filter_by === "text") {
       discustionsFiltered = discustions.filter((discustion: any) => discustion.content.includes(filter_value));
     }
