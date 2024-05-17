@@ -56,7 +56,15 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: Request) {
-  const discustions = await prisma.discustions.findMany({
+  const {searchParams} = new URL(req.url);
+  const filter_by = searchParams.get('filter_by') as "tags" | "id" | "user" | "text";
+  const filter_value = searchParams.get('filter_value');
+  const sort_by = searchParams.get("sort_by") as
+		| "newest"
+		| "oldest"
+		| "top_vote";
+    
+  let discustions = await prisma.discustions.findMany({
     include: {
       user: {
         select: {
@@ -73,10 +81,36 @@ export async function GET(req: Request) {
           // image: true,
         },
       },
+      votes: true,
     },
     orderBy: {
       created_at: 'desc',
     },
   });
+  if (filter_by && filter_value) {
+    let discustionsFiltered: any = [];
+    if (filter_by === "tags") {
+      discustionsFiltered = discustions.filter((discustion: any) => discustion.tags.includes(filter_value));
+    } else if (filter_by === "id") {
+      discustionsFiltered = discustions.filter((discustion: any) => discustion.id === +filter_value);
+    } else if (filter_by === "user") {
+      discustionsFiltered = discustions.filter((discustion: any) => discustion.user.id === filter_value);
+    } else if (filter_by === "text") {
+      discustionsFiltered = discustions.filter((discustion: any) => discustion.content.includes(filter_value));
+    }
+    discustions = discustionsFiltered;
+  }
+  if (sort_by === "newest") {
+    discustions = discustions.sort((a: any, b: any) => a.created_at - b.created_at);
+  }
+  if (sort_by === "oldest") {
+    discustions = discustions.sort((a: any, b: any) => b.created_at - a.created_at);
+  }
+  if (sort_by === "top_vote") {
+		const discustionsVote = discustions.map((item) => {
+      return {...item, upvote: item.votes.filter((vote: any) => vote.type === "UPVOTE").length, downvote: item.votes.filter((vote: any) => vote.type === "DOWNVOTE").length};
+    });
+    discustions = discustionsVote.sort((a: any, b: any) => (b.upvote - b.downvote) - (a.upvote - a.downvote));
+  }
   return getResponse(discustions, "Discustions fetched", 200);
 }

@@ -20,7 +20,7 @@ export async function POST(req: Request, { params }: any) {
   });
   if (!discustion) return getResponse(null, "Discustion not found", 404);
   const user = await getSessionUser();
-  const voteExist = discustion.votes && discustion.votes.find((v: any) => v.user_id === 1 && v.type === vote);
+  const voteExist = discustion.votes && discustion.votes.find((v: any) => v.user_id === user?.id && v.type === vote);
   if (voteExist) {
     await prisma.vote.delete({
       where: {
@@ -31,7 +31,7 @@ export async function POST(req: Request, { params }: any) {
   }
   await prisma.vote.create({
     data: {
-      user_id:1,
+      user_id: user?.id ||1,
       discustion_id: +id,
       type: vote,
 
