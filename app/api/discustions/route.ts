@@ -1,116 +1,40 @@
-import { upload } from '@/utils/azure/storageBlob';
-import getResponse from '@/utils/getResponse';
-import getSessionUser from '@/utils/session';
-import { PrismaClient } from '@prisma/client';
+import getResponse from "@/utils/getResponse";
+import getSessionUser from "@/utils/session";
+import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient()
-export async function POST(req: Request) {
-  const data = await req.formData();
-  const content = data.get('content') as string;
-  const type = data.get('type')as any;
-  const tags = data.get('tags') as string;
-  const attachments = data.getAll("attachments") as unknown as File[];
-  if (!content) {
-    return getResponse(400, 'Content is required');
+const prisma = new PrismaClient();
+export async function POST(req: Request, { params }: any) {
+  const { id } = params;
+  const { vote } = await req.json();
+  if (!vote) return getResponse(null, "vote is required", 400);
+  if (["UPVOTE", "DOWNVOTE"].includes(vote) === false) {
+    return getResponse(400, "Invalid vote");
   }
-  if (["DRAFT", "PUBLISHED", "ARCHIVED"].includes(type) === false) {
-		return getResponse(400, "Invalid type");
-  }
-    
-  const user = await getSessionUser();
-  let attachmentsPaths: string[] = [];
-  if (attachments) {
-    if (!Array.isArray(attachments)) {
-      return getResponse(400, 'Attachments should be an array');
-    }
-    if (attachments.length > 5) {
-      return getResponse(400, 'Maximum 5 attachments allowed');
-    }
-    const attacmentUploaded = await Promise.all(attachments.map(async (attachment: any) => {
-      const bytes = await attachment.arrayBuffer()
-      const buffer = Buffer.from(bytes)
-      const now = new Date();
-      const prefixFile = `${now.toLocaleString()}`;
-      return upload(
-			"attachments",
-			`${prefixFile} -${attachment.name}`,
-			buffer
-		);
-    }) )
-    attachmentsPaths = attacmentUploaded.map((attachment: any) => attachment.request.url);
-  }
-  const discustion = await prisma.discustions.create({
-		data: {
-			content,
-			type,
-			tags: tags ?  JSON.parse(tags) : [],
-			attachments: attachmentsPaths || [],
-			user: {
-				connect: {
-					id: user?.id,
-				},
-			},
-		},
-  });
-  return getResponse(discustion, "Discustion created", 200);
-}
-
-export async function GET(req: Request) {
-  const {searchParams} = new URL(req.url);
-  const filter_by = searchParams.get('filter_by') as "tags" | "id" | "user" | "text";
-  const filter_value = searchParams.get('filter_value');
-  const sort_by = searchParams.get("sort_by") as
-		| "newest"
-		| "oldest"
-		| "top_vote";
-    
-  let discustions = await prisma.discustions.findMany({
+  const discustion = await prisma.discustions.findFirst({
+    where: {
+      id: +id,
+    },
     include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          username: true,
-          class: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-          // email: true,
-          // image: true,
-        },
-      },
       votes: true,
     },
-    orderBy: {
-      created_at: 'desc',
+  });
+  if (!discustion) return getResponse(null, "Discustion not found", 404);
+  const user = await getSessionUser();
+  const voteExist = discustion.votes && discustion.votes.find((v: any) => v.user_id === user?.id && v.type === vote);
+  if (voteExist) {
+    await prisma.vote.delete({
+      where: {
+        id: voteExist.id,
+      },
+    });
+  }
+  await prisma.vote.create({
+    data: {
+      user_id: user?.id ||1,
+      discustion_id: +id,
+      type: vote,
     },
   });
-  if (filter_by && filter_value) {
-    let discustionsFiltered: any = [];
-    if (filter_by === "tags") {
-      discustionsFiltered = discustions.filter((discustion: any) => discustion.tags.includes(filter_value));
-    } else if (filter_by === "id") {
-      discustionsFiltered = discustions.filter((discustion: any) => discustion.id === +filter_value);
-    } else if (filter_by === "user") {
-      discustionsFiltered = discustions.filter((discustion: any) => discustion.user.id === +filter_value);
-    } else if (filter_by === "text") {
-      discustionsFiltered = discustions.filter((discustion: any) => discustion.content.includes(filter_value));
-    }
-    discustions = discustionsFiltered;
-  }
-  if (sort_by === "newest") {
-    discustions = discustions.sort((a: any, b: any) => a.created_at - b.created_at);
-  }
-  if (sort_by === "oldest") {
-    discustions = discustions.sort((a: any, b: any) => b.created_at - a.created_at);
-  }
-  if (sort_by === "top_vote") {
-		const discustionsVote = discustions.map((item) => {
-      return {...item, upvote: item.votes.filter((vote: any) => vote.type === "UPVOTE").length, downvote: item.votes.filter((vote: any) => vote.type === "DOWNVOTE").length};
-    });
-    discustions = discustionsVote.sort((a: any, b: any) => (b.upvote - b.downvote) - (a.upvote - a.downvote));
-  }
-  return getResponse(discustions, "Discustions fetched", 200);
+
+  return getResponse(discustion, "Discustion voted", 200);
 }

@@ -7,3 +7,19 @@
     @apply py-2 px-4 bg-dark-blue text-white font-semibold rounded-lg shadow-md hover:bg-dark-blue focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-75;
   }
 }
+
+.discuss-post-content h1 {
+  @apply text-3xl font-bold;
+}
+
+.discuss-post-content h2 {
+  @apply text-2xl font-bold;
+}
+
+.discuss-post-content h3 {
+  @apply text-xl font-bold;
+}
+
+.discuss-post-content a {
+  @apply text-blue-500;
+}
