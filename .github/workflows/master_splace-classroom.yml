@@ -23,8 +23,8 @@ jobs:
 
       - name: generate prisma, npm install and  build
         run: |
-          npx prisma generate
           yarn install
+          npx prisma generate
           npm run build --if-present
 
       - name: Zip artifact for deployment
