@@ -21,8 +21,9 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: npm install, build, and test
+      - name: generate prisma, npm install and  build
         run: |
+          npx prisma generate
           yarn install
           npm run build --if-present
 
