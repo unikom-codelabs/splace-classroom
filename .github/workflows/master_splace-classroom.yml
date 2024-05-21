@@ -23,6 +23,7 @@ jobs:
       - name: npm install, build, and test
         run: |
           yarn install
+          npm install -g cmd-env
           npx prisma generate
           env-cmd -f .env.production yarn build 
 
