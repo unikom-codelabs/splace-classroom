@@ -1,12 +1,20 @@
 import fetchApi from "@/utils/fetchApi";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Input } from "@nextui-org/input";
+import { Textarea } from "@nextui-org/input";
 import React from "react";
 import toast from "react-hot-toast";
 import { mutate } from "swr";
 
-const AddComment = ({ id }: { id: number }) => {
+const AddComment = ({
+  id,
+  reply,
+  c_id,
+}: {
+  id: number;
+  c_id?: number;
+  reply?: boolean;
+}) => {
   const [comment, setComment] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
@@ -21,19 +29,53 @@ const AddComment = ({ id }: { id: number }) => {
     setLoading(false);
   };
 
+  const handleReply = async () => {
+    setLoading(true);
+    await fetchApi(`/discustions/${id}/comment/${c_id}/reply`, "POST", {
+      text: comment,
+    });
+    toast.success("Comment Added");
+    mutate("/discustions");
+    setComment("");
+    setLoading(false);
+  };
+
   return (
     <div className="flex flex-row gap-3">
-      <Input
-        size={"md"}
-        type="text"
-        placeholder="Add Your Comments"
-        onValueChange={setComment}
-        value={comment}
-        disabled={loading}
-      />
-      <button onClick={handleAddComment} disabled={loading}>
-        <FontAwesomeIcon icon={faPaperPlane} size={"lg"} />
-      </button>
+      {!reply ? (
+        <>
+          <Textarea
+            minRows={1}
+            maxRows={3}
+            size={"md"}
+            type="text"
+            placeholder="Add Your Comments"
+            onValueChange={setComment}
+            value={comment}
+            disabled={loading}
+          />
+          <button onClick={handleAddComment} disabled={loading}>
+            <FontAwesomeIcon icon={faPaperPlane} size={"lg"} />
+          </button>
+        </>
+      ) : (
+        <>
+          <Textarea
+            minRows={1}
+            maxRows={3}
+            size={"sm"}
+            type="text"
+            placeholder="Add Your Reply Comments"
+            onValueChange={setComment}
+            value={comment}
+            disabled={loading}
+            className="w-3/4"
+          />
+          <button onClick={handleReply} disabled={loading}>
+            <FontAwesomeIcon icon={faPaperPlane} size={"sm"} />
+          </button>
+        </>
+      )}
     </div>
   );
 };

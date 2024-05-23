@@ -3,7 +3,7 @@ import { Button } from "@nextui-org/button";
 import { Card, CardBody } from "@nextui-org/card";
 import { Avatar, AvatarIcon, Divider, useDisclosure } from "@nextui-org/react";
 import React from "react";
-import AddDiscuss from "./addDiscuss";
+import AddDiscuss from "./addDiscuss/addDiscuss";
 
 export default function CardUser({ data }: any) {
   const { name } = data || {};

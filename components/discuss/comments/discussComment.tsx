@@ -1,13 +1,36 @@
-import { faAnglesUp } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Divider } from "@nextui-org/react";
 import React from "react";
 import AddComment from "./addComment";
 import CommentList from "./commentList";
+import Comment from "./singleComment";
+import fetchApi from "@/utils/fetchApi";
+import { mutate } from "swr";
+import toast from "react-hot-toast";
+import { useSession } from "next-auth/react";
 
 const DiscussComment = ({ data, showComment }: any) => {
   const [detail, setDetail] = React.useState(false);
   const [detailReply, setDetailReply] = React.useState(false);
+
+  const { data: session } = useSession() as any;
+
+  const handleVote = async ({ c_id }: any) => {
+    const res = await fetchApi(
+      `/discustions/${data.id}/comment/${c_id}/like`,
+      "POST",
+      {
+        id: c_id,
+      }
+    );
+
+    mutate("/discustions");
+
+    toast.success(
+      `${
+        res.message === "Comment liked" ? "Liked" : "Unliked"
+      } Comment Discussion`
+    );
+  };
 
   return (
     <div className="my-2">
@@ -33,30 +56,22 @@ const DiscussComment = ({ data, showComment }: any) => {
       )}
 
       {data.comments.length > 0 && !detail && (
-        <Comment data={data.comments[0]} />
+        <Comment
+          data={data.comments[0]}
+          handleVote={handleVote}
+          session={session}
+        />
       )}
       {detail && (
         <CommentList
+          discussionId={data.id}
           data={data.comments}
           detailReply={{ detailReply, setDetailReply }}
-          idDiscussion={data.id}
+          handleVote={handleVote}
+          session={session}
         />
       )}
       {showComment.showComment && <AddComment id={data.id} />}
-    </div>
-  );
-};
-
-const Comment = ({ data }: any) => {
-  return (
-    <div className="flex flex-row justify-between items-center mb-2">
-      <div>
-        <span className=" text-sm font-semibold text-gray-600">
-          {data.user.name}
-        </span>{" "}
-        <span className="text-sm text-gray-600">{data.content}</span>
-      </div>
-      <FontAwesomeIcon icon={faAnglesUp} size="sm" />
     </div>
   );
 };

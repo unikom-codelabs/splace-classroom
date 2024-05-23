@@ -96,7 +96,19 @@ export async function GET(req: Request) {
           content: true,
           created_at: true,
           like_comments: true,
-          replies: true,
+          replies: {
+            select: {
+              id: true,
+              content: true,
+              created_at: true,
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
           user: {
             select: {
               id: true,
