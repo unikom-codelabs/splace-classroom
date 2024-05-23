@@ -4,6 +4,7 @@ import { faAnglesDown, faAnglesUp } from "@fortawesome/free-solid-svg-icons";
 import fetchApi from "@/utils/fetchApi";
 import { mutate } from "swr";
 import { useSession } from "next-auth/react";
+import toast from "react-hot-toast";
 
 const UpDownVote = ({ data }: any) => {
   const { data: session } = useSession() as any;
@@ -13,9 +14,11 @@ const UpDownVote = ({ data }: any) => {
       vote: type,
     });
     mutate("/discustions");
-  };
 
-  console.log(session);
+    toast.success(
+      `${res.message === "Discustion voted" ? "Vote" : "Unvote"} Discussion`
+    );
+  };
 
   return (
     <div className="flex bg-dark-blue/10 p-1 rounded-md gap-2">

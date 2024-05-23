@@ -7,19 +7,29 @@ import {
   faShare,
   faShareNodes,
 } from "@fortawesome/free-solid-svg-icons";
+import DiscussComment from "./comments/discussComment";
 
-const DiscussInteract = ({ data }: any) => {
+const DiscussInteract = ({ data, comment }: any) => {
   return (
-    <div className="flex gap-4">
-      <UpDownVote data={data} />
-      <button className="flex items-center gap-2 text-gray-500">
-        <FontAwesomeIcon icon={faComments} />
-        <span>{data.comments.length}</span>
-      </button>
-      <button className="flex items-center gap-2 text-gray-500">
-        <FontAwesomeIcon icon={faShareNodes} />
-        <span>{data.shere_count}</span>
-      </button>
+    <div>
+      <div className="flex gap-4">
+        <UpDownVote data={data} />
+        <button
+          className="flex items-center gap-2 text-gray-500"
+          onClick={() => comment.setShowComment(!comment.showComment)}
+        >
+          <FontAwesomeIcon
+            icon={faComments}
+            className={comment.showComment ? " text-primary" : ""}
+          />
+          <span>{data.comments.length}</span>
+        </button>
+        <button className="flex items-center gap-2 text-gray-500">
+          <FontAwesomeIcon icon={faShareNodes} />
+          <span>{data.shere_count}</span>
+        </button>
+      </div>
+      <DiscussComment data={data} showComment={comment} />
     </div>
   );
 };

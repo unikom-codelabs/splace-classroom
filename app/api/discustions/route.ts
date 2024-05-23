@@ -90,7 +90,21 @@ export async function GET(req: Request) {
         },
       },
       votes: true,
-      comments: true,
+      comments: {
+        select: {
+          id: true,
+          content: true,
+          created_at: true,
+          like_comments: true,
+          replies: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
     },
     orderBy: {
       created_at: "desc",
