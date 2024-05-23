@@ -8,12 +8,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookmark } from "@fortawesome/free-regular-svg-icons";
 import DiscussInteract from "./discussInteract";
 import moment from "moment";
+import { TimeAgo } from "@/utils/timeStamp";
 
 export default function DiscussItem({ data }: any) {
-  const TimeAgo = () => {
-    const timeAgo = moment(data.created_at).fromNow();
-    return timeAgo;
-  };
+  const [showComment, setShowComment] = React.useState(false);
 
   return (
     <Card className="w-full">
@@ -31,7 +29,9 @@ export default function DiscussItem({ data }: any) {
             <div className="flex flex-row gap-1 justify-center items-center">
               <span className="text-lg font-semibold">{data.user.name}</span>{" "}
               <span>•</span>
-              <span className=" text-xs text-gray-500">{TimeAgo()}</span>
+              <span className=" text-xs text-gray-500">
+                {TimeAgo(data.created_at)}
+              </span>
             </div>
             <Label text={data.tags} />
           </div>
@@ -45,7 +45,10 @@ export default function DiscussItem({ data }: any) {
             dangerouslySetInnerHTML={{ __html: data.content }}
           />
         </div>
-        <DiscussInteract data={data} />
+        <DiscussInteract
+          data={data}
+          comment={{ showComment, setShowComment }}
+        />
       </CardBody>
     </Card>
   );

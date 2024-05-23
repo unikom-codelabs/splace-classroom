@@ -1,4 +1,5 @@
 import exp from "constants";
+import moment from "moment";
 
 export const showFormattedDate = (date: string | number | Date): string => {
   const optionsDate: Intl.DateTimeFormatOptions = {
@@ -15,8 +16,14 @@ export const showFormattedDate = (date: string | number | Date): string => {
   };
 
   const formattedDate = new Date(date);
-  const formattedDateString = formattedDate.toLocaleDateString("en-US", optionsDate);
-  const formattedTimeString = formattedDate.toLocaleTimeString("en-US", optionsTime);
+  const formattedDateString = formattedDate.toLocaleDateString(
+    "en-US",
+    optionsDate
+  );
+  const formattedTimeString = formattedDate.toLocaleTimeString(
+    "en-US",
+    optionsTime
+  );
 
   return `${formattedDateString}, ${formattedTimeString}`;
 };
@@ -29,7 +36,15 @@ export const showFormattedDateOnly = (date: string | number | Date): string => {
   };
 
   const formattedDate = new Date(date);
-  const formattedDateString = formattedDate.toLocaleDateString("en-US", optionsDate);
+  const formattedDateString = formattedDate.toLocaleDateString(
+    "en-US",
+    optionsDate
+  );
 
   return `${formattedDateString}`;
-}
+};
+
+export const TimeAgo = (time: any) => {
+  const timeAgo = moment(time).fromNow();
+  return timeAgo;
+};
