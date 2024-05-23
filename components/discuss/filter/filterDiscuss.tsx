@@ -3,8 +3,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Input } from "@nextui-org/input";
 import { Autocomplete, AutocompleteItem, Divider } from "@nextui-org/react";
 import React from "react";
+import { faBookmark as faBookmarkSolid } from "@fortawesome/free-regular-svg-icons";
 
-const FilterDiscuss = ({ filter, setFilter }: any) => {
+const FilterDiscuss = ({ filter, setFilter, isBookmark }: any) => {
   const handleCategoryChange = (value: string) => {
     setFilter({ ...filter, category: value });
   };
@@ -20,8 +21,15 @@ const FilterDiscuss = ({ filter, setFilter }: any) => {
           startContent={<FontAwesomeIcon icon={faSearch} />}
           placeholder="Search Topic Discussion"
         />
-        <button className="bg-dark-blue text-white font-medium p-2 rounded-md">
-          <FontAwesomeIcon icon={faBookmark} className="px-2" size="lg" />
+        <button
+          className="bg-dark-blue text-white font-medium p-2 rounded-md"
+          onClick={() => isBookmark.setIsBookmark(!isBookmark.isBookmark)}
+        >
+          <FontAwesomeIcon
+            icon={isBookmark.isBookmark ? faBookmarkSolid : faBookmark}
+            className="px-2"
+            size="lg"
+          />
         </button>
       </div>
       <Divider />
