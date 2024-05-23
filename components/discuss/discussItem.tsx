@@ -9,9 +9,12 @@ import { faBookmark } from "@fortawesome/free-regular-svg-icons";
 import DiscussInteract from "./discussInteract";
 import moment from "moment";
 import { TimeAgo } from "@/utils/timeStamp";
+import Image from "next/image";
 
 export default function DiscussItem({ data }: any) {
   const [showComment, setShowComment] = React.useState(false);
+
+  console.log(data);
 
   return (
     <Card className="w-full">
@@ -38,6 +41,18 @@ export default function DiscussItem({ data }: any) {
           <div className="flex gap-2 items-center justify-center">
             <FontAwesomeIcon icon={faBookmark} size="lg" />
           </div>
+        </div>
+        <div className="gap-2 grid grid-cols-3 ">
+          {data.attachments.map((attachment: any) => (
+            <Image
+              key={attachment}
+              className="border border-gray-200 rounded-md"
+              width={300}
+              height={200}
+              alt="NextUI hero Image"
+              src={attachment}
+            />
+          ))}
         </div>
         <div className="text-base font-base text-gray-600">
           <div
