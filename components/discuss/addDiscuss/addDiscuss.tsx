@@ -21,6 +21,7 @@ import ImagePreview from "./ImagePreview";
 import dynamic from "next/dynamic";
 import Swal from "sweetalert2";
 import { mutate } from "swr";
+import toast from "react-hot-toast";
 
 export default function AddDiscuss({
   isOpen,
@@ -51,6 +52,11 @@ export default function AddDiscuss({
   );
 
   const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.length ?? 0 > 5) {
+      toast.error("Maximum 5 attachments allowed");
+      return;
+    }
+
     if (e.target.files) {
       const _files = Array.from(e.target.files);
       setImages(_files);
@@ -63,6 +69,16 @@ export default function AddDiscuss({
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (formData.content == "<p><br></p>") {
+      toast.error("Content is required");
+      return;
+    }
+
+    if (selectedKey == null) {
+      toast.error("Select a category");
+      return;
+    }
 
     const data = new FormData(e.target as HTMLFormElement);
     data.append("content", formData.content);
@@ -94,6 +110,13 @@ export default function AddDiscuss({
 
     mutate("/discustions");
 
+    setFormData({
+      content: "",
+      tags: "",
+      type: "PUBLISHED",
+      attachments: [],
+    });
+    setValue("");
     setUploading(false);
   };
 
