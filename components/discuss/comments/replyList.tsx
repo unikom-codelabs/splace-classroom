@@ -1,6 +1,4 @@
 import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAnglesUp } from "@fortawesome/free-solid-svg-icons";
 import { TimeAgo } from "@/utils/timeStamp";
 
 const ReplyList = ({ data }: any) => {
@@ -22,18 +20,8 @@ const ReplyList = ({ data }: any) => {
               <span className="text-xs text-gray-400">
                 {TimeAgo(comment.created_at)}
               </span>
-              <span className="text-xs text-gray-600">•</span>
-              <span className="text-xs text-gray-500 font-semibold">
-                {comment.like_comments.length} likes
-              </span>
-              <span className="text-xs text-gray-600">•</span>
-
-              <button className="text-xs text-gray-500 font-semibold">
-                Reply
-              </button>
             </div>
           </div>
-          <FontAwesomeIcon icon={faAnglesUp} size="sm" />
         </div>
       ))}
     </div>

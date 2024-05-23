@@ -17,7 +17,6 @@ import {
   faClose,
   faPaperclip,
 } from "@fortawesome/free-solid-svg-icons";
-import fetchApi from "@/utils/fetchApi";
 import ImagePreview from "./ImagePreview";
 import dynamic from "next/dynamic";
 import Swal from "sweetalert2";

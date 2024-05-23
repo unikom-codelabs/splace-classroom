@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { Card, CardBody } from "@nextui-org/card";
 
 import DiscussItem from "./discussItem";
-import FilterDiscuss from "./filterDiscuss";
+import FilterDiscuss from "./filter/filterDiscuss";
 import useSWR from "swr";
 import fetchApi from "@/utils/fetchApi";
 import Loading from "@/app/course/[id]/loading";
