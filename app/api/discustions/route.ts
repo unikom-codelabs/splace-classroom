@@ -117,6 +117,7 @@ export async function GET(req: Request) {
           },
         },
       },
+      discustion_bookmark: true,
     },
     orderBy: {
       created_at: "desc",
