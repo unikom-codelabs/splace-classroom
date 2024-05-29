@@ -8,8 +8,31 @@ import {
   faShareNodes,
 } from "@fortawesome/free-solid-svg-icons";
 import DiscussComment from "./comments/discussComment";
+import fetchApi from "@/utils/fetchApi";
+import { mutate } from "swr";
+import toast from "react-hot-toast";
+import { Tooltip } from "@nextui-org/tooltip";
 
 const DiscussInteract = ({ data, comment }: any) => {
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const shareLink: any =
+    process.env.NEXT_PUBLIC_BASE_URL + "/discuss/" + data.id;
+  const copylink = () => {
+    navigator.clipboard.writeText(shareLink);
+  };
+
+  const handleShare = async () => {
+    setIsLoading(true);
+    const res = await fetchApi(`/discustions/${data.id}/share`, "PUT");
+    copylink();
+
+    mutate("/discustions");
+
+    toast.success("Discussion has copied to clipboard");
+    setIsLoading(false);
+  };
+
   return (
     <div>
       <div className="flex gap-4">
@@ -24,10 +47,16 @@ const DiscussInteract = ({ data, comment }: any) => {
           />
           <span>{data.comments.length}</span>
         </button>
-        <button className="flex items-center gap-2 text-gray-500">
-          <FontAwesomeIcon icon={faShareNodes} />
-          <span>{data.shere_count}</span>
-        </button>
+        <Tooltip content="Copy Link Discussion" placement="top">
+          <button
+            className="flex items-center gap-2 text-gray-500"
+            onClick={() => handleShare()}
+            disabled={isLoading}
+          >
+            <FontAwesomeIcon icon={faShareNodes} />
+            <span>{data.shere_count}</span>
+          </button>
+        </Tooltip>
       </div>
       <DiscussComment data={data} showComment={comment} />
     </div>

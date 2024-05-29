@@ -1,5 +1,5 @@
 import { Divider } from "@nextui-org/react";
-import React from "react";
+import React, { useEffect } from "react";
 import AddComment from "./addComment";
 import CommentList from "./commentList";
 import Comment from "./singleComment";
@@ -7,8 +7,10 @@ import fetchApi from "@/utils/fetchApi";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
+import { useParams } from "next/navigation";
 
 const DiscussComment = ({ data, showComment }: any) => {
+  const { id } = useParams();
   const [detail, setDetail] = React.useState(false);
   const [detailReply, setDetailReply] = React.useState(false);
 
@@ -31,6 +33,13 @@ const DiscussComment = ({ data, showComment }: any) => {
       } Comment Discussion`
     );
   };
+
+  useEffect(() => {
+    if (id) {
+      setDetail(true);
+      showComment.setShowComment(true);
+    }
+  }, []);
 
   return (
     <div className="my-2">
