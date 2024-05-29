@@ -1,7 +1,12 @@
 import { faBookmark, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Input } from "@nextui-org/input";
-import { Autocomplete, AutocompleteItem, Divider } from "@nextui-org/react";
+import {
+  Autocomplete,
+  AutocompleteItem,
+  Divider,
+  Tooltip,
+} from "@nextui-org/react";
 import React from "react";
 import { faBookmark as faBookmarkSolid } from "@fortawesome/free-regular-svg-icons";
 
@@ -21,16 +26,26 @@ const FilterDiscuss = ({ filter, setFilter, isBookmark }: any) => {
           startContent={<FontAwesomeIcon icon={faSearch} />}
           placeholder="Search Topic Discussion"
         />
-        <button
-          className="bg-dark-blue text-white font-medium p-2 rounded-md"
-          onClick={() => isBookmark.setIsBookmark(!isBookmark.isBookmark)}
+        <Tooltip
+          content={`
+          ${
+            isBookmark.isBookmark
+              ? "Show All Discussion"
+              : "Show Bookmarked Discussion"
+          }
+        `}
         >
-          <FontAwesomeIcon
-            icon={isBookmark.isBookmark ? faBookmarkSolid : faBookmark}
-            className="px-2"
-            size="lg"
-          />
-        </button>
+          <button
+            className="bg-dark-blue text-white font-medium p-2 rounded-md"
+            onClick={() => isBookmark.setIsBookmark(!isBookmark.isBookmark)}
+          >
+            <FontAwesomeIcon
+              icon={isBookmark.isBookmark ? faBookmark : faBookmarkSolid}
+              className="px-2"
+              size="lg"
+            />
+          </button>
+        </Tooltip>
       </div>
       <Divider />
       <div className="flex flex-row w-full gap-2 max-h-[250px]">

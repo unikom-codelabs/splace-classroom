@@ -12,14 +12,10 @@ import { useSession } from "next-auth/react";
 export default function Discuss() {
   const { data: session } = useSession() as any;
 
-  console.log(session);
-
   const [isBookmark, setIsBookmark] = useState(false);
   const [dataBookmark, setDataBookmark] = useState<any>([]);
 
   const { data: data, isLoading } = useSWR("/discustions", fetchApi as any);
-
-  console.log(data);
 
   useEffect(() => {
     const datas = data?.data.filter((item: any) =>
