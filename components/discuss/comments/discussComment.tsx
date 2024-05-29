@@ -4,10 +4,11 @@ import AddComment from "./addComment";
 import CommentList from "./commentList";
 import Comment from "./singleComment";
 import fetchApi from "@/utils/fetchApi";
-import { mutate } from "swr";
+import { useSWRConfig } from "swr";
 import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
+import { mutateSWRPartialKey } from "@/utils/mutateSWR";
 
 const DiscussComment = ({ data, showComment }: any) => {
   const { id } = useParams();
@@ -15,6 +16,8 @@ const DiscussComment = ({ data, showComment }: any) => {
   const [detailReply, setDetailReply] = React.useState(false);
 
   const { data: session } = useSession() as any;
+
+  const { cache }: any = useSWRConfig();
 
   const handleVote = async ({ c_id }: any) => {
     const res = await fetchApi(
@@ -25,7 +28,7 @@ const DiscussComment = ({ data, showComment }: any) => {
       }
     );
 
-    mutate("/discustions");
+    mutateSWRPartialKey({ key: "/discustions", cache });
 
     toast.success(
       `${

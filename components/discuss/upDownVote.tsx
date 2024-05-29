@@ -2,21 +2,24 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAnglesDown, faAnglesUp } from "@fortawesome/free-solid-svg-icons";
 import fetchApi from "@/utils/fetchApi";
-import { mutate } from "swr";
+import { mutate, useSWRConfig } from "swr";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import { Tooltip } from "@nextui-org/tooltip";
+import { mutateSWRPartialKey } from "@/utils/mutateSWR";
 
 const UpDownVote = ({ data }: any) => {
   const { data: session } = useSession() as any;
   const [isLoading, setIsLoading] = React.useState(false);
+
+  const { cache }: any = useSWRConfig();
 
   const handleVote = async ({ type, id }: any) => {
     setIsLoading(true);
     const res = await fetchApi(`/discustions/${id}/vote`, "POST", {
       vote: type,
     });
-    mutate("/discustions");
+    mutateSWRPartialKey({ key: "/discustions", cache });
 
     toast.success(
       `${res.message === "Discustion voted" ? "Vote" : "Unvote"} Discussion`

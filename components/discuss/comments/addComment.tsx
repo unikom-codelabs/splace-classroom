@@ -1,10 +1,11 @@
 import fetchApi from "@/utils/fetchApi";
+import { mutateSWRPartialKey } from "@/utils/mutateSWR";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Textarea } from "@nextui-org/input";
 import React from "react";
 import toast from "react-hot-toast";
-import { mutate } from "swr";
+import { mutate, useSWRConfig } from "swr";
 
 const AddComment = ({
   id,
@@ -18,13 +19,15 @@ const AddComment = ({
   const [comment, setComment] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
+  const { cache }: any = useSWRConfig();
+
   const handleAddComment = async () => {
     setLoading(true);
     await fetchApi(`/discustions/${id}/comment`, "POST", {
       text: comment,
     });
     toast.success("Comment Added");
-    mutate("/discustions");
+    mutateSWRPartialKey({ key: "/discustions", cache });
     setComment("");
     setLoading(false);
   };
@@ -35,7 +38,8 @@ const AddComment = ({
       text: comment,
     });
     toast.success("Comment Added");
-    mutate("/discustions");
+    mutateSWRPartialKey({ key: "/discustions", cache });
+
     setComment("");
     setLoading(false);
   };

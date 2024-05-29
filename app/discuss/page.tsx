@@ -8,8 +8,11 @@ import CardUser from "@/components/discuss/userCard";
 import Layout from "@/layouts/layout";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 
 export default function Discuss() {
+  const params = useSearchParams();
+
   const { data: session } = useSession() as any;
 
   const [isBookmark, setIsBookmark] = useState(false);
