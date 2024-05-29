@@ -61,12 +61,17 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const filter_by = searchParams.get("filter_by") as
-    | "tags"
-    | "id"
-    | "user"
-    | "text";
-  const filter_value = searchParams.get("filter_value");
+  // const filter_by = searchParams.get("filter_by") as
+  //   | "tags"
+  //   | "id"
+  //   | "user"
+  //   | "text";
+  // const filter_value = searchParams.get("filter_value");
+  const tags = searchParams.get("tags");
+  const id = searchParams.get("id");
+  const user = searchParams.get("user");
+  const text = searchParams.get("text");
+
   const sort_by = searchParams.get("sort_by") as
     | "newest"
     | "oldest"
@@ -123,27 +128,11 @@ export async function GET(req: Request) {
       created_at: "desc",
     },
   });
-  if (filter_by && filter_value) {
-    let discustionsFiltered: any = [];
-    if (filter_by === "tags") {
-      discustionsFiltered = discustions.filter((discustion: any) =>
-        discustion.tags.includes(filter_value)
-      );
-    } else if (filter_by === "id") {
-      discustionsFiltered = discustions.filter(
-        (discustion: any) => discustion.id === +filter_value
-      );
-    } else if (filter_by === "user") {
-      discustionsFiltered = discustions.filter(
-        (discustion: any) => discustion.user.id === +filter_value
-      );
-    } else if (filter_by === "text") {
-      discustionsFiltered = discustions.filter((discustion: any) =>
-        discustion.content.includes(filter_value)
-      );
-    }
-    discustions = discustionsFiltered;
-  }
+  if (tags) discustions = discustions.filter((item) =>  Array.isArray(item.tags) && item.tags.includes(tags));
+  if (id) discustions = discustions.filter((item) => item.id === +id);
+  if (user) discustions = discustions.filter((item) => item.user.id === +user);
+  if (text) discustions = discustions.filter((item) =>item.content.toLowerCase().includes(text.toLowerCase()));
+  
   if (sort_by === "newest") {
     discustions = discustions.sort(
       (a: any, b: any) => a.created_at - b.created_at
