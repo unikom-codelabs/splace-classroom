@@ -16,6 +16,7 @@ import fetchApi from "@/utils/fetchApi";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
+import Loading from "@/app/course/[id]/loading";
 
 export default function DiscussItem({ data }: any) {
   const { data: session } = useSession() as any;
@@ -37,6 +38,8 @@ export default function DiscussItem({ data }: any) {
     );
     setIsLoading(false);
   };
+
+  if (!session) return <Loading />;
 
   return (
     <Card className="w-full">
