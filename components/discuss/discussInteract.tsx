@@ -9,9 +9,10 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import DiscussComment from "./comments/discussComment";
 import fetchApi from "@/utils/fetchApi";
-import { mutate } from "swr";
+import { mutate, useSWRConfig } from "swr";
 import toast from "react-hot-toast";
 import { Tooltip } from "@nextui-org/tooltip";
+import { mutateSWRPartialKey } from "@/utils/mutateSWR";
 
 const DiscussInteract = ({ data, comment }: any) => {
   const [isLoading, setIsLoading] = React.useState(false);
@@ -22,12 +23,14 @@ const DiscussInteract = ({ data, comment }: any) => {
     navigator.clipboard.writeText(shareLink);
   };
 
+  const { cache }: any = useSWRConfig();
+
   const handleShare = async () => {
     setIsLoading(true);
     const res = await fetchApi(`/discustions/${data.id}/share`, "PUT");
     copylink();
 
-    mutate("/discustions");
+    mutateSWRPartialKey({ key: "/discustions", cache });
 
     toast.success("Discussion has copied to clipboard");
     setIsLoading(false);

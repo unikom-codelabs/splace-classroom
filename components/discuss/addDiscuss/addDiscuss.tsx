@@ -20,8 +20,9 @@ import {
 import ImagePreview from "./ImagePreview";
 import dynamic from "next/dynamic";
 import Swal from "sweetalert2";
-import { mutate } from "swr";
+import { mutate, useSWRConfig } from "swr";
 import toast from "react-hot-toast";
+import { mutateSWRPartialKey } from "@/utils/mutateSWR";
 
 export default function AddDiscuss({
   isOpen,
@@ -34,6 +35,8 @@ export default function AddDiscuss({
   const [images, setImages] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [selectedKey, setSelectedKey] = React.useState<React.Key | null>(null);
+
+  const { cache }: any = useSWRConfig();
 
   const onSelectionChange = (key: React.Key | null) => {
     setSelectedKey(key);
@@ -108,7 +111,7 @@ export default function AddDiscuss({
       });
     }
 
-    mutate("/discustions");
+    mutateSWRPartialKey({ key: "/discustions", cache });
 
     setFormData({
       content: "",

@@ -2,7 +2,7 @@
 import { Button } from "@nextui-org/button";
 import { Card, CardBody } from "@nextui-org/card";
 import { Avatar, AvatarIcon, Divider, Tooltip } from "@nextui-org/react";
-import React from "react";
+import React, { useEffect } from "react";
 import Label from "../atom/label";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookmark } from "@fortawesome/free-regular-svg-icons";
@@ -13,15 +13,18 @@ import DiscussInteract from "./discussInteract";
 import { TimeAgo } from "@/utils/timeStamp";
 import Image from "next/image";
 import fetchApi from "@/utils/fetchApi";
-import { mutate } from "swr";
+import { useSWRConfig } from "swr";
 import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
 import Loading from "@/app/course/[id]/loading";
+import { mutateSWRPartialKey } from "@/utils/mutateSWR";
 
 export default function DiscussItem({ data }: any) {
   const { data: session } = useSession() as any;
   const [showComment, setShowComment] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+
+  const { cache }: any = useSWRConfig();
 
   const handleBookmark = async () => {
     setIsLoading(true);
@@ -29,7 +32,7 @@ export default function DiscussItem({ data }: any) {
       id: data.id,
     });
 
-    mutate("/discustions");
+    mutateSWRPartialKey({ key: "/discustions", cache });
 
     toast.success(
       `${
