@@ -52,12 +52,12 @@ export default function AddDiscuss({
   );
 
   const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.length ?? 0 > 5) {
-      toast.error("Maximum 5 attachments allowed");
-      return;
-    }
-
     if (e.target.files) {
+      if (e.target.files.length > 5) {
+        toast.error("Maximum 5 attachments allowed");
+        return;
+      }
+
       const _files = Array.from(e.target.files);
       setImages(_files);
       setFormData({

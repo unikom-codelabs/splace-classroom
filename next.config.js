@@ -1,7 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["aicstorage.blob.core.windows.net"],
+    remotePatterns: [
+      {
+        hostname: "aicstorage.blob.core.windows.net",
+      },
+    ],
   },
 };
 

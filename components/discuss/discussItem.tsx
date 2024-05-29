@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@nextui-org/button";
 import { Card, CardBody } from "@nextui-org/card";
-import { Avatar, AvatarIcon, Divider } from "@nextui-org/react";
+import { Avatar, AvatarIcon, Divider, Tooltip } from "@nextui-org/react";
 import React from "react";
 import Label from "../atom/label";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,11 +15,15 @@ import Image from "next/image";
 import fetchApi from "@/utils/fetchApi";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
+import { useSession } from "next-auth/react";
 
 export default function DiscussItem({ data }: any) {
+  const { data: session } = useSession() as any;
   const [showComment, setShowComment] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const handleBookmark = async () => {
+    setIsLoading(true);
     const res = await fetchApi(`/discustions/${data.id}/bookmark`, "POST", {
       id: data.id,
     });
@@ -31,6 +35,7 @@ export default function DiscussItem({ data }: any) {
         res.message === "Discustion bookmarked" ? "Bookmark" : "Remove Bookmark"
       } Discussion`
     );
+    setIsLoading(false);
   };
 
   return (
@@ -56,19 +61,29 @@ export default function DiscussItem({ data }: any) {
             <Label text={data.tags} />
           </div>
           <div className="flex gap-2 items-center justify-center">
-            <button onClick={() => handleBookmark()}>
-              <FontAwesomeIcon
-                icon={
-                  data.discustion_bookmark.find(
-                    (bookmark: any) => bookmark.user_id === data.user_id
-                  )
-                    ? faBookmarkSolid
-                    : faBookmark
-                }
-                className="text-primary"
-                size="lg"
-              />
-            </button>
+            <Tooltip
+              content={
+                data.discustion_bookmark.find(
+                  (bookmark: any) => bookmark.user_id === session.user.id
+                )
+                  ? "Remove Bookmark"
+                  : "Bookmark"
+              }
+            >
+              <button onClick={() => handleBookmark()} disabled={isLoading}>
+                <FontAwesomeIcon
+                  icon={
+                    data.discustion_bookmark.find(
+                      (bookmark: any) => bookmark.user_id === session.user.id
+                    )
+                      ? faBookmarkSolid
+                      : faBookmark
+                  }
+                  className="text-primary"
+                  size="lg"
+                />
+              </button>
+            </Tooltip>
           </div>
         </div>
         <div className="gap-2 grid grid-cols-3 ">
