@@ -5,7 +5,8 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient()
 export async function POST(req: Request, { params }: any) {
   const session = await getSessionUser();
-  const answers : Answer[] = await req.json();
+  const {answers,duration}:any = await req.json();
+  
   const { id } = params;
   if (!answers) return getResponse(null, 'answers is required', 400);
   const isAlreadyAnswered = await prisma.user_quiz.findFirst({
@@ -30,12 +31,14 @@ export async function POST(req: Request, { params }: any) {
     if (answer?.answer.sort().toString() === answerKey.answer.sort().toString()) countTrueAnswer++
   });
   const score = countTrueAnswer / questionLength * 100
+  console.log(score)
 
   const quizResult = await prisma.user_quiz.create({
     data: {      
       quiz_id: +id,
-      user_id: session?.id as number,
-      answer: answers as any ,
+      user_id: session?.id as number ||1,
+      answer: answers as any,
+      duration,
       score
     }
   })
