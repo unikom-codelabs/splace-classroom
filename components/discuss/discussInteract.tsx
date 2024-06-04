@@ -30,7 +30,7 @@ const DiscussInteract = ({ data, comment }: any) => {
     const res = await fetchApi(`/discustions/${data.id}/share`, "PUT");
     copylink();
 
-    mutateSWRPartialKey({ key: "/discustions", cache });
+    mutateSWRPartialKey({ key: ["/discustions", "/bookmark"], cache });
 
     toast.success("Discussion has copied to clipboard");
     setIsLoading(false);

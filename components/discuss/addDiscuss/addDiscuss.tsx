@@ -111,7 +111,7 @@ export default function AddDiscuss({
       });
     }
 
-    mutateSWRPartialKey({ key: "/discustions", cache });
+    mutateSWRPartialKey({ key: ["/discustions", "/bookmark"], cache });
 
     setFormData({
       content: "",

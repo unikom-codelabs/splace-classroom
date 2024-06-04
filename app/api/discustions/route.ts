@@ -128,19 +128,25 @@ export async function GET(req: Request) {
       created_at: "desc",
     },
   });
-  if (tags) discustions = discustions.filter((item) =>  Array.isArray(item.tags) && item.tags.includes(tags));
+  if (tags)
+    discustions = discustions.filter(
+      (item) => Array.isArray(item.tags) && item.tags.includes(tags)
+    );
   if (id) discustions = discustions.filter((item) => item.id === +id);
   if (user) discustions = discustions.filter((item) => item.user.id === +user);
-  if (text) discustions = discustions.filter((item) =>item.content.toLowerCase().includes(text.toLowerCase()));
-  
+  if (text)
+    discustions = discustions.filter((item) =>
+      item.content.toLowerCase().includes(text.toLowerCase())
+    );
+
   if (sort_by === "newest") {
     discustions = discustions.sort(
-      (a: any, b: any) => a.created_at - b.created_at
+      (a: any, b: any) => b.created_at - a.created_at
     );
   }
   if (sort_by === "oldest") {
     discustions = discustions.sort(
-      (a: any, b: any) => b.created_at - a.created_at
+      (a: any, b: any) => a.created_at - b.created_at
     );
   }
   if (sort_by === "top_vote") {

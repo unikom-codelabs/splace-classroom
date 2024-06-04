@@ -19,7 +19,7 @@ const UpDownVote = ({ data }: any) => {
     const res = await fetchApi(`/discustions/${id}/vote`, "POST", {
       vote: type,
     });
-    mutateSWRPartialKey({ key: "/discustions", cache });
+    mutateSWRPartialKey({ key: ["/discustions", "/bookmark"], cache });
 
     toast.success(
       `${res.message === "Discustion voted" ? "Vote" : "Unvote"} Discussion`
