@@ -32,7 +32,7 @@ export default function DiscussItem({ data }: any) {
       id: data.id,
     });
 
-    mutateSWRPartialKey({ key: "/discustions", cache });
+    mutateSWRPartialKey({ key: ["/discustions", "/bookmark"], cache });
 
     toast.success(
       `${

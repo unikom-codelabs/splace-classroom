@@ -7,22 +7,16 @@ import FilterDiscuss from "./filter/filterDiscuss";
 import Loading from "@/app/course/[id]/loading";
 
 export default function DiscussList({ data, isLoading, isBookmark }: any) {
-  const [filter, setFilter] = React.useState({
-    category: "all",
-    sort: "newest",
-  });
-
   return (
     <Card className="lg:max-w-[811px] w-full">
       <CardBody className="flex flex-col gap-5 items-center">
-        <FilterDiscuss
-          filter={filter}
-          setFilter={setFilter}
-          isBookmark={isBookmark}
-        />
+        <FilterDiscuss isBookmark={isBookmark} />
         {!isLoading ? (
           data.data.map((datas: any) => (
-            <DiscussItem key={datas.id} data={datas} />
+            <DiscussItem
+              key={datas.id}
+              data={isBookmark.isBookmark ? datas.discustions : datas}
+            />
           ))
         ) : (
           <Loading />

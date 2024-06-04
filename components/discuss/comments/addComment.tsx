@@ -27,7 +27,7 @@ const AddComment = ({
       text: comment,
     });
     toast.success("Comment Added");
-    mutateSWRPartialKey({ key: "/discustions", cache });
+    mutateSWRPartialKey({ key: ["/discustions", "/bookmark"], cache });
     setComment("");
     setLoading(false);
   };
@@ -38,7 +38,7 @@ const AddComment = ({
       text: comment,
     });
     toast.success("Comment Added");
-    mutateSWRPartialKey({ key: "/discustions", cache });
+    mutateSWRPartialKey({ key: ["/discustions", "/bookmark"], cache });
 
     setComment("");
     setLoading(false);

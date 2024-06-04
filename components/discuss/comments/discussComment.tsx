@@ -28,7 +28,7 @@ const DiscussComment = ({ data, showComment }: any) => {
       }
     );
 
-    mutateSWRPartialKey({ key: "/discustions", cache });
+    mutateSWRPartialKey({ key: ["/discustions", "/bookmark"], cache });
 
     toast.success(
       `${
