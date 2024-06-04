@@ -12,7 +12,9 @@ export interface Answer {
 export interface Quiz {
   course_id: string;
   name: string;
-  question: Questions[]| any ;
+  question: Questions[] | any;
+  duration: number;
+  deadline: Date;
   answer: Answer[]|any;
   type: TypeQuiz;
 }

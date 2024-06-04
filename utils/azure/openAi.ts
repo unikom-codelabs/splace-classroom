@@ -27,3 +27,8 @@ export const getChatCompletions : any = async (indexName: string, message: strin
  );
 
 }
+export const GetCompletions: any = async (prompt: string) => {
+	return await openAiClient.getCompletions(modelName, [
+		
+	]);
+}

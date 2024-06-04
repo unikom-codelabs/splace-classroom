@@ -2,9 +2,8 @@ import axios from "axios";
 export default async function fetchApi(
   path: string,
   method: string,
-  body?: any,
+  body?: any
 ) {
-  
   const url = process.env.NEXT_PUBLIC_API_URL + path;
   const headers = {
     "Content-Type": "application/json",
@@ -17,7 +16,26 @@ export default async function fetchApi(
   try {
     const response = await axios(url, options);
     return response.data;
-  } catch (error:any) {
+  } catch (error: any) {
+    console.error(error);
+    return error.response.data;
+  }
+}
+
+export async function getAPIWithParams(path: string, params: any) {
+  const url = process.env.NEXT_PUBLIC_API_URL + path;
+  const headers = {
+    "Content-Type": "application/json",
+  };
+  const options = {
+    method: "GET",
+    headers,
+    params,
+  };
+  try {
+    const response = await axios(url, options);
+    return response.data;
+  } catch (error: any) {
     console.error(error);
     return error.response.data;
   }
