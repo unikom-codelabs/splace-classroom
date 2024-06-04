@@ -80,6 +80,8 @@ model Quiz {
   course_id Int
   question  Json @default("[]")
   answer    Json @default("[]")
+  deadline  DateTime 
+  duration  Int @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deletedAt DateTime?
@@ -113,6 +115,8 @@ model User_quiz {
   quiz_id   Int
   score     Int
   answer    Json @default("[]")
+  duration Int @default(0)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deletedAt DateTime?
