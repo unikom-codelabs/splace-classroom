@@ -167,6 +167,7 @@ model Comments {
   content   String
   reply_id  Int? @unique
   is_pin    Boolean @default(false)
+  attachments Json @default("[]")
   created_at DateTime @default(now())
   deleted_at DateTime?
   user      User @relation(fields: [user_id], references: [id])
