@@ -4,6 +4,7 @@ import { faAnglesUp } from "@fortawesome/free-solid-svg-icons";
 import { TimeAgo } from "@/utils/timeStamp";
 import ReplyList from "./replyList";
 import AddComment from "./addComment";
+import Image from "next/image";
 
 const CommentList = ({
   data,
@@ -25,6 +26,18 @@ const CommentList = ({
                 <span className=" text-sm font-semibold text-gray-600">
                   {comment.user.name}
                 </span>{" "}
+                <div className="gap-2 grid grid-cols-3 ">
+                  {comment.attachments.map((attachment: any) => (
+                    <Image
+                      key={attachment}
+                      className="border border-gray-200 rounded-md"
+                      width={200}
+                      height={100}
+                      alt="NextUI hero Image"
+                      src={attachment}
+                    />
+                  ))}
+                </div>
                 <span className="text-sm text-gray-600 leading-snug">
                   {comment.content}
                 </span>

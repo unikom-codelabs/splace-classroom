@@ -101,6 +101,7 @@ export async function GET(req: Request) {
           content: true,
           created_at: true,
           like_comments: true,
+          attachments: true,
           replies: {
             select: {
               id: true,
