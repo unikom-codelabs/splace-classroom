@@ -1,13 +1,9 @@
 import Layout from "@/layouts/layout";
 
 export default function RootLayout({
-	children,
+  children,
 }: {
-	children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-	return (
-		<section className="w-screen h-screen">
-			{children}
-		</section>
-	);
+  return <section className="w-screen h-screen">{children}</section>;
 }
