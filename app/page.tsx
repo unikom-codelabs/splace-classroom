@@ -1,6 +1,5 @@
-
 "use client";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { CourseList } from "@/components/course/CourseList";
 import { Course } from "@/config/data-dummy";
 import fetchApi from "@/utils/fetchApi";
@@ -11,32 +10,31 @@ import Layout from "@/layouts/layout";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 export default function Home() {
-	const [data, setData] = useState([]);
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-	const { data: session } = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
-	async function  getData() {
-    const courses = (await fetchApi('/courses', 'GET'));
+  async function getData() {
+    const courses = await fetchApi("/courses", "GET");
     return courses.data;
   }
   useEffect(() => {
     if (!session) {
-      router.push('auth/login');
+      router.push("welcome");
     }
-  },[session])
-  useEffect(()=>{
-    getData().then((res)=>{
-      setData(res)
-      setLoading(false)
-    })
-  }, [])
-  if (loading) return <Spinner className="w-full text-center h-screen"/>
-	return (
+  }, [session]);
+  useEffect(() => {
+    getData().then((res) => {
+      setData(res);
+      setLoading(false);
+    });
+  }, []);
+  if (loading) return <Spinner className="w-full text-center h-screen" />;
+  return (
     <Layout>
       <section className="flex flex-col items-start justify-center gap-4 p-8">
-        {data?.length > 0 ? <CourseList data={data}/>:<EmptyCourse/> }
+        {data?.length > 0 ? <CourseList data={data} /> : <EmptyCourse />}
       </section>
     </Layout>
-		
-	);
+  );
 }
