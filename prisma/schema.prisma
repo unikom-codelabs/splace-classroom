@@ -197,3 +197,12 @@ model DiscustionBookmark {
   discustions Discustions @relation(fields: [discustion_id], references: [id])
 }
 
+model Setting{
+  id Int @id @default(autoincrement())
+  project_name String
+  university_name String
+  logo String
+  banner String 
+  description String
+  color Json @default("[]")
+}
