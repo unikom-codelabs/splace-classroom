@@ -205,4 +205,5 @@ model Setting{
   banner String 
   description String
   color Json @default("[]")
+  contact_us Json @default("[]")
 }
