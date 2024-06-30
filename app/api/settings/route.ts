@@ -18,7 +18,7 @@ export async function POST(req: Request) {
 	const description = form.get("description") as string;
 	const logo = form.get("logo") as any;
 	const banner = form.get("banner") as any;
-
+	const contact_us =form.get("contact_us") as any
 	let setting = await prisma.setting.findFirst();
 	const now = new Date();
 	const fileName = `${now.getTime()}_${project_name}_${university_name}_`;
@@ -61,6 +61,7 @@ export async function POST(req: Request) {
 				logo: logoFile.url,
 				banner: bannerFile.url,
 				color: JSON.parse(color),
+				contact_us: JSON.parse(contact_us)
 			},
 		});
   } else if (setting) {
@@ -90,6 +91,7 @@ export async function POST(req: Request) {
 				description: description || setting.description,
 				banner: bannerFile || setting.banner,
 				logo: logoFile || setting.banner,
+				contact_us: JSON.parse(contact_us) ||setting.contact_us,
 			},
 		});
 	}
