@@ -12,6 +12,7 @@ export interface Answer {
 export interface Quiz {
   course_id: string;
   name: string;
+  start_at: Date;
   question: Questions[] | any;
   duration: number;
   deadline: Date;
