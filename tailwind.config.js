@@ -1,4 +1,5 @@
 import { nextui } from "@nextui-org/theme";
+import { getColors } from "./utils/getSettings";
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -11,7 +12,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "dark-blue": "#146CB1",
+        "dark-blue": "var(--dark-blue)",
         "light-blue": "#C0D4F6",
         background: "#F8F8F8",
       },
