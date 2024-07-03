@@ -1,6 +1,7 @@
 import {
   faBook,
   faComments,
+  faGear,
   faHouse,
   faListCheck,
   faSwatchbook,
@@ -55,6 +56,11 @@ export const siteConfig = {
       label: "Course",
       icon: faBook,
       href: "/admin/courses",
+    },
+    {
+      label: "Settings",
+      icon: faGear,
+      href: "/admin/settings",
     },
   ],
 };

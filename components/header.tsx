@@ -8,12 +8,12 @@ import {
 import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
 import { siteConfig } from "@/config/site";
+import { usePathname } from "next/navigation";
 import NextLink from "next/link";
 
 import {
   faBars,
   faCaretDown,
-  faChevronRight,
   faFileLines,
   faGear,
   faGraduationCap,
@@ -64,6 +64,7 @@ const learnMore = [
 export const Header = ({ toggle }: any) => {
   const { data: session } = useSession();
   const userData = session?.user as User;
+  const pathname = usePathname();
 
   const handleSignOut = () => {
     signOut();
@@ -77,10 +78,18 @@ export const Header = ({ toggle }: any) => {
       className="bg-white"
     >
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
-        <FontAwesomeIcon icon={faBars} onClick={toggle} className="fa-lg" />
+        {session !== null && (
+          <FontAwesomeIcon
+            icon={faBars}
+            onClick={toggle}
+            className="fa-lg cursor-pointer"
+          />
+        )}
         <NavbarBrand as="li" className="gap-3 max-w-fit">
-          <NextLink className="flex justify-start items-center gap-1" href="/">
-            <p className="font-bold text-inherit text-lg">{siteConfig.name}</p>
+          <NextLink className="flex justify-start items-center gap-1 " href="/">
+            <h1 className="font-bold text-dark-blue text-xl">
+              {siteConfig.name}
+            </h1>
           </NextLink>
         </NavbarBrand>
         <UsageGuide learnMore={learnMore} guide={true} />
@@ -95,7 +104,7 @@ export const Header = ({ toggle }: any) => {
         {session == null ? (
           <NavbarItem className="flex gap-3">
             <Button
-              as={Link}
+              as={NextLink}
               href="/auth/login"
               variant="flat"
               radius="sm"

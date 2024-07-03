@@ -1,5 +1,6 @@
 import Footer from "@/components/auth/footer";
 import HeaderHomepage from "@/components/auth/header";
+import { Header } from "@/components/header";
 import { siteConfig } from "@/config/site";
 
 export default function RootLayout({
@@ -9,7 +10,7 @@ export default function RootLayout({
 }) {
   return (
     <section className="w-screen h-screen">
-      <HeaderHomepage siteConfig={siteConfig} />
+      <Header siteConfig={siteConfig} />
       {children}
       <Footer siteConfig={siteConfig} />
     </section>

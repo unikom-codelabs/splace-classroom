@@ -12,6 +12,8 @@ import {
 import { Button } from "@nextui-org/react";
 import UsageGuide from "@/components/auth/usageGuide";
 import Link from "next/link";
+import fetchApi from "@/utils/fetchApi";
+import { useEffect, useState } from "react";
 
 const defaultContent = [
   {
@@ -55,10 +57,24 @@ const learnMore = [
 ];
 
 const Page = () => {
+  const [data, setData] = useState();
+
+  async function getData() {
+    const dataSettings = await fetchApi("/settings", "GET");
+
+    return dataSettings.data;
+  }
+
+  useEffect(() => {
+    getData().then((res) => {
+      setData(res);
+    });
+  }, []);
+
   return (
     <main className="flex flex-col justify-center w-full items-center bg-gray-100">
       <div className="flex flex-col justify-center items-center mt-10">
-        <div className="relative top-7 z-10 transform bg-white p-4 rounded-md shadow-md">
+        <div className="relative top-7 z-10 transform bg-white p-4 rounded-xl shadow-md">
           <img
             src="/unikom.png"
             alt="Universitas Komputer Indonesia"
@@ -69,9 +85,9 @@ const Page = () => {
           <img
             src="/bg-lms.png"
             alt="Background"
-            className="w-full h-[50rem] object-cover"
+            className="w-[80rem] h-[35rem] object-cover"
           />
-          <div className="absolute w-[45rem] h-[25rem] px-4 self-center mx-auto text-center rounded-lg inset-0 flex flex-col gap-4 justify-center items-center bg-white/10 border-3 border-white backdrop-blur-sm">
+          <div className="absolute mt-36 w-[45rem] h-[25rem] px-4 self-center mx-auto text-center rounded-lg inset-0 flex flex-col gap-4 justify-center items-center bg-white/10 border-3 border-white backdrop-blur-sm">
             <h1 className="text-white text-3xl md:text-5xl font-bold mb-4">
               Welcome to LMS
             </h1>
