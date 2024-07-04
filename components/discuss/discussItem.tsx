@@ -85,7 +85,7 @@ export default function DiscussItem({ data }: any) {
                       ? faBookmarkSolid
                       : faBookmark
                   }
-                  className="text-primary"
+                  className="text-dark-blue"
                   size="lg"
                 />
               </button>

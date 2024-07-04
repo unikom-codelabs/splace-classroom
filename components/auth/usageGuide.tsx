@@ -9,8 +9,11 @@ import {
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDown, faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { useSettingsStore } from "@/utils/useSettingsStore";
 
 const UsageGuide = ({ learnMore, guide }: any) => {
+  const { settings } = useSettingsStore();
+
   return (
     <Dropdown>
       <DropdownTrigger>
@@ -22,7 +25,7 @@ const UsageGuide = ({ learnMore, guide }: any) => {
             LMS Usage Guide
           </Button>
         ) : (
-          <Button className="bg-light-blue text-dark-blue font-semibold">
+          <Button className="border-dark-blue border-2 bg-transparent text-dark-blue font-semibold">
             Learn More
           </Button>
         )}
@@ -41,9 +44,9 @@ const UsageGuide = ({ learnMore, guide }: any) => {
         <DropdownSection title="Need Help?">
           <DropdownItem
             startContent={<FontAwesomeIcon icon={faEnvelope} />}
-            href="mailto:lms@email.unikom.ac.id"
+            href={`mailto:${settings.contact_us[0].email}`}
           >
-            lms@email.unikom.ac.id
+            {settings.contact_us[0].email}
           </DropdownItem>
         </DropdownSection>
       </DropdownMenu>

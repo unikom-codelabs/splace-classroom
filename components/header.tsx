@@ -37,6 +37,7 @@ import { signOut } from "next-auth/react";
 
 import { User } from "@/types";
 import UsageGuide from "./auth/usageGuide";
+import { useSettingsStore } from "@/utils/useSettingsStore";
 
 const learnMore = [
   {
@@ -64,7 +65,8 @@ const learnMore = [
 export const Header = ({ toggle }: any) => {
   const { data: session } = useSession();
   const userData = session?.user as User;
-  const pathname = usePathname();
+
+  const { settings } = useSettingsStore();
 
   const handleSignOut = () => {
     signOut();
@@ -88,7 +90,7 @@ export const Header = ({ toggle }: any) => {
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1 " href="/">
             <h1 className="font-bold text-dark-blue text-xl">
-              {siteConfig.name}
+              {settings.project_name}
             </h1>
           </NextLink>
         </NavbarBrand>
@@ -97,8 +99,13 @@ export const Header = ({ toggle }: any) => {
 
       <NavbarContent as="div" justify="end" className="flex flex-row gap-4">
         {/* <ThemeSwitch /> */}
-        <Button variant="light" href="mailto:lms@email.com">
-          <span className="font-bold">Contact LMS:</span> lms@email.com
+        <Button
+          as={Link}
+          variant="light"
+          href={`mailto:${settings.contact_us[0].email}`}
+        >
+          <span className="font-bold">Contact LMS:</span>{" "}
+          {settings.contact_us[0].email}
         </Button>
         <Divider orientation="vertical" className="h-8 mr-2" />
         {session == null ? (
@@ -119,7 +126,7 @@ export const Header = ({ toggle }: any) => {
             backdrop={"blur"}
             classNames={{
               base: "before:bg-default-200", // change arrow background
-              content: "p-0 border-small border-divider bg-background",
+              content: "p-0 border-small border-divider bg-background ",
             }}
           >
             <DropdownTrigger>
@@ -127,11 +134,12 @@ export const Header = ({ toggle }: any) => {
                 <Avatar
                   isBordered
                   as="button"
-                  color="primary"
+                  color="default"
                   size="sm"
                   icon={<AvatarIcon />}
                   classNames={{
-                    base: "bg-gradient-to-br from-[#00acdf] to-[#7879FF]",
+                    base: "bg-dark-blue border-dark-blue",
+
                     icon: "text-black/80",
                   }}
                 />

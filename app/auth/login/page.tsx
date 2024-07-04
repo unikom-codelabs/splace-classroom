@@ -60,8 +60,8 @@ const Login = () => {
             className="h-28"
           />
         </div>
-        <div className="w-full bg-dark-blue/10 p-5 rounded-xl justify-start items-center gap-2.5 inline-flex mt-20">
-          <div className=" text-dark-blue text-base font-normal">
+        <div className="w-full bg-black/20 p-5 rounded-xl justify-start items-center gap-2.5 inline-flex mt-20">
+          <div className=" text-black/50 text-base font-normal">
             For Students, please log in using the username (NIM) and password as
             used at https://my.university.ac.id
             <br />
