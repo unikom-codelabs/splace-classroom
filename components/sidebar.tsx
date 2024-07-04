@@ -78,7 +78,7 @@ function Sidebar({ open, toggle }: any) {
             <NextLink
               className={`${
                 isActive ? "bg-dark-blue text-white" : "text-gray-400"
-              } flex justify-between items-center w-full hover:bg-blue-200 hover:text-blue-800 rounded-xl p-3 md:px-5 gap-3 h-14`}
+              } flex justify-between items-center w-full hover:bg-dark-blue hover:text-white rounded-xl p-3 md:px-5 gap-3 h-14`}
               href={item.href}
               key={index}
               onClick={open ? closeSidebarHandler : undefined}

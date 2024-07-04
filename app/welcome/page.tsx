@@ -3,7 +3,6 @@
 import { Accordion, AccordionItem } from "@nextui-org/accordion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faChevronCircleRight,
   faChevronRight,
   faCircleMinus,
   faCirclePlus,
@@ -12,8 +11,8 @@ import {
 import { Button } from "@nextui-org/react";
 import UsageGuide from "@/components/auth/usageGuide";
 import Link from "next/link";
-import fetchApi from "@/utils/fetchApi";
-import { useEffect, useState } from "react";
+
+import { useSettingsStore } from "@/utils/useSettingsStore";
 
 const defaultContent = [
   {
@@ -57,19 +56,7 @@ const learnMore = [
 ];
 
 const Page = () => {
-  const [data, setData] = useState();
-
-  async function getData() {
-    const dataSettings = await fetchApi("/settings", "GET");
-
-    return dataSettings.data;
-  }
-
-  useEffect(() => {
-    getData().then((res) => {
-      setData(res);
-    });
-  }, []);
+  const { settings } = useSettingsStore();
 
   return (
     <main className="flex flex-col justify-center w-full items-center bg-gray-100">
@@ -77,7 +64,7 @@ const Page = () => {
         <div className="relative top-7 z-10 transform bg-white p-4 rounded-xl shadow-md">
           <img
             src="/unikom.png"
-            alt="Universitas Komputer Indonesia"
+            alt={settings.university_name}
             className=" h-40"
           />
         </div>
@@ -92,12 +79,12 @@ const Page = () => {
               Welcome to LMS
             </h1>
             <p className="text-white text-center mb-6">
-              LMS Universitas Komputer Indonesia merupakan media pembelajaran
-              daring untuk memudahkan proses pengajaran di lingkungan
-              Universitas Komputer Indonesia
+              LMS {settings.university_name} merupakan media pembelajaran daring
+              untuk memudahkan proses pengajaran di lingkungan{" "}
+              {settings.university_name}
             </p>
             <div className="flex space-x-4">
-              <UsageGuide learnMore={learnMore} />
+              <UsageGuide learnMore={learnMore} settings={settings} />
 
               <Button
                 className="bg-dark-blue text-white font-bold"
@@ -126,12 +113,12 @@ const Page = () => {
                 !isOpen ? (
                   <FontAwesomeIcon
                     icon={faCirclePlus}
-                    className="text-primary"
+                    className="text-dark-blue"
                   />
                 ) : (
                   <FontAwesomeIcon
                     icon={faCircleMinus}
-                    className="text-primary/30"
+                    className="text-dark-blue/30"
                   />
                 )
               }

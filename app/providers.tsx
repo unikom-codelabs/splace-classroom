@@ -7,7 +7,8 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { ThemeProviderProps } from "next-themes/dist/types";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "react-hot-toast";
-import { getColors } from "@/utils/getSettings";
+
+import { useSettingsStore } from "@/utils/useSettingsStore";
 
 export interface ProvidersProps {
   children: React.ReactNode;
@@ -17,9 +18,11 @@ export interface ProvidersProps {
 export function Providers({ children, themeProps }: ProvidersProps) {
   const router = useRouter();
 
+  const fetchSettings = useSettingsStore((state) => state.fetchSettings);
+
   React.useEffect(() => {
-    getColors();
-  }, []);
+    fetchSettings();
+  }, [fetchSettings]);
 
   return (
     <SessionProvider>
