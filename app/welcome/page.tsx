@@ -119,7 +119,7 @@ const Page = () => {
                   className="bg-dark-blue text-white font-bold"
                   endContent={<FontAwesomeIcon icon={faChevronRight} />}
                 >
-                  <Link href="/dashboard">Dashboard</Link>
+                  <Link href="/">Dashboard</Link>
                 </Button>
               )}
             </div>

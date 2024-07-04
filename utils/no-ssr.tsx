@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactElement, ReactNode, useEffect, useState } from "react";
 
 interface NoSSRProps {
   /**
@@ -12,9 +12,9 @@ interface NoSSRProps {
   children?: ReactNode;
 }
 
-const EmptySpan: React.FC = (): ReactNode => <span />;
+const EmptySpan: React.FC = (): ReactElement<any, any> | null => <span />;
 
-const NoSSR: React.FC<NoSSRProps> = (props: NoSSRProps): ReactNode => {
+const NoSSR: any = (props: NoSSRProps): ReactNode => {
   const { onSSR = EmptySpan, children = <EmptySpan /> } = props;
 
   const [isMounted, setIsMounted] = useState<boolean>(false);
