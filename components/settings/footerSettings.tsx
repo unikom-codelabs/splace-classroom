@@ -2,9 +2,9 @@ import { faAnglesLeft, faAnglesRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "@nextui-org/react";
 
-const FooterSettings = ({ stateStep, steps }: any) => {
+const FooterSettings = ({ stateStep, steps, loading }: any) => {
   return (
-    <div className="flex justify-between w-full bg-white shadow-md shadow-t-2 border-t-1 p-4 sticky z-10 bottom-0 ">
+    <div className="flex justify-between w-full sticky z-10 bottom-0 ">
       <Button
         className=" px-5"
         variant={"bordered"}
@@ -22,7 +22,8 @@ const FooterSettings = ({ stateStep, steps }: any) => {
         onClick={() => {
           stateStep.setCurrentStep((prev: any) => prev + 1);
         }}
-        type="submit"
+        type={stateStep.currentStep === steps.length ? "button" : "submit"}
+        isLoading={loading}
       >
         {stateStep.currentStep === steps.length ? "Finish" : "Next"}
       </Button>

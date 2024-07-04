@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+"use client";
+
+import React, { use, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
 interface FileUploadProps {
   label: string;
   ukuran: string;
   store: any;
-  defaultImage: string;
+  defaultImage?: string;
 }
 
 const thumbInner = {
@@ -39,7 +41,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
           })
         )
       );
-      store(files);
     },
   });
 
@@ -74,6 +75,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
     return () =>
       files.forEach((file: any) => URL.revokeObjectURL(file.preview));
   }, []);
+
+  useEffect(() => {
+    store(files);
+  }, [files]);
 
   return (
     <div className="mb-4 flex flex-row justify-between gap-16">

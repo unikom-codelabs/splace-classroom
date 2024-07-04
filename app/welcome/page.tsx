@@ -8,11 +8,13 @@ import {
   faCirclePlus,
   faFileLines,
 } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "@nextui-org/react";
+import { Button, Skeleton } from "@nextui-org/react";
 import UsageGuide from "@/components/auth/usageGuide";
 import Link from "next/link";
 
 import { useSettingsStore } from "@/utils/useSettingsStore";
+import Image from "next/image";
+import { useSession } from "next-auth/react";
 
 const defaultContent = [
   {
@@ -56,24 +58,43 @@ const learnMore = [
 ];
 
 const Page = () => {
-  const { settings } = useSettingsStore();
+  const { settings, loading } = useSettingsStore();
+  const { data: session } = useSession();
 
   return (
     <main className="flex flex-col justify-center w-full items-center bg-gray-100">
       <div className="flex flex-col justify-center items-center mt-10">
         <div className="relative top-7 z-10 transform bg-white p-4 rounded-xl shadow-md">
-          <img
-            src="/unikom.png"
-            alt={settings.university_name}
-            className=" h-40"
-          />
+          {loading ? (
+            <Skeleton className="rounded-lg">
+              <div className="h-40 w-40 rounded-lg bg-default-300"></div>
+            </Skeleton>
+          ) : (
+            <Image
+              src={settings.logo}
+              alt={settings.university_name}
+              height={160}
+              width={160}
+              className="h-40"
+            />
+          )}
         </div>
         <div className="relative -mt-16 bg-white shadow-md rounded-lg overflow-hidden">
-          <img
-            src="/bg-lms.png"
-            alt="Background"
-            className="w-[80rem] h-[35rem] object-cover"
-          />
+          {loading ? (
+            <Skeleton className="rounded-lg">
+              <div className="w-[80rem] h-[35rem] rounded-lg bg-default-300"></div>
+            </Skeleton>
+          ) : (
+            <Image
+              src={settings.banner}
+              alt="Background"
+              width={1280}
+              height={560}
+              objectFit="cover"
+              className="w-[80rem] h-[35rem] "
+            />
+          )}
+
           <div className="absolute mt-36 w-[45rem] h-[25rem] px-4 self-center mx-auto text-center rounded-lg inset-0 flex flex-col gap-4 justify-center items-center bg-white/10 border-3 border-white backdrop-blur-sm">
             <h1 className="text-white text-3xl md:text-5xl font-bold mb-4">
               Welcome to LMS
@@ -86,12 +107,21 @@ const Page = () => {
             <div className="flex space-x-4">
               <UsageGuide learnMore={learnMore} settings={settings} />
 
-              <Button
-                className="bg-dark-blue text-white font-bold"
-                endContent={<FontAwesomeIcon icon={faChevronRight} />}
-              >
-                <Link href="/auth/login">Login</Link>
-              </Button>
+              {session == null ? (
+                <Button
+                  className="bg-dark-blue text-white font-bold"
+                  endContent={<FontAwesomeIcon icon={faChevronRight} />}
+                >
+                  <Link href="/auth/login">Login</Link>
+                </Button>
+              ) : (
+                <Button
+                  className="bg-dark-blue text-white font-bold"
+                  endContent={<FontAwesomeIcon icon={faChevronRight} />}
+                >
+                  <Link href="/dashboard">Dashboard</Link>
+                </Button>
+              )}
             </div>
           </div>
         </div>

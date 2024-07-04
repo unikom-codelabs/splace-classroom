@@ -9,6 +9,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleChevronRight } from "@fortawesome/free-solid-svg-icons";
 import Tips from "./tips";
 import Image from "next/image";
+import { useSettingsStore } from "@/utils/useSettingsStore";
+import { Skeleton } from "@nextui-org/react";
 
 type menuItems = {
   label: String;
@@ -17,6 +19,8 @@ type menuItems = {
 };
 
 function Sidebar({ open, toggle }: any) {
+  const { settings, loading } = useSettingsStore();
+
   const { data: session } = useSession() as any;
   const [navMenuItems, setNavMenuItems] = React.useState<menuItems[]>(
     siteConfig.navMenuItems
@@ -61,13 +65,19 @@ function Sidebar({ open, toggle }: any) {
         open ? "translate-x-0" : "-translate-x-full"
       }`}
     >
-      <Image
-        className="self-center mx-auto"
-        src="/Logo-Unikom.png"
-        width={160}
-        height={36}
-        alt={""}
-      />
+      {loading ? (
+        <Skeleton className="rounded-lg">
+          <div className="w-[80px] h-[36px] rounded-lg bg-default-300 w"></div>
+        </Skeleton>
+      ) : (
+        <Image
+          className="self-center mx-auto"
+          src={settings.logo}
+          width={80}
+          height={36}
+          alt={""}
+        />
+      )}
       <div className="flex flex-col gap-3">
         {navMenuItems.map((item, index) => {
           let isActive =
@@ -119,7 +129,7 @@ function Sidebar({ open, toggle }: any) {
         })}
       </div>
 
-      <Tips />
+      {/* <Tips /> */}
     </aside>
   );
 }

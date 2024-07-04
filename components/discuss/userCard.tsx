@@ -8,7 +8,6 @@ import Loading from "@/app/course/[id]/loading";
 
 export default function CardUser({ data }: any) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  console.log(data);
 
   return (
     <>

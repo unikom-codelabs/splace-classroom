@@ -1,9 +1,13 @@
+"use client";
+
 import React, { FormEvent, useEffect } from "react";
 import FileUpload from "./fileUploud";
 import { Button, Divider, Input } from "@nextui-org/react";
 import { RadioGroup, Radio, cn } from "@nextui-org/react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useSettingsStore } from "@/utils/useSettingsStore";
+import FooterSettings from "./footerSettings";
 
 const CustomRadio = (props: any) => {
   const { children, ...otherProps } = props;
@@ -51,19 +55,23 @@ const colors = [
   },
 ];
 
-const SettingForm = ({ step, data }: any) => {
+const SettingForm = ({ step, steps }: any) => {
+  const { settings } = useSettingsStore();
+
+  const { currentStep, setCurrentStep } = step;
+
   const [nameUniversity, setNameUniversity] = React.useState(
-    data.university_name
+    settings.university_name
   );
-  const [contact, setContact] = React.useState(data.contact_us[0].email) as any;
+  const [contact, setContact] = React.useState(
+    settings.contact_us[0].email
+  ) as any;
   const [imagesLogo, setImagesLogo] = React.useState<File[]>([]);
   const [imagesBanner, setImagesBanner] = React.useState<File[]>([]);
   const [uploading, setUploading] = React.useState(false);
-  const [submitForm, setSubmitForm] = React.useState(data);
+  const [submitForm, setSubmitForm] = React.useState(settings);
   const [formData, setFormData] = React.useState({}) as any;
-  const [colorHex, setColorHex] = React.useState(data.color[0]);
-
-  const router = useRouter();
+  const [colorHex, setColorHex] = React.useState(settings.color[0]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -83,7 +91,12 @@ const SettingForm = ({ step, data }: any) => {
       "description",
       "LMS Universitas Komputer Indonesia merupakan media pembelajaran daring untuk memudahkan proses pengajaran di lingkungan Universitas Komputer Indonesia"
     );
-    datas.append("color", JSON.stringify(colors));
+
+    colorHex && datas.append("color", JSON.stringify(colors));
+
+    imagesLogo.length > 0 && datas.append("logo", imagesLogo[0]);
+
+    imagesBanner.length > 0 && datas.append("banner", imagesBanner[0]);
 
     setUploading(true);
 
@@ -107,7 +120,7 @@ const SettingForm = ({ step, data }: any) => {
 
   return (
     <form className="" onSubmit={handleSubmit}>
-      <div className={`p-4 bg-white ${step == 1 ? "" : "hidden"}`}>
+      <div className={`p-4 bg-white ${currentStep == 1 ? "" : "hidden"}`}>
         <h3 className="text-xl font-semibold mb-4">
           Change To Your University
         </h3>
@@ -138,22 +151,14 @@ const SettingForm = ({ step, data }: any) => {
             />
           </div>
 
-          <FileUpload
-            label="Logo"
-            ukuran="1:1"
-            store={setImagesLogo}
-            defaultImage={data.logo}
-          />
-          <FileUpload
-            label="Banner"
-            ukuran="4:3"
-            store={setImagesBanner}
-            defaultImage={data.banner}
-          />
+          <FileUpload label="Logo" ukuran="1:1" store={setImagesLogo} />
+          <FileUpload label="Banner" ukuran="4:3" store={setImagesBanner} />
         </form>
       </div>
       <div
-        className={`p-4 bg-white max-h-min h-fit ${step == 2 ? "" : "hidden"}`}
+        className={`p-4 bg-white max-h-min h-fit ${
+          currentStep >= 2 ? "" : "hidden"
+        }`}
       >
         <h3 className="text-xl font-semibold mb-4">Color Pallate</h3>
 
@@ -199,9 +204,11 @@ const SettingForm = ({ step, data }: any) => {
           />
         </div>
       </div>
-      <button id="id_settings" type="submit">
-        submit
-      </button>
+      <FooterSettings
+        stateStep={{ currentStep, setCurrentStep }}
+        steps={steps}
+        loading={uploading}
+      />
     </form>
   );
 };
