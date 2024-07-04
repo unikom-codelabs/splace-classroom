@@ -25,8 +25,8 @@ export const useSettingsStore = create<SettingsState>((set) => ({
     id: 0,
     project_name: "EduClassAI",
     university_name: "University",
-    logo: "",
-    banner: "",
+    logo: "/logo_default.png",
+    banner: "/bg-lms.png",
     description: "University",
     color: ["#0057EE"],
     contact_us: [{ email: "contact@example.com" }],
@@ -39,6 +39,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
         "--dark-blue",
         data.data.color[0]
       );
+
       set({ settings: data.data });
     } catch (error) {
       console.error("Failed to fetch settings", error);

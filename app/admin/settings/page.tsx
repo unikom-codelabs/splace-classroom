@@ -3,12 +3,11 @@
 import SettingForm from "@/components/settings/settingsForm";
 import AdminLayout from "@/layouts/AdminLayout";
 
-import FooterSettings from "@/components/settings/footerSettings";
 import { useEffect, useState } from "react";
 import { NoSSR } from "@/utils/no-ssr";
 import Loading from "@/app/course/[id]/loading";
 
-const Home: React.FC = () => {
+const Home = () => {
   const steps = ["User Profile", "Color Pallete"];
 
   const [currentStep, setCurrentStep] = useState(1);
