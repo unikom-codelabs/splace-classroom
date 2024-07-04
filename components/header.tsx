@@ -66,6 +66,8 @@ export const Header = ({ toggle }: any) => {
   const { data: session } = useSession();
   const userData = session?.user as User;
 
+  const router = usePathname();
+
   const { settings } = useSettingsStore();
 
   const handleSignOut = () => {
@@ -80,13 +82,15 @@ export const Header = ({ toggle }: any) => {
       className="bg-white"
     >
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
-        {session !== null && (
-          <FontAwesomeIcon
-            icon={faBars}
-            onClick={toggle}
-            className="fa-lg cursor-pointer"
-          />
-        )}
+        {router !== "/welcome"
+          ? session !== null && (
+              <FontAwesomeIcon
+                icon={faBars}
+                onClick={toggle}
+                className="fa-lg cursor-pointer"
+              />
+            )
+          : null}
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1 " href="/">
             <h1 className="font-bold text-dark-blue text-xl">

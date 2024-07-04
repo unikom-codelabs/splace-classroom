@@ -13,21 +13,23 @@ interface SettingsData {
 }
 
 interface SettingsState {
+  loading: boolean;
   settings: SettingsData;
   fetchSettings: () => Promise<void>;
   updateSetting: (key: string, value: any) => void;
 }
 
 export const useSettingsStore = create<SettingsState>((set) => ({
+  loading: true,
   settings: {
     id: 0,
-    project_name: "",
-    university_name: "",
+    project_name: "EduClassAI",
+    university_name: "University",
     logo: "",
     banner: "",
-    description: "",
-    color: [],
-    contact_us: [{ email: "" }],
+    description: "University",
+    color: ["#0057EE"],
+    contact_us: [{ email: "contact@example.com" }],
   },
 
   fetchSettings: async () => {
@@ -40,6 +42,8 @@ export const useSettingsStore = create<SettingsState>((set) => ({
       set({ settings: data.data });
     } catch (error) {
       console.error("Failed to fetch settings", error);
+    } finally {
+      set({ loading: false });
     }
   },
 

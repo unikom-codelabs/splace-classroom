@@ -11,6 +11,9 @@ import { siteConfig } from "@/config/site";
 import Swal from "sweetalert2";
 import HeaderHomepage from "@/components/auth/header";
 import Link from "next/link";
+import { useSettingsStore } from "@/utils/useSettingsStore";
+import { Skeleton } from "@nextui-org/react";
+import Image from "next/image";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -18,6 +21,8 @@ const Login = () => {
   const router = useRouter();
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
+
+  const { settings, loading: loadSet } = useSettingsStore();
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -54,14 +59,22 @@ const Login = () => {
           className="absolute top-28 left-1/2 transform -translate-y-1/2 -translate-x-1/2 z-10 bg-white p-4 rounded-md shadow-md"
           id="logo"
         >
-          <img
-            src="/unikom.png"
-            alt="Universitas Komputer Indonesia"
-            className="h-28"
-          />
+          {loadSet ? (
+            <Skeleton className="rounded-lg">
+              <div className="h-28 w-28 rounded-lg bg-default-300"></div>
+            </Skeleton>
+          ) : (
+            <Image
+              src={settings.logo}
+              alt={settings.university_name}
+              height={112}
+              width={112}
+              className="h-28"
+            />
+          )}
         </div>
-        <div className="w-full bg-black/20 p-5 rounded-xl justify-start items-center gap-2.5 inline-flex mt-20">
-          <div className=" text-black/50 text-base font-normal">
+        <div className="w-full bg-black/5 p-5 rounded-xl justify-start items-center gap-2.5 inline-flex mt-20">
+          <div className=" text-black text-base font-normal">
             For Students, please log in using the username (NIM) and password as
             used at https://my.university.ac.id
             <br />
