@@ -1,4 +1,3 @@
-import { Prisma, TypeQuiz } from "@prisma/client";
 import { JsonArray, JsonObject } from "@prisma/client/runtime/library";
 
 export interface Questions {
@@ -16,6 +15,6 @@ export interface Quiz {
   question: Questions[] | any;
   duration: number;
   deadline: Date;
-  answer: Answer[]|any;
-  type: TypeQuiz;
+  answer: Answer[] | any;
+  
 }
