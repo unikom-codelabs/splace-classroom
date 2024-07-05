@@ -19,34 +19,26 @@ export async function POST(req: Request, { params }: any) {
   const quiz = await prisma.quiz.findUnique({
     where: {
       id: +id
-    }
+    },
+    select:{questions:true}
   }) ;
   if (!quiz) return getResponse(null, 'quiz not found', 400);
-  const answerKeys: Array<any> | any = quiz.answer;
-  const question :any = quiz?.question as [] || []
-  let totalPoints =0
+  if(quiz.questions.length !==answers.length) return getResponse(null,"Question And Answer isnt Matching", 400);
+  const questionQuiz = quiz.questions
+  let totalPoints = 0
  
-  
-  const answerMapped = answerKeys.map((answerKey: Answer, index: number) => {
-    let answer = answers.find(
-		(answer: Answer) => answer.title === answerKey.title
-    );
-       if (!answer) {
-			answer = {title:question[index].title,answer:[],points:0};
-		}
-    if (answer?.answer.sort().toString() === answerKey.answer.sort().toString()) {
-      totalPoints += +question[index].points 
-      answer.points = question[index].points;
+  const questionsAnswerUser = answers.map((answer:any,index:number) => {
+    if (questionQuiz.find((q) => q.id === +answer.id)) totalPoints += questionQuiz[index].point;
+    return {
+      ...answer,
+      point: questionQuiz[index].point
     }
- 
-return answer
-    
   })
   const quizResult = await prisma.user_quiz.create({
 		data: {
 			quiz_id: +id,
 			user_id: (session?.id as number) || 1,
-			answer: answerMapped as any,
+			answer: questionsAnswerUser as any,
 			duration,
 			score: totalPoints,
 		},
