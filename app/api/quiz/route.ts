@@ -44,7 +44,6 @@ export async function POST(req: Request) {
     },
   });
   if (!course) return getResponse(null, 'course not found', 400);
-  console.log(questions);
   const quiz = await prisma.quiz.create({
     data: {
       course_id: +course_id,
@@ -55,7 +54,6 @@ export async function POST(req: Request) {
       type
     },
   })
-  console.log(quiz)
   const questionMapped = questions.map((question:any) => ({
     ...question,
     point: +question.point,
