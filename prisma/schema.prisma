@@ -15,12 +15,17 @@ enum Role {
   STUDENT
 }
 
-enum TypeQuiz {
+enum QuestionType {
   Multiple
   Essay
-  Mixed
+  TrueOrFalse
+  Choice
 }
-
+enum QuizType {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
 model User {
   id        Int      @id @default(autoincrement())
   username  String   @unique
@@ -76,20 +81,33 @@ model Resource {
 model Quiz {
   id        Int      @id @default(autoincrement())
   name      String
-  type      TypeQuiz 
+  type      QuizType @default(PUBLISHED)
   course_id Int
-  question  Json @default("[]")
-  answer    Json @default("[]")
   deadline  DateTime 
   duration  Int @default(0)
   start_at DateTime @default(now())
+  end_at DateTime @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deletedAt DateTime?
   course   Course @relation(fields: [course_id], references: [id])
   user_quiz User_quiz[]
+  questions Question[]
 
 }
+
+model Question{
+  id Int @id @default(autoincrement())
+  title String 
+  answer Json 
+  choices Json?
+  image String?
+  point Int
+  type QuestionType
+  quiz_id Int
+  quiz Quiz @relation(fields: [quiz_id],references: [id])
+}
+
 model Classes {
   id        Int      @id @default(autoincrement())
   name      String    @unique
