@@ -53,7 +53,8 @@ jobs:
           echo "AZURE_STORAGE_ACCOUNT=${{ secrets.AZURE_STORAGE_ACCOUNT }}" >> $GITHUB_ENV
           echo "AZURE_STORAGE_CONNECTION_STRING=${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}" >> $GITHUB_ENV
           echo "AZURE_STORAGE_URL=${{ secrets.AZURE_STORAGE_URL }}" >> $GITHUB_ENV
-  
+      - name: Install Yarn
+        run: npm install -g yarn
       - name: npm install, build, and test
         run: |
           yarn install
