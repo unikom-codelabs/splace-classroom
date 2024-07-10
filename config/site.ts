@@ -11,7 +11,7 @@ import {
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Splace Classroom",
+  name: "EduClass.AI",
   navMenuItems: [
     {
       label: "Dashboard",
