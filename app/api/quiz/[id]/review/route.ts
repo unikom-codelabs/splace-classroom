@@ -8,7 +8,6 @@ export async function POST(req: Request, { params }: any) {
   const reviews: any = await req.json();
 
   const session = await getSessionUser();
-  // console.log(reviews);
   const userQuiz = await prisma.user_quiz.findFirst({
     where: {
       user_id: session?.id,
@@ -20,13 +19,18 @@ export async function POST(req: Request, { params }: any) {
   const userQuizAnswer = userQuiz.answer as Array<any>;
   let totalPoints = 0
   const userQuizReviewed = userQuizAnswer.map((q: any, index: number) => {
-    const titleMatched = reviews.find((r: any) => r.title == q.title) 
-    if(titleMatched) totalPoints+=titleMatched.points
-    return titleMatched || userQuizAnswer[index]
+    const idMatched = reviews.find((r: any) => r.id == q.id) 
+
+    if(idMatched) totalPoints+=idMatched.points
+    return {
+      ...q,
+      point: idMatched? idMatched.points : 0,
+      review: idMatched? idMatched.notes : ''
+    }
   })
-  console.log(userQuizReviewed)
   const quizUpdated =await prisma.user_quiz.update({
     where: { id: userQuiz.id }, data: {
+
       answer: userQuizReviewed,
       score:totalPoints
     }
