@@ -55,9 +55,19 @@ jobs:
           echo "AZURE_STORAGE_URL=${{ secrets.AZURE_STORAGE_URL }}" >> $GITHUB_ENV
       - name: Install Yarn
         run: npm install -g yarn
+      - name: Cache Node.js modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: List installed packages
+        run: npm list --depth=0
+
       - name: npm install, build, and test
         run: |
-          yarn install
+          yarn install --no-cache
           npx prisma generate
           npx prisma migrate deploy
           npm run build
