@@ -69,7 +69,8 @@ jobs:
           yarn install
           npx prisma generate
           npx prisma migrate deploy
-          yarn  build
+          # yarn  build
+          npm run build
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
