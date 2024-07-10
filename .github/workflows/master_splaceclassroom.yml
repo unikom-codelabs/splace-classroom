@@ -65,7 +65,7 @@ jobs:
 
       - name: npm install, build, and test
         run: |
-          yarn install --no-cache
+          npm install --no-cache
           npx prisma generate
           npx prisma migrate deploy
           npm run build
