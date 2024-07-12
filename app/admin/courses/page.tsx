@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { SearchIcon } from "@/components/icons";
 import Modal from "@/components/modal";
@@ -7,40 +7,43 @@ import AdminLayout from "@/layouts/AdminLayout";
 import fetchApi from "@/utils/fetchApi";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
-import { Link } from "@nextui-org/link";
+import NextLink from "next/link";
 import { Spinner } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-export default  function Users() {
-  const headers = ['name', 'student count'];
+export default function Users() {
+  const headers = ["name", "student count"];
   const [data, setData] = useState([]);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [searchData, setSearchData] = useState([]);
-  const router = useRouter() 
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
-  async function  getData() {
-    const courses = (await fetchApi('/admin/courses', 'GET'));
+  async function getData() {
+    const courses = await fetchApi("/admin/courses", "GET");
     return courses.data;
   }
 
-  const handleDelete = async (id:number) => {
-    await fetchApi(`/admin/courses/${id}`, 'DELETE');
-      window.location.reload();
-  }
+  const handleDelete = async (id: number) => {
+    await fetchApi(`/admin/courses/${id}`, "DELETE");
+    window.location.reload();
+  };
   useEffect(() => {
-    getData().then((res) => { 
+    getData().then((res) => {
       setData(res);
       setLoading(false);
-    })
-
-  },[])
+    });
+  }, []);
 
   useEffect(() => {
-    setSearchData(data.filter((item: any) => item.name.toLowerCase().includes(search.toLowerCase())));
-  }, [search])
-  
+    setSearchData(
+      data.filter((item: any) =>
+        item.name.toLowerCase().includes(search.toLowerCase())
+      )
+    );
+  }, [search]);
+
   return (
     <AdminLayout title="Course Management" subtitle="Manage your Course Here">
       <div className="flex flex-col md:flex-row items-center my-5 gap-2 ">
@@ -57,21 +60,29 @@ export default  function Users() {
             ],
             innerWrapper: "bg-transparent",
           }}
-          onChange={(e)=>setSearch(e.target.value)}
+          onChange={(e) => setSearch(e.target.value)}
           placeholder="Type to search..."
           startContent={
             <SearchIcon className="text-black/50 mb-0.5 dark:text-white/90 text-slate-400 pointer-events-none flex-shrink-0" />
           }
-          />
+        />
 
-        <Button color="primary" className="self-end" as={Link} href="/admin/courses/create">Create</Button>
+        <Button
+          color="primary"
+          className="self-end"
+          as={NextLink}
+          href="/admin/courses/create"
+        >
+          Create
+        </Button>
       </div>
 
-      <Table 
-        headers={headers} 
-        data={search == ''?data:searchData} 
-        uniqueKey="id" module="admin/courses" 
-        onDelete={handleDelete} 
+      <Table
+        headers={headers}
+        data={search == "" ? data : searchData}
+        uniqueKey="id"
+        module="admin/courses"
+        onDelete={handleDelete}
         loading={loading}
       />
     </AdminLayout>
