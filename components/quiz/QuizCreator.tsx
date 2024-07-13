@@ -1,5 +1,5 @@
 "use client";
-import React, { memo, MutableRefObject, useEffect, useMemo, useState } from "react";
+import React, { memo, MutableRefObject, useCallback, useEffect, useMemo, useState } from "react";
 import { Input } from "@nextui-org/input";
 import { Switch } from "@nextui-org/switch";
 import { Button } from "@nextui-org/button";
@@ -123,10 +123,10 @@ const QuestionMultiple = ({
 }: any) => {
   const [choices, setChoices] = useState<string[]>(question.choices);
 
-  const onChoiceValueChange = (e: any, index: number) => {
+  const onChoiceValueChange = useCallback((e: any, index: number) => {
     const { value } = e.target;
     setChoices((prev) => prev.map((c, i) => (i === index ? value : c)));
-  }
+  }, []);
 
   const handleRemoveQuestChoice = (index: number) => {
     setChoices((prev) => prev.filter((_, i) => i !== index));
