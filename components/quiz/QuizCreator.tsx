@@ -118,19 +118,21 @@ export const QuizCreator = memo(({
 const QuestionMultiple = ({
   question,
   index,
-  handleDeleteChoice,
   handleSwitchChange,
   onRemoveQuestion,
-  onAddQuestChoice,
-  onRemoveChoiceQuest
 }: any) => {
   const [choices, setChoices] = useState<string[]>(question.choices);
+
+  const onChoiceValueChange = (e: any, index: number) => {
+    const { value } = e.target;
+    setChoices((prev) => prev.map((c, i) => (i === index ? value : c)));
+  }
 
   const handleRemoveQuestChoice = (index: number) => {
     setChoices((prev) => prev.filter((_, i) => i !== index));
   }
 
-  const handleAddQuestChoce = (index: number) => {
+  const handleAddQuestChoce = () => {
     setChoices((prev) => [...prev, ""]);
   }
   return (
@@ -158,7 +160,7 @@ const QuestionMultiple = ({
           required
         />
         <div className="space-y-3">
-          {choices.map((choice: any, choiceIndex: number) => {
+          {choices.map((choice, choiceIndex) => {
             return (
               <div key={choiceIndex} className="flex gap-2 items-center">
                 <input
@@ -178,13 +180,15 @@ const QuestionMultiple = ({
                   radius="sm"
                   size="sm"
                   className="w-fit question-choice"
+                  value={choice}
+                  onChange={(e) => onChoiceValueChange(e, choiceIndex)}
                 />
                 <Button
                   radius="full"
                   size="sm"
                   variant="light"
                   isIconOnly
-                  onClick={() => onRemoveChoiceQuest(index, choiceIndex)}
+                  onClick={() => handleRemoveQuestChoice(choiceIndex)}
                 >
                   <FontAwesomeIcon icon={faTrashCan} />
                 </Button>
@@ -200,7 +204,7 @@ const QuestionMultiple = ({
             variant="light"
             startContent={<FontAwesomeIcon icon={faPlus} />}
             className="border-dark-blue text-dark-blue"
-            onClick={() => onAddQuestChoice(index)}
+            onClick={() => handleAddQuestChoce()}
           >
             Add Choice
           </Button>
