@@ -57,15 +57,7 @@ export const QuizCreator = memo(({
               key={index}
               question={q}
               index={index}
-              handleAnswerChange={() => {}}
-              handleDeleteChoice={() => {}}
-              handleSwitchChange={() => {}}
-              onAddQuestChoice={onAddQuestChoice}
-              onRemoveChoiceQuest={onRemoveQuestChoice}
               onRemoveQuestion={onRemoveQuestion}
-              answers={() => {}}
-              updateAnswer={() => {}}
-              handleChangeQuestionChoice={() => {}}
             />
           );
         })}
@@ -118,15 +110,29 @@ export const QuizCreator = memo(({
 const QuestionMultiple = ({
   question,
   index,
-  handleSwitchChange,
   onRemoveQuestion,
-}: any) => {
+}: {
+  question: Question,
+  index: number,
+  onRemoveQuestion: (index: number) => void
+}) => {
   const [choices, setChoices] = useState<string[]>(question.choices);
+
+  const [questionType, setQuestionType] = useState(question.type);
 
   const onChoiceValueChange = useCallback((e: any, index: number) => {
     const { value } = e.target;
     setChoices((prev) => prev.map((c, i) => (i === index ? value : c)));
   }, []);
+
+  const onSwitchChange = useCallback((e: any, index: number) => {
+    const { checked } = e.target;
+    setQuestionType(checked ? QuestionType.Multiple : QuestionType.Choice);
+  }, [])
+
+  useEffect(() => {
+    console.log(questionType)
+  }, [questionType])
 
   const handleRemoveQuestChoice = (index: number) => {
     setChoices((prev) => prev.filter((_, i) => i !== index));
@@ -136,7 +142,7 @@ const QuestionMultiple = ({
     setChoices((prev) => [...prev, ""]);
   }
   return (
-    <Card data-question-type="Multiple" key={index} className="question-card" shadow="sm">
+    <Card data-question-type={questionType} key={index} className="question-card" shadow="sm">
       <CardHeader className="py-3 px-10 flex justify-between border-b-1 border-gray-300">
         <h1 className="text-lg">Question {index + 1}</h1>
         <Button
@@ -164,7 +170,7 @@ const QuestionMultiple = ({
             return (
               <div key={choiceIndex} className="flex gap-2 items-center">
                 <input
-                  type={`${question.isMultipleAnswer ? "checkbox" : "radio"}`}
+                  type={`${questionType === QuestionType.Multiple ? "checkbox" : "radio"}`}
                   id={`choice-${index}-${choiceIndex}`}
                   name={`choice-${index}`}
                   required
@@ -197,7 +203,7 @@ const QuestionMultiple = ({
           })}
         </div>
         <CardFooter className="space-x-2">
-          <Switch size="sm" onChange={(e) => handleSwitchChange(e, index)}>
+          <Switch size="sm" onChange={(e) => onSwitchChange(e, index)}>
             Mulitple Answers
           </Switch>
           <Button

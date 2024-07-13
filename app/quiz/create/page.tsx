@@ -23,7 +23,7 @@ const MULTIPLE_QUESTION_DEFAULT = {
   choices: ['', '', '', ''],
   answer: [''],
   point: 0,
-  type: QuestionType.Multiple,
+  type: QuestionType.Choice,
 };
 
 const ESSAY_QUESTION_DEFAULT = {
@@ -129,21 +129,41 @@ export default function Page({
       questionsRef.current?.querySelectorAll('.question-card').forEach((el) => {
         const questionType = el.getAttribute('data-question-type')
 
-        let title, choices, choicesAnswer, answer : string | undefined | null = '';
+        let title : string | undefined | null = '';
+        let choices : any;
+        let choicesAnswer : any;
+        let answer : string[] = [];
 
         title = el.querySelector('.question-title')?.querySelector('input')?.value;
 
-        if(questionType === 'Multiple') {
+        if(questionType === QuestionType.Choice) {
+          choices = el.querySelectorAll('.question-choice input');
           choicesAnswer = el.querySelector('.question-choice-answer:checked')?.getAttribute('data-index')
 
-          
           if(choicesAnswer) {
             choicesAnswer = parseInt(choicesAnswer);
-            choices = el.querySelectorAll('.question-choice input');
-            answer = (choices[choicesAnswer] as HTMLInputElement).value;
+            answer.push(choices[choicesAnswer].value)
+          }
+        } else if(questionType === QuestionType.Multiple) {
+          choices = el.querySelectorAll('.question-choice input');
+          
+          choicesAnswer = el.querySelectorAll('.question-choice-answer:checked')
+
+          let selectedIndex: number[] = [];
+          choicesAnswer.forEach((el: Element) => {
+            const dataIndex = el.getAttribute('data-index');
+            if(dataIndex) {
+              selectedIndex.push(parseInt(dataIndex)) ;
+            }
+          });
+          for(let i = 0; i < selectedIndex.length; i++) {
+            answer.push(choices[selectedIndex[i]].value);
           }
         } else {
-          answer = el.querySelector('.question-answer')?.querySelector('input')?.value;
+          const questAnswer = el.querySelector('.question-answer')?.querySelector('input')?.value;
+          if(questAnswer) {
+            answer.push(questAnswer);
+          }
         }
         
         console.log("Question Type: ", questionType)
