@@ -1,27 +1,44 @@
-"use client";
-import { QuizCreator } from "@/components/quiz/QuizCreator";
-import React, { useCallback, useEffect, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/input";
-import fetchApi from "@/utils/fetchApi";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
-import Swal from "sweetalert2";
+'use client';
+import { QuizCreator } from '@/components/quiz/QuizCreator';
+import { Question } from '@/core/entity/Question';
+import { QuestionType } from '@/core/entity/QuestionType';
+import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Button } from '@nextui-org/button';
+import { Input } from '@nextui-org/input';
 import {
   CalendarDate,
   DatePicker,
-  DateValue,
   Select,
   SelectItem,
-} from "@nextui-org/react";
-import { QUIZ_DURATION } from "./data";
+} from '@nextui-org/react';
+import { useRouter } from 'next/navigation';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import Swal from 'sweetalert2';
+import { QUIZ_DURATION } from './data';
+import { convertToObject } from 'typescript';
+
+const MULTIPLE_QUESTION_DEFAULT = {
+  title: '',
+  choices: ['', '', '', ''],
+  answer: [''],
+  point: 0,
+  type: QuestionType.Multiple,
+};
+
+const ESSAY_QUESTION_DEFAULT = {
+  title: '',
+  choices: [''],
+  answer: [''],
+  point: 0,
+  type: QuestionType.Essay,
+};
 
 export default function Page({
   searchParams,
 }: {
   searchParams: {
-    course_id: BigInt;
+    course_id: number;
     qname: string;
     type: string;
   };
@@ -31,8 +48,32 @@ export default function Page({
   const [changeQuizName, setChangeQuizName] = useState(false);
   const [quizName, setQuizName] = useState(qname);
   const [loading, setLoading] = useState(false);
-  const [quizDuration, setQuizDuration] = useState("45");
+  const [quizDuration, setQuizDuration] = useState('45');
   const [deadline, setDeadline] = useState<CalendarDate | null>(null);
+
+  const [questions, setQuestions] = useState<Question[]>([]);
+
+  const [questionFormLoading, setQuestionFormLoading] = useState(true);
+
+  const questionsRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const listOfQuestions: Question[] = [];
+    if (type === QuestionType.Multiple) {
+      listOfQuestions.push(MULTIPLE_QUESTION_DEFAULT);
+    } else if (type === QuestionType.Essay) {
+      listOfQuestions.push(ESSAY_QUESTION_DEFAULT);
+    } else if (type === QuestionType.Mixed) {
+      listOfQuestions.push(MULTIPLE_QUESTION_DEFAULT);
+      listOfQuestions.push(ESSAY_QUESTION_DEFAULT);
+    }
+    setQuestions(listOfQuestions);
+    setQuestionFormLoading(false);
+  }, [type]);
+
+  useEffect(() => {
+    console.log(questions);
+  }, [questions]);
 
   const handleChangeQuizName = (value: string) => {
     setQuizName(value);
@@ -46,36 +87,102 @@ export default function Page({
   };
 
   const handleToggleChangeQuizName = () => {
-    if (quizName === "") setQuizName(qname);
+    if (quizName === '') setQuizName(qname);
     setChangeQuizName(!changeQuizName);
   };
 
-  async function handleSubmit(e: any, data: any) {
+  const onAddQuestChoice = (index: number) => {
+    const newQuestions = questions.map((q, i) => {
+      if (i === index) {
+        return {
+          ...q,
+          choices: [...q.choices, ''],
+        };
+      }
+      return q;
+    });
+    setQuestions(newQuestions);
+  }
+
+  const onRemoveQuestChoice = (index: number, choiceIndex: number) => {
+    const currentChoiceValue = questionsRef.current?.querySelectorAll('.question-card')[index].querySelectorAll('.question-choice')[choiceIndex].querySelector('input')?.value;
+    
+    setQuestions(prev => {
+      const newQuestions = prev.map((q, i) => {
+        if (i === index) {
+          return {
+            ...q,
+            choices: q.choices.filter((_, i) => i !== choiceIndex),
+          };
+        }
+        return q;
+      });
+      return newQuestions;
+    });
+  }
+
+  async function handleCreateQuiz(e: any) {
     e.preventDefault();
     setLoading(true);
     try {
-      if (!quizDuration || !deadline)
-        throw new Error("Please fill in the duration and deadline");
+      console.log(questions);
+      questionsRef.current?.querySelectorAll('.question-card').forEach((el) => {
+        const questionType = el.getAttribute('data-question-type')
 
-      const res = await fetchApi("/quiz", "POST", {
-        ...data,
-        duration: parseInt(quizDuration),
-        deadline: Date.parse(deadline?.toString() || ""),
+        let title, choices, choicesAnswer, answer : string | undefined | null = '';
+
+        title = el.querySelector('.question-title')?.querySelector('input')?.value;
+
+        if(questionType === 'Multiple') {
+          choicesAnswer = el.querySelector('.question-choice-answer:checked')?.getAttribute('data-index')
+
+          
+          if(choicesAnswer) {
+            choicesAnswer = parseInt(choicesAnswer);
+            choices = el.querySelectorAll('.question-choice input');
+            answer = (choices[choicesAnswer] as HTMLInputElement).value;
+          }
+        } else {
+          answer = el.querySelector('.question-answer')?.querySelector('input')?.value;
+        }
+        
+        console.log("Question Type: ", questionType)
+        console.log("Title: ", title);
+        console.log("Answer: ", answer);
+        console.log("---------------------")
       });
-      if (res) return router.push(`/quiz`);
+      // const res = await createQuizUseCase(createQuizRequest);
+      // if (res) return router.push(`/quiz`);
     } catch (error) {
+      console.log(error);
       Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Something went wrong!",
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Something went wrong!',
       });
       console.error(error);
     }
     setLoading(false);
   }
 
+  const onAddQuestionMultiple = () => {
+    setQuestions([...questions, MULTIPLE_QUESTION_DEFAULT]);
+  };
+
+  const onAddQuestionEssay = () => {
+    setQuestions([...questions, ESSAY_QUESTION_DEFAULT]);
+  };
+
+  const onRemoveQuestion = (index: number) => {
+    console.log(index);
+    const newQuestions = questions.filter((_, i) => i !== index);
+    setQuestions(newQuestions);
+  };
+
+
+  
   useEffect(() => {
-    if (course_id === undefined) return router.push("/quiz");
+    if (course_id === undefined) return router.push('/quiz');
   }, []);
 
   return (
@@ -126,11 +233,17 @@ export default function Page({
       </header>
       <section>
         <QuizCreator
-          courseId={course_id}
-          quizName={quizName}
-          onSubmit={handleSubmit}
+          questionsRef={questionsRef}
+          questions={questions}
+          onSubmit={handleCreateQuiz}
           type={type}
           loadingSubmit={loading}
+          questionFormLoading={questionFormLoading}
+          onAddQuestionMultiple={onAddQuestionMultiple}
+          onAddQuestionEssay={onAddQuestionEssay}
+          onAddQuestChoice={onAddQuestChoice}
+          onRemoveQuestChoice={onRemoveQuestChoice}
+          onRemoveQuestion={onRemoveQuestion}
         />
       </section>
     </section>
