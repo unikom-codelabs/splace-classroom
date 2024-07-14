@@ -34,15 +34,15 @@ export default function Imports() {
         body: fileAccounts,
       });
 
-      const courses = await fetch("/api/admin/courses/import", {
-        method: "POST",
-        body: fileCoursess,
-      });
+      // const courses = await fetch("/api/admin/courses/import", {
+      //   method: "POST",
+      //   body: fileCoursess,
+      // });
 
-      const assign = await fetch("/api/admin/assigns/import", {
-        method: "POST",
-        body: fileAssigns,
-      });
+      // const assign = await fetch("/api/admin/assign", {
+      //   method: "POST",
+      //   body: fileAssigns,
+      // });
 
       toast.success("Import data successfully");
     } catch (error) {
@@ -77,16 +77,7 @@ export default function Imports() {
           store={setFileAssign}
         />
         <div className="ml-auto">
-          <Button
-            color="primary"
-            type="submit"
-            isLoading={loading}
-            isDisabled={
-              !(fileAccount && fileAccount.length > 0) ||
-              !(fileCourses && fileCourses.length > 0) ||
-              !(fileAssign && fileAssign.length > 0)
-            }
-          >
+          <Button color="primary" type="submit" isLoading={loading}>
             Import
           </Button>
         </div>

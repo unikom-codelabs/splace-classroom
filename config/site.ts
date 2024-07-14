@@ -36,6 +36,11 @@ export const siteConfig = {
       href: "/quiz",
       icon: faListCheck,
     },
+    {
+      label: "Forum Discussion",
+      href: "/discuss",
+      icon: faComments,
+    },
   ],
   navMenuItemsAdmin: [
     {

@@ -84,12 +84,7 @@ export async function GET(req: Request) {
           id: true,
           name: true,
           username: true,
-          class: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
+
           // email: true,
           // image: true,
         },
