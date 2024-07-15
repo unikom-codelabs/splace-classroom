@@ -12,8 +12,19 @@ export async function POST(req: Request) {
 	if (!file) return getResponse(null, "Please upload a file", 400);
 	if (file.size > 10000000)
 		return getResponse(null, "File size limit 10mb", 400);
-  const datas: any = await readXlsx(file);
- 
+  let datas: any = await readXlsx(file);
+  
+  const courseNames = datas.map((item: any) => item["Mata Kuliah"]);
+  const courses = await prisma.course.findMany({
+    where: {
+      name: {
+        in: courseNames
+      }
+    }
+  });
+  const courseNamesExist = courses.map((course) => course.name);
+  datas = datas.filter((item: any) => !courseNamesExist.includes(item["Mata Kuliah"]));
+  
   await prisma.course.createMany({
     data: await Promise.all(datas.map(async (item: any) => {
       const name = item["Mata Kuliah"];
