@@ -61,6 +61,7 @@
     "react-dropzone": "^14.2.3",
     "react-hot-toast": "^2.4.1",
     "react-quill": "^2.0.0",
+    "require-hook": "^0.1.2",
     "sweetalert2": "^11.10.1",
     "swr": "^2.2.5",
     "tailwind-variants": "^0.1.18",
