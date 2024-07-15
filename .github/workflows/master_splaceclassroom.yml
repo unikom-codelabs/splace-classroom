@@ -77,7 +77,8 @@ jobs:
 
     # Running on latest version of Ubuntu
     runs-on: ubuntu-latest
-
+    environment:
+        name: 'Production'
     steps:
       - name: Install SSH
         run: sudo apt-get install openssh-client
