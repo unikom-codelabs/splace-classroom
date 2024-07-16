@@ -1,3 +1,4 @@
+import { Question } from "./Question";
 import { QuizType } from "./QuizType";
 
 export interface Quiz {
@@ -12,5 +13,6 @@ export interface Quiz {
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
+  questions: Question[] | null;
 }
 
