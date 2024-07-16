@@ -13,6 +13,7 @@ export interface Quiz {
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
+  user_quiz: any[] | null,
   questions: Question[] | null;
 }
 
