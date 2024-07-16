@@ -13,10 +13,9 @@ import {
   SelectItem,
 } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Swal from 'sweetalert2';
 import { QUIZ_DURATION } from './data';
-import { convertToObject } from 'typescript';
 
 const MULTIPLE_QUESTION_DEFAULT = {
   title: '',
@@ -91,86 +90,63 @@ export default function Page({
     setChangeQuizName(!changeQuizName);
   };
 
-  const onAddQuestChoice = (index: number) => {
-    const newQuestions = questions.map((q, i) => {
-      if (i === index) {
-        return {
-          ...q,
-          choices: [...q.choices, ''],
-        };
-      }
-      return q;
-    });
-    setQuestions(newQuestions);
-  }
+  const extractQuestionsTitleAnswer = () : {
+    title: string | undefined | null,
+    answer: string[]
+  }[] => {
+    let result : {title: string | undefined | null, answer: string[]}[] = []
 
-  const onRemoveQuestChoice = (index: number, choiceIndex: number) => {
-    const currentChoiceValue = questionsRef.current?.querySelectorAll('.question-card')[index].querySelectorAll('.question-choice')[choiceIndex].querySelector('input')?.value;
-    
-    setQuestions(prev => {
-      const newQuestions = prev.map((q, i) => {
-        if (i === index) {
-          return {
-            ...q,
-            choices: q.choices.filter((_, i) => i !== choiceIndex),
-          };
+    questionsRef.current?.querySelectorAll('.question-card').forEach((el) => {
+      let title : string | undefined | null = '';
+      let choices : any;
+      let choicesAnswer : any;
+      let answer : string[] = [];
+
+      const questionType = el.getAttribute('data-question-type')
+
+
+      title = el.querySelector('.question-title')?.querySelector('input')?.value;
+
+      if(questionType === QuestionType.Choice) {
+        choices = el.querySelectorAll('.question-choice input');
+        choicesAnswer = el.querySelector('.question-choice-answer:checked')?.getAttribute('data-index')
+
+        if(choicesAnswer) {
+          choicesAnswer = parseInt(choicesAnswer);
+          answer.push(choices[choicesAnswer].value)
         }
-        return q;
-      });
-      return newQuestions;
+      } else if(questionType === QuestionType.Multiple) {
+        choices = el.querySelectorAll('.question-choice input');
+        
+        choicesAnswer = el.querySelectorAll('.question-choice-answer:checked')
+
+        let selectedIndex: number[] = [];
+        choicesAnswer.forEach((el: Element) => {
+          const dataIndex = el.getAttribute('data-index');
+          if(dataIndex) {
+            selectedIndex.push(parseInt(dataIndex)) ;
+          }
+        });
+        for(let i = 0; i < selectedIndex.length; i++) {
+          answer.push(choices[selectedIndex[i]].value);
+        }
+      } else {
+        const questAnswer = el.querySelector('.question-answer')?.querySelector('input')?.value;
+        if(questAnswer) {
+          answer.push(questAnswer);
+        }
+      }
+      result.push({title, answer})
     });
+
+    return result
   }
 
   async function handleCreateQuiz(e: any) {
     e.preventDefault();
     setLoading(true);
     try {
-      console.log(questions);
-      questionsRef.current?.querySelectorAll('.question-card').forEach((el) => {
-        const questionType = el.getAttribute('data-question-type')
-
-        let title : string | undefined | null = '';
-        let choices : any;
-        let choicesAnswer : any;
-        let answer : string[] = [];
-
-        title = el.querySelector('.question-title')?.querySelector('input')?.value;
-
-        if(questionType === QuestionType.Choice) {
-          choices = el.querySelectorAll('.question-choice input');
-          choicesAnswer = el.querySelector('.question-choice-answer:checked')?.getAttribute('data-index')
-
-          if(choicesAnswer) {
-            choicesAnswer = parseInt(choicesAnswer);
-            answer.push(choices[choicesAnswer].value)
-          }
-        } else if(questionType === QuestionType.Multiple) {
-          choices = el.querySelectorAll('.question-choice input');
-          
-          choicesAnswer = el.querySelectorAll('.question-choice-answer:checked')
-
-          let selectedIndex: number[] = [];
-          choicesAnswer.forEach((el: Element) => {
-            const dataIndex = el.getAttribute('data-index');
-            if(dataIndex) {
-              selectedIndex.push(parseInt(dataIndex)) ;
-            }
-          });
-          for(let i = 0; i < selectedIndex.length; i++) {
-            answer.push(choices[selectedIndex[i]].value);
-          }
-        } else {
-          const questAnswer = el.querySelector('.question-answer')?.querySelector('input')?.value;
-          if(questAnswer) {
-            answer.push(questAnswer);
-          }
-        }
-        
-        console.log("Question Type: ", questionType)
-        console.log("Title: ", title);
-        console.log("Answer: ", answer);
-        console.log("---------------------")
-      });
+      const questionTitle = extractQuestionsTitleAnswer();
       // const res = await createQuizUseCase(createQuizRequest);
       // if (res) return router.push(`/quiz`);
     } catch (error) {
@@ -261,8 +237,6 @@ export default function Page({
           questionFormLoading={questionFormLoading}
           onAddQuestionMultiple={onAddQuestionMultiple}
           onAddQuestionEssay={onAddQuestionEssay}
-          onAddQuestChoice={onAddQuestChoice}
-          onRemoveQuestChoice={onRemoveQuestChoice}
           onRemoveQuestion={onRemoveQuestion}
         />
       </section>

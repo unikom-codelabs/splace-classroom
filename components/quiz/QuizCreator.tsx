@@ -1,14 +1,14 @@
 "use client";
-import React, { memo, MutableRefObject, useCallback, useEffect, useMemo, useState } from "react";
-import { Input } from "@nextui-org/input";
-import { Switch } from "@nextui-org/switch";
-import { Button } from "@nextui-org/button";
-import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/card";
-import { faXmark, faPlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Spinner } from "@nextui-org/react";
 import { Question } from "@/core/entity/Question";
 import { QuestionType } from "@/core/entity/QuestionType";
+import { faPlus, faTrashCan, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Button } from "@nextui-org/button";
+import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/card";
+import { Input } from "@nextui-org/input";
+import { Spinner } from "@nextui-org/react";
+import { Switch } from "@nextui-org/switch";
+import { memo, MutableRefObject, useCallback, useEffect, useState } from "react";
 
 interface QuizProps {
   onSubmit: any;
@@ -19,8 +19,6 @@ interface QuizProps {
   questionsRef: MutableRefObject<any>;
   onAddQuestionMultiple: () => void;
   onAddQuestionEssay: () => void;
-  onAddQuestChoice: (index: number) => void;
-  onRemoveQuestChoice: (index: number, choiceIndex: number) => void;
   onRemoveQuestion: (index: number) => void;
 }
 
@@ -33,8 +31,6 @@ export const QuizCreator = memo(({
   questionsRef,
   onAddQuestionMultiple,
   onAddQuestionEssay,
-  onAddQuestChoice,
-  onRemoveQuestChoice,
   onRemoveQuestion,
 }: QuizProps) => {
 
