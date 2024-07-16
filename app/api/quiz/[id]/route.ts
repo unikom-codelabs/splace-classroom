@@ -93,6 +93,7 @@ export async function GET(req: Request, { params }: any) {
           user_id: session?.id
         }
       },
+      questions:true
     },
   })
   return getResponse(quiz, 'success get quiz', 200);

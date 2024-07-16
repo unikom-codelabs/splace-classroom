@@ -11,12 +11,14 @@ export async function POST(req: Request) {
 	if (file.size > 10000000)
 		return getResponse(null, "File size limit 10mb", 400);
   const datas: any = await readXlsx(file);
-  console.log(datas)
+
   let [courses, users] = await Promise.all([
     await prisma.course.findMany({ where: { name: { in: datas.map((item: any) => (item['mata kuliah'])) } } }),
     await prisma.user.findMany({ where: { username: { in: datas.map((item: any) => (`${item['username']}`)) } } }),
 
   ])
+  if (!courses.length) return getResponse(null, "course not found", 404);
+  if (!users.length) return getResponse(null, "user not found", 404);
   const alreadyUserCourse = await prisma.user_course.findMany({
 		where: {
 			AND: [
@@ -31,7 +33,8 @@ export async function POST(req: Request) {
   });
 users = users.filter(
 	(user) => !alreadyUserCourse.some((item) => item.user_id === user.id)
-);
+  ); 
+
 	await prisma.user_course.createMany({
     data: users.map(user => {
       return courses.map(course => ({

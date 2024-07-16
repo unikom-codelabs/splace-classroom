@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function PUT(req: Request, { params }: any) {
-  const { username, name, class_id, role } = await req.json();
+  const { username, name, role } = await req.json();
   const { username: oldUsername } = params;
   
   if (!username || !role || !name) return getResponse(null, ' Please Fill all Inputs', 400);
@@ -21,7 +21,6 @@ export async function PUT(req: Request, { params }: any) {
     data: {
       username,
       name,
-      class_id,
       role
     }
   })

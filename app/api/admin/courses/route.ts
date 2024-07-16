@@ -11,11 +11,10 @@ export async function GET(req: Request, response: Response) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get('id');
   if (id) {
-    const data:any[] = await prisma.$queryRaw`SELECT DISTINCT \`User\`.class_id,\`Course\`.name,\`User\`.Role,CASE WHEN \`User\`.Role = 'INSTRUCTOR' THEN \`User\`.id END AS instructor_id FROM \`Course\` JOIN \`User_course\` ON \`Course\`.id = \`User_course\`.course_id JOIN \`User\` ON \`User\`.id = \`User_course\`.user_id WHERE \`Course\`.id = ${id}`
+    const data:any[] = await prisma.$queryRaw`SELECT DISTINCT \`Course\`.name,\`User\`.Role,CASE WHEN \`User\`.Role = 'INSTRUCTOR' THEN \`User\`.id END AS instructor_id FROM \`Course\` JOIN \`User_course\` ON \`Course\`.id = \`User_course\`.course_id JOIN \`User\` ON \`User\`.id = \`User_course\`.user_id WHERE \`Course\`.id = ${id}`
     const result = data.map(item => ({
       name: item.name,
       role: item.Role,
-      class_id: item.class_id,
       instructor_id: item.instructor_id && parseInt(item.instructor_id)
       })) 
     return getResponse(result, 'success get course', 200);
