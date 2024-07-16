@@ -101,5 +101,5 @@ jobs:
             yarn install
             yarn prisma:migrate
             yarn build
-            pm2 restart splaceclassroom
+            npx pm2 restart splaceclassroom
 
