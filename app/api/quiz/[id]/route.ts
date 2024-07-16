@@ -65,8 +65,7 @@ export async function PUT(req: Request, { params }: any) {
     data: {
       course_id: +course_id,
       name,
-      question,
-      answer,
+      questions:question,
     }
   })
   return getResponse(quiz, 'success get Update quiz', 200);
@@ -94,6 +93,7 @@ export async function GET(req: Request, { params }: any) {
           user_id: session?.id
         }
       },
+      questions:true
     },
   })
   return getResponse(quiz, 'success get quiz', 200);

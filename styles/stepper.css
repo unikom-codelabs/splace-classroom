@@ -1,0 +1,22 @@
+.step-item {
+  @apply relative flex flex-row gap-2 justify-center items-center w-48 my-8;
+}
+.step-item:not(:first-child):before {
+  @apply content-[''] bg-slate-200 absolute w-[20rem] mr-28 h-[1.5px] right-2/4 -translate-y-2/4;
+}
+.step {
+  @apply w-10 h-10 flex items-center justify-center z-10 relative bg-slate-300 rounded-full font-semibold;
+}
+.active .step {
+  @apply bg-dark-blue;
+}
+.complete .step {
+  @apply bg-dark-blue;
+}
+.complete p {
+  @apply text-black;
+}
+.complete:not(:first-child):before,
+.active:not(:first-child):before {
+  @apply bg-dark-blue;
+}

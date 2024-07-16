@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --dark-blue: #0057ee;
+}
+
 @layer components {
   .btn-primary {
     @apply py-2 px-4 bg-dark-blue text-white font-semibold rounded-lg shadow-md hover:bg-dark-blue focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-75;

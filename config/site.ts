@@ -1,51 +1,66 @@
+import {
+  faBook,
+  faComments,
+  faGear,
+  faHouse,
+  faListCheck,
+  faSwatchbook,
+  faUsers,
+} from "@fortawesome/free-solid-svg-icons";
+
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Splace Classroom",
+  name: "EduClass.AI",
   navMenuItems: [
     {
       label: "Dashboard",
       href: "/",
-      icon: "ic:round-home",
+      icon: faHouse,
     },
     {
       label: "Forum Discussion",
       href: "/discuss",
-      icon: "fa-solid:comments",
+      icon: faComments,
     },
   ],
   navMenuItemsInstructor: [
     {
       label: "Dashboard",
       href: "/",
-      icon: "ic:round-home",
+      icon: faHouse,
     },
     {
       label: "Quiz",
       href: "/quiz",
-      icon: "carbon:task-tools",
+      icon: faListCheck,
     },
   ],
   navMenuItemsAdmin: [
     {
       label: "Dashboard",
       href: "/",
-      icon: "ic:round-home",
+      icon: faHouse,
     },
     {
       label: "Users",
-      icon: "fa6-solid:users",
+      icon: faUsers,
       href: "/admin/users",
     },
     {
       label: "Class",
-      icon: "mingcute:black-board-fill",
+      icon: faSwatchbook,
       href: "/admin/classes",
     },
     {
       label: "Course",
-      icon: "fluent:book-24-filled",
+      icon: faBook,
       href: "/admin/courses",
+    },
+    {
+      label: "Settings",
+      icon: faGear,
+      href: "/admin/settings",
     },
   ],
 };

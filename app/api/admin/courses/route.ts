@@ -38,18 +38,8 @@ const processedResult = result.map(row => ({
 }
 
 export async function POST(req: Request) {
-  const { name, class_ids, instructor_id } = await req.json();
-  if (!name|| !class_ids ||!instructor_id) return getResponse(null, 'please fill all inputs', 400);
-  const userIds = (await prisma.user.findMany({
-    where: {
-      class_id: {
-        in: class_ids
-      }
-    },
-    select: {
-      id: true
-    }
-  })).map(item=>item.id)
+  const { name, user_ids, instructor_id } = await req.json();
+  if (!name|| !user_ids ||!instructor_id) return getResponse(null, 'please fill all inputs', 400);
   
   const newName =  name.split(' ').join('-')
   const indexName = `${new Date().getTime()}-${newName}-index`.toLowerCase()
@@ -72,11 +62,11 @@ export async function POST(req: Request) {
     }
   })
   await prisma.user_course.createMany({
-    data: userIds.map(item=>({
-      user_id: item,
-      course_id: courses.id
-    }))
-  })
+		data: user_ids.map((item:any) => ({
+			user_id: item,
+			course_id: courses.id,
+		})),
+  });
   await prisma.user_course.create({
     data: {
       user_id: +instructor_id,

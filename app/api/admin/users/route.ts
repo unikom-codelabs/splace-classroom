@@ -13,7 +13,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const { username, name, role,class_id}= await req.json()
+  const { username, name, role}= await req.json()
   const isUserExist = await prisma.user.findUnique({
     where: {
       username: username,
@@ -26,7 +26,6 @@ export async function POST(req: Request) {
       username: username,
       name: capitalName,
       role: role,
-      class_id: class_id ? +class_id : null,
       password: hashSync('password', 10),
     },
   });
