@@ -89,4 +89,4 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
-          script: cd splace-classroom/; git pull origin master;yarn install ;npx prisma migrate; npx prisma migrate deploy; yarn build; pm2 restart splaceclassroom;
+          script: cd splace-classroom/;pwd; git pull origin master;yarn install ;npx prisma migrate; npx prisma migrate deploy; yarn build; pm2 restart splaceclassroom;
