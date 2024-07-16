@@ -1,22 +1,33 @@
 "use client";
-import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
-import { Button, Input, Radio, RadioGroup } from "@nextui-org/react";
-import React from "react";
-
-type quizItemProps = {
-  title: string;
-};
+import { QuestionType } from "@/core/entity/QuestionType";
+import { Card, CardBody } from "@nextui-org/card";
+import { Input } from "@nextui-org/react";
+import { useMemo } from "react";
 
 export default function QuizItemEssay({
   no,
-  question,
-  handleInputChange,
-}: any) {
-  const { title }: quizItemProps = question;
+  title,
+  id,
+  answer,
+}: {
+  no: number;
+  title: string;
+  id?: number;
+  answer?: string[];
+}) {
+  const defaultValue = useMemo(() => {
+    if(answer && answer.length > 0) {
+      return answer[0]
+    }
+  }, [answer])
   return (
-    <div className="space-y-1">
+    <div
+      data-question-id={`${id}`}
+      data-question-type={`${QuestionType.Essay}`}
+      className="quiz-container space-y-1"
+    >
       <Card
-        id={no}
+        id={`${no}`}
         className="p-4 w-full border-gray-300 border-1"
         radius="none"
         shadow="none"
@@ -30,11 +41,7 @@ export default function QuizItemEssay({
       >
         <CardBody className="space-y-2">
           <h1>{title}</h1>
-          <Input
-            type="text"
-            placeholder="Type your answer here"
-            onChange={(e) => handleInputChange(e, question)}
-          />
+          <Input type="text" placeholder="Type your answer here" defaultValue={defaultValue}/>
         </CardBody>
       </Card>
     </div>

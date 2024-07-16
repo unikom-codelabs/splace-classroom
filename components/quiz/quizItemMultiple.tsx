@@ -1,24 +1,39 @@
 "use client";
+import { QuestionType } from "@/core/entity/QuestionType";
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import { CheckboxGroup, Checkbox } from "@nextui-org/react";
 import { Button, Radio, RadioGroup } from "@nextui-org/react";
-import React from "react";
-
-type quizItemProps = {
-  title: string;
-  choices: string[];
-};
+import React, { useEffect, useMemo } from "react";
 
 export default function QuizItemMultiple({
   no,
-  question,
-  handleInputChange,
-}: any) {
-  const { title, choices }: quizItemProps = question;
+  title,
+  choices,
+  questionType,
+  id,
+  answer,
+}: {
+  no: number;
+  title: string;
+  choices: string[];
+  questionType: QuestionType;
+  id?: number;
+  answer?: string[];
+}) {
+  const defaultValue = useMemo(() => {
+    if (answer && answer.length > 0) {
+      return answer;
+    }
+  }, [answer]);
+
   return (
-    <div className="space-y-1">
+    <div
+      data-question-id={`${id}`}
+      data-question-type={questionType}
+      className="quiz-container space-y-1"
+    >
       <Card
-        id={no}
+        id={`${no}`}
         className="p-4 w-full border-gray-300 border-1"
         radius="none"
         shadow="none"
@@ -32,14 +47,9 @@ export default function QuizItemMultiple({
       >
         <CardBody className="space-y-2">
           <h1>{title}</h1>
-          {question.isMultipleAnswer ? (
+          {questionType == QuestionType.Multiple ? (
             <div className="flex flex-col gap-3">
-              <CheckboxGroup
-                radius="sm"
-                color="primary"
-                value={question.answer}
-                onChange={(e) => handleInputChange(e, question)}
-              >
+              <CheckboxGroup radius="sm" color="primary" defaultValue={defaultValue}>
                 {choices.map((choice, index) => {
                   return (
                     <Checkbox key={index} value={choice}>
@@ -50,10 +60,13 @@ export default function QuizItemMultiple({
               </CheckboxGroup>
             </div>
           ) : (
-            <RadioGroup onChange={(e) => handleInputChange(e, question)}>
+            <RadioGroup defaultValue={defaultValue && defaultValue[0]}>
               {choices.map((choice, index) => {
                 return (
-                  <Radio key={index} value={choice}>
+                  <Radio
+                    key={index}
+                    value={choice}
+                  >
                     {choice}
                   </Radio>
                 );
