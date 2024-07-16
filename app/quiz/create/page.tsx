@@ -41,10 +41,9 @@ export default function Page({
   searchParams: {
     course_id: number;
     qname: string;
-    type: string;
   };
 }) {
-  const { course_id, qname, type } = searchParams;
+  const { course_id, qname } = searchParams;
   const router = useRouter();
   const [changeQuizName, setChangeQuizName] = useState(false);
   const [quizName, setQuizName] = useState(qname);
@@ -60,17 +59,11 @@ export default function Page({
 
   useEffect(() => {
     const listOfQuestions: Question[] = [];
-    if (type === QuestionType.Multiple) {
-      listOfQuestions.push(MULTIPLE_QUESTION_DEFAULT);
-    } else if (type === QuestionType.Essay) {
-      listOfQuestions.push(ESSAY_QUESTION_DEFAULT);
-    } else if (type === QuestionType.Mixed) {
-      listOfQuestions.push(MULTIPLE_QUESTION_DEFAULT);
-      listOfQuestions.push(ESSAY_QUESTION_DEFAULT);
-    }
+    listOfQuestions.push(MULTIPLE_QUESTION_DEFAULT);
+    listOfQuestions.push(ESSAY_QUESTION_DEFAULT);
     setQuestions(listOfQuestions);
     setQuestionFormLoading(false);
-  }, [type]);
+  }, []);
 
   useEffect(() => {
     console.log(questions);
@@ -163,12 +156,20 @@ export default function Page({
           point: pointPerQuestion,
         };
       }) as Question[];
+
+      if (deadline === null) {
+        throw new Error("Deadline is required");
+      }
+      if (questions.length === 0) {
+        throw new Error("Question is required");
+      }
+
       const res = await createQuizUseCase({
         course_id: course_id,
         name: quizName,
         type: QuizType.PUBLISHED,
         questions: newQuestions,
-        deadline: deadline?.toString() || new Date().toISOString(),
+        deadline: deadline?.toString(),
         start_at: new Date().toISOString(),
         end_at: new Date().toISOString(),
         duration: parseInt(quizDuration),
@@ -255,7 +256,6 @@ export default function Page({
           questionsRef={questionsRef}
           questions={questions}
           onSubmit={handleCreateQuiz}
-          type={type}
           loadingSubmit={loading}
           questionFormLoading={questionFormLoading}
           onAddQuestionMultiple={onAddQuestionMultiple}

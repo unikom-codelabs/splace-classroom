@@ -1,6 +1,6 @@
 import React from 'react'
 import { Input, Select, SelectItem } from '@nextui-org/react'
-export default function FormQuizAI({courses, modules, questionTypes,handleChange}: {courses: any, modules: any, questionTypes: any, handleChange: any}) {
+export default function FormQuizAI({courses, modules, handleChange}: {courses: any, modules: any, handleChange: any}) {
   return (
     <>
       <Input
@@ -43,32 +43,6 @@ export default function FormQuizAI({courses, modules, questionTypes,handleChange
           </SelectItem>
         ))}
       </Select>
-    </div>
-    <div className='flex gap-5'>
-      <Select
-        name='type'
-        variant='bordered'
-        label='Question Type :'
-        labelPlacement='outside' 
-        radius='sm'
-        placeholder='Choose Type'
-        onChange={handleChange}
-      >
-        {questionTypes.map((type:any) => (
-          <SelectItem key={type.name} value={type.name}>
-            {type.name}
-          </SelectItem>
-        ))}
-      </Select>
-      <Input
-        name='numberQuestion'
-        placeholder='Insert Your Number Question'
-        label='Number Of Question :'
-        variant='bordered'
-        labelPlacement='outside'
-        radius='sm'
-        onChange={handleChange}
-      />
     </div>
     </>
   )

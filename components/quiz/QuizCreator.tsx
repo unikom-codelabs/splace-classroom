@@ -18,7 +18,6 @@ import {
 
 interface QuizProps {
   onSubmit: any;
-  type: string;
   loadingSubmit: boolean;
   questions: Question[];
   questionFormLoading: boolean;
@@ -32,7 +31,6 @@ export const QuizCreator = memo(
   ({
     onSubmit,
     loadingSubmit,
-    type,
     questions,
     questionFormLoading,
     questionsRef,
@@ -70,17 +68,7 @@ export const QuizCreator = memo(
             size="md"
             variant="bordered"
             radius="none"
-            className="border-dark-blue text-dark-blue hidden"
-          >
-            Cancel
-          </Button>
-          <Button
-            size="md"
-            variant="bordered"
-            radius="none"
-            className={`border-dark-blue text-dark-blue ${
-              type === "Multiple" || type === "Mixed" ? "" : "hidden"
-            }`}
+            className={`border-dark-blue text-dark-blue`}
             onClick={onAddQuestionMultiple}
           >
             Add Question Multiple
@@ -89,9 +77,7 @@ export const QuizCreator = memo(
             size="md"
             variant="bordered"
             radius="none"
-            className={`border-dark-blue text-dark-blue ${
-              type === "Essay" || type === "Mixed" ? "" : "hidden"
-            }`}
+            className={`border-dark-blue text-dark-blue`}
             onClick={onAddQuestionEssay}
           >
             Add Question Essay

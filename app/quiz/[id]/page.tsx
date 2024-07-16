@@ -21,6 +21,7 @@ const QUESTION_PER_PAGE = 5;
 
 async function getQuizDetail(id: any) {
   const res = await fetchApi(`/quiz/${id}`, "GET");
+  console.log(res);
   return res.data;
 }
 
@@ -80,10 +81,11 @@ export default function page({ params: { id } }: { params: { id: any } }) {
   };
 
   useEffect(() => {
-    getQuizDetail(id).then((res) => {
-      setData(res);
-      setLoading(false);
-    });
+    // getQuizDetail(id).then((res) => {
+    //   setData(res);
+    //   setLoading(false);
+    // });
+    getQuizDetail(id)
   }, []);
 
   async function handleSubmit(e: any) {

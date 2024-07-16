@@ -36,24 +36,9 @@ export default function page() {
     name: '',
     course: '',
     module: '',
-    type: '',
     numberQuestion: 0
   })
 
-  const questionTypes = [
-    {
-      id:1,
-      name: 'Multiple'
-    },
-    {
-      id:2,
-      name: 'Essay'
-    },
-    {
-      id:3,
-      name: 'Mixed'
-    },
-  ]
   const columns = [
     {
       key: "name",
@@ -117,13 +102,13 @@ export default function page() {
   }
   function handleSubmitQuizManual(e:any) {
     e.preventDefault()
-    const {name, course, type} = quizForm;
-    if(!name || !course || !type) return Swal.fire({
+    const {name, course} = quizForm;
+    if(!name || !course) return Swal.fire({
       icon: 'error',
       title: 'Oops...',
       text: 'Please fill in all the fields!',
     });
-    router.push(`/quiz/create?qname=${name}&course_id=${course}&type=${type}`);
+    router.push(`/quiz/create?qname=${name}&course_id=${course}`);
   }
   
   return (
@@ -172,7 +157,6 @@ export default function page() {
         >
           <FormQuizAI 
             courses={courses} 
-            questionTypes={questionTypes} 
             modules={modules}
             handleChange={handleChange}
           />
@@ -196,7 +180,6 @@ export default function page() {
         >
           <FormQuizManual 
             courses={courses} 
-            questionTypes={questionTypes} 
             handleChange={handleChange}
           />
         </Modal>
