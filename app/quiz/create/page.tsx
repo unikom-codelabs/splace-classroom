@@ -175,17 +175,17 @@ export default function Page({
         throw new Error("Quiz name is required");
       }
       
-      // const res = await createQuizUseCase({
-      //   course_id: course_id,
-      //   name: quizName,
-      //   type: QuizType.PUBLISHED,
-      //   questions: newQuestions,
-      //   deadline: deadline?.toString(),
-      //   start_at: new Date().toISOString(),
-      //   end_at: new Date().toISOString(),
-      //   duration: parseInt(quizDuration),
-      // });
-      // if (res) return router.push(`/quiz`);
+      const res = await createQuizUseCase({
+        course_id: course_id,
+        name: quizName,
+        type: QuizType.PUBLISHED,
+        questions: newQuestions,
+        deadline: deadline?.toString(),
+        start_at: new Date().toISOString(),
+        end_at: new Date().toISOString(),
+        duration: parseInt(quizDuration),
+      });
+      if (res) return router.push(`/quiz`);
     } catch (error) {
       console.log(error);
       Swal.fire({
