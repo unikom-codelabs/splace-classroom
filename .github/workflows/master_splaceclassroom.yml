@@ -90,11 +90,11 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            cd splace-classroom/
-            pwd
-            git pull origin master
-            /home/codelabs/.nvm/versions/node/v20.13.0/bin/yarn install 
-            /home/codelabs/.nvm/versions/node/v20.13.0/bin/npx prisma migrate
-            /home/codelabs/.nvm/versions/node/v20.13.0/bin/npx prisma migrate deploy
-            /home/codelabs/.nvm/versions/node/v20.13.0/bin/yarn build
-            /home/codelabs/.nvm/versions/node/v20.13.0/bin/pm2 restart splaceclassroom
+            cd splace-classroom/ &&
+            echo &PATH &&
+            pwd &&
+            git pull origin master &&
+            yarn install &&
+            npx prisma migrate deploy &&
+            yarn build &&
+            pm2 restart splaceclassroom
