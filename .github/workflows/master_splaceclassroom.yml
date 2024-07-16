@@ -99,7 +99,7 @@ jobs:
             echo "Current directory: $(pwd)"
             git pull origin master
             yarn install
-            npx prisma migrate deploy
+            yarn prisma:migrate
             yarn build
             pm2 restart splaceclassroom
 
