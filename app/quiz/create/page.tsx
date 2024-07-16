@@ -1,34 +1,36 @@
-'use client';
-import { QuizCreator } from '@/components/quiz/QuizCreator';
-import { Question } from '@/core/entity/Question';
-import { QuestionType } from '@/core/entity/QuestionType';
-import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Button } from '@nextui-org/button';
-import { Input } from '@nextui-org/input';
+"use client";
+import { QuizCreator } from "@/components/quiz/QuizCreator";
+import { Question } from "@/core/entity/Question";
+import { QuestionType } from "@/core/entity/QuestionType";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Button } from "@nextui-org/button";
+import { Input } from "@nextui-org/input";
 import {
   CalendarDate,
   DatePicker,
   Select,
   SelectItem,
-} from '@nextui-org/react';
-import { useRouter } from 'next/navigation';
-import React, { useEffect, useRef, useState } from 'react';
-import Swal from 'sweetalert2';
-import { QUIZ_DURATION } from './data';
+} from "@nextui-org/react";
+import { useRouter } from "next/navigation";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import Swal from "sweetalert2";
+import { QUIZ_DURATION } from "./data";
+import { createQuizUseCase } from "@/core/usecase/createQuizUseCase";
+import { QuizType } from "@/core/entity/QuizType";
 
 const MULTIPLE_QUESTION_DEFAULT = {
-  title: '',
-  choices: ['', '', '', ''],
-  answer: [''],
+  title: "",
+  choices: ["", "", "", ""],
+  answer: [""],
   point: 0,
   type: QuestionType.Choice,
 };
 
 const ESSAY_QUESTION_DEFAULT = {
-  title: '',
-  choices: [''],
-  answer: [''],
+  title: "",
+  choices: [""],
+  answer: [""],
   point: 0,
   type: QuestionType.Essay,
 };
@@ -47,7 +49,7 @@ export default function Page({
   const [changeQuizName, setChangeQuizName] = useState(false);
   const [quizName, setQuizName] = useState(qname);
   const [loading, setLoading] = useState(false);
-  const [quizDuration, setQuizDuration] = useState('45');
+  const [quizDuration, setQuizDuration] = useState("45");
   const [deadline, setDeadline] = useState<CalendarDate | null>(null);
 
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -86,75 +88,98 @@ export default function Page({
   };
 
   const handleToggleChangeQuizName = () => {
-    if (quizName === '') setQuizName(qname);
+    if (quizName === "") setQuizName(qname);
     setChangeQuizName(!changeQuizName);
   };
 
-  const extractQuestionsTitleAnswer = () : {
-    title: string | undefined | null,
-    answer: string[]
+  const extractQuestionsTitleAnswer = (): {
+    title: string | undefined | null;
+    answer: string[];
   }[] => {
-    let result : {title: string | undefined | null, answer: string[]}[] = []
+    let result: { title: string | undefined | null; answer: string[] }[] = [];
 
-    questionsRef.current?.querySelectorAll('.question-card').forEach((el) => {
-      let title : string | undefined | null = '';
-      let choices : any;
-      let choicesAnswer : any;
-      let answer : string[] = [];
+    questionsRef.current?.querySelectorAll(".question-card").forEach((el) => {
+      let title: string | undefined | null = "";
+      let choices: any;
+      let choicesAnswer: any;
+      let answer: string[] = [];
 
-      const questionType = el.getAttribute('data-question-type')
+      const questionType = el.getAttribute("data-question-type");
 
+      title = el
+        .querySelector(".question-title")
+        ?.querySelector("input")?.value;
 
-      title = el.querySelector('.question-title')?.querySelector('input')?.value;
+      if (questionType === QuestionType.Choice) {
+        choices = el.querySelectorAll(".question-choice input");
+        choicesAnswer = el
+          .querySelector(".question-choice-answer:checked")
+          ?.getAttribute("data-index");
 
-      if(questionType === QuestionType.Choice) {
-        choices = el.querySelectorAll('.question-choice input');
-        choicesAnswer = el.querySelector('.question-choice-answer:checked')?.getAttribute('data-index')
-
-        if(choicesAnswer) {
+        if (choicesAnswer) {
           choicesAnswer = parseInt(choicesAnswer);
-          answer.push(choices[choicesAnswer].value)
+          answer.push(choices[choicesAnswer].value);
         }
-      } else if(questionType === QuestionType.Multiple) {
-        choices = el.querySelectorAll('.question-choice input');
-        
-        choicesAnswer = el.querySelectorAll('.question-choice-answer:checked')
+      } else if (questionType === QuestionType.Multiple) {
+        choices = el.querySelectorAll(".question-choice input");
+
+        choicesAnswer = el.querySelectorAll(".question-choice-answer:checked");
 
         let selectedIndex: number[] = [];
         choicesAnswer.forEach((el: Element) => {
-          const dataIndex = el.getAttribute('data-index');
-          if(dataIndex) {
-            selectedIndex.push(parseInt(dataIndex)) ;
+          const dataIndex = el.getAttribute("data-index");
+          if (dataIndex) {
+            selectedIndex.push(parseInt(dataIndex));
           }
         });
-        for(let i = 0; i < selectedIndex.length; i++) {
+        for (let i = 0; i < selectedIndex.length; i++) {
           answer.push(choices[selectedIndex[i]].value);
         }
       } else {
-        const questAnswer = el.querySelector('.question-answer')?.querySelector('input')?.value;
-        if(questAnswer) {
+        const questAnswer = el
+          .querySelector(".question-answer")
+          ?.querySelector("input")?.value;
+        if (questAnswer) {
           answer.push(questAnswer);
         }
       }
-      result.push({title, answer})
+      result.push({ title, answer });
     });
 
-    return result
-  }
+    return result;
+  };
 
   async function handleCreateQuiz(e: any) {
     e.preventDefault();
     setLoading(true);
     try {
       const questionTitle = extractQuestionsTitleAnswer();
-      // const res = await createQuizUseCase(createQuizRequest);
-      // if (res) return router.push(`/quiz`);
+      const pointPerQuestion = 100 / questions.length;
+      const newQuestions = questions.map((question, index) => {
+        return {
+          ...question,
+          title: questionTitle[index].title,
+          answer: questionTitle[index].answer,
+          point: pointPerQuestion,
+        };
+      }) as Question[];
+      const res = await createQuizUseCase({
+        course_id: course_id,
+        name: quizName,
+        type: QuizType.PUBLISHED,
+        questions: newQuestions,
+        deadline: deadline?.toString() || new Date().toISOString(),
+        start_at: new Date().toISOString(),
+        end_at: new Date().toISOString(),
+        duration: parseInt(quizDuration),
+      });
+      if (res) return router.push(`/quiz`);
     } catch (error) {
       console.log(error);
       Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Something went wrong!',
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
       });
       console.error(error);
     }
@@ -175,10 +200,8 @@ export default function Page({
     setQuestions(newQuestions);
   };
 
-
-  
   useEffect(() => {
-    if (course_id === undefined) return router.push('/quiz');
+    if (course_id === undefined) return router.push("/quiz");
   }, []);
 
   return (
