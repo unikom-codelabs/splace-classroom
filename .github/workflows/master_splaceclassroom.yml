@@ -90,11 +90,16 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            cd splace-classroom/ &&
-            echo &PATH &&
-            pwd &&
-            git pull origin master &&
-            yarn install &&
-            npx prisma migrate deploy &&
-            yarn build &&
+            echo "Starting deployment..."
+            echo "Current PATH: $PATH"
+            which bash
+            which git
+            which yarn
+            cd splace-classroom/
+            echo "Current directory: $(pwd)"
+            git pull origin master
+            yarn install
+            npx prisma migrate deploy
+            yarn build
             pm2 restart splaceclassroom
+
