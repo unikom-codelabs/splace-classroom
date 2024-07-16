@@ -103,6 +103,8 @@ export default function Page({
         .querySelector(".question-title")
         ?.querySelector("input")?.value;
 
+      if (!title) throw new Error("Question title is required"); 
+
       if (questionType === QuestionType.Choice) {
         choices = el.querySelectorAll(".question-choice input");
         choicesAnswer = el
@@ -112,6 +114,8 @@ export default function Page({
         if (choicesAnswer) {
           choicesAnswer = parseInt(choicesAnswer);
           answer.push(choices[choicesAnswer].value);
+        } else {
+          throw new Error("Answer is required");
         }
       } else if (questionType === QuestionType.Multiple) {
         choices = el.querySelectorAll(".question-choice input");
@@ -123,6 +127,8 @@ export default function Page({
           const dataIndex = el.getAttribute("data-index");
           if (dataIndex) {
             selectedIndex.push(parseInt(dataIndex));
+          } else {
+            throw new Error("Answer is required");
           }
         });
         for (let i = 0; i < selectedIndex.length; i++) {
@@ -134,6 +140,8 @@ export default function Page({
           ?.querySelector("input")?.value;
         if (questAnswer) {
           answer.push(questAnswer);
+        } else {
+          throw new Error("Answer is required");
         }
       }
       result.push({ title, answer });
@@ -160,27 +168,30 @@ export default function Page({
       if (deadline === null) {
         throw new Error("Deadline is required");
       }
-      if (questions.length === 0) {
+      if (newQuestions.length === 0) {
         throw new Error("Question is required");
       }
-
-      const res = await createQuizUseCase({
-        course_id: course_id,
-        name: quizName,
-        type: QuizType.PUBLISHED,
-        questions: newQuestions,
-        deadline: deadline?.toString(),
-        start_at: new Date().toISOString(),
-        end_at: new Date().toISOString(),
-        duration: parseInt(quizDuration),
-      });
-      if (res) return router.push(`/quiz`);
+      if (quizName === "") {
+        throw new Error("Quiz name is required");
+      }
+      
+      // const res = await createQuizUseCase({
+      //   course_id: course_id,
+      //   name: quizName,
+      //   type: QuizType.PUBLISHED,
+      //   questions: newQuestions,
+      //   deadline: deadline?.toString(),
+      //   start_at: new Date().toISOString(),
+      //   end_at: new Date().toISOString(),
+      //   duration: parseInt(quizDuration),
+      // });
+      // if (res) return router.push(`/quiz`);
     } catch (error) {
       console.log(error);
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: "Something went wrong!",
+        text: error instanceof Error ? error.message : "Something went wrong",
       });
       console.error(error);
     }
