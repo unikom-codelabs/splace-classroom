@@ -88,14 +88,17 @@ export default function Page({
   const extractQuestionsTitleAnswer = (): {
     title: string | undefined | null;
     answer: string[];
+    choices: string[];
+    type: QuestionType;
   }[] => {
-    let result: { title: string | undefined | null; answer: string[] }[] = [];
+    let result: { title: string | undefined | null; answer: string[], choices: string[], type: QuestionType }[] = [];
 
     questionsRef.current?.querySelectorAll(".question-card").forEach((el) => {
       let title: string | undefined | null = "";
-      let choices: any;
+      let choices: string[] = [];
       let choicesAnswer: any;
       let answer: string[] = [];
+      let type: QuestionType = QuestionType.Choice;
 
       const questionType = el.getAttribute("data-question-type");
 
@@ -106,19 +109,45 @@ export default function Page({
       if (!title) throw new Error("Question title is required"); 
 
       if (questionType === QuestionType.Choice) {
-        choices = el.querySelectorAll(".question-choice input");
+        type = QuestionType.Choice;
+        let choicesElement = el.querySelectorAll(".question-choice");
+
+        if(choicesElement.length === 0) throw new Error("Choices is required");
+
+
+        choicesElement.forEach((el: Element) => {
+          const choice = el.querySelector("input")?.value;
+          console.log(choice)
+          if (choice) {
+            choices.push(choice);
+          } else {
+            throw new Error("Choices is required");
+          }
+        });
+        
         choicesAnswer = el
           .querySelector(".question-choice-answer:checked")
           ?.getAttribute("data-index");
 
         if (choicesAnswer) {
           choicesAnswer = parseInt(choicesAnswer);
-          answer.push(choices[choicesAnswer].value);
+          answer.push(choices[choicesAnswer]);
         } else {
           throw new Error("Answer is required");
         }
       } else if (questionType === QuestionType.Multiple) {
-        choices = el.querySelectorAll(".question-choice input");
+        type = QuestionType.Multiple;
+        let choicesElement = el.querySelectorAll(".question-choice");
+        if(choicesElement.length === 0) throw new Error("Choices is required");
+
+        choicesElement.forEach((el: Element) => {
+          const choice = el.querySelector("input")?.value;
+          if (choice) {
+            choices.push(choice);
+          } else {
+            throw new Error("Choices is required");
+          }
+        });
 
         choicesAnswer = el.querySelectorAll(".question-choice-answer:checked");
 
@@ -132,9 +161,10 @@ export default function Page({
           }
         });
         for (let i = 0; i < selectedIndex.length; i++) {
-          answer.push(choices[selectedIndex[i]].value);
+          answer.push(choices[selectedIndex[i]]);
         }
       } else {
+        type = QuestionType.Essay;
         const questAnswer = el
           .querySelector(".question-answer")
           ?.querySelector("input")?.value;
@@ -144,7 +174,7 @@ export default function Page({
           throw new Error("Answer is required");
         }
       }
-      result.push({ title, answer });
+      result.push({ title, answer, choices, type });
     });
 
     return result;
@@ -161,6 +191,8 @@ export default function Page({
           ...question,
           title: questionTitle[index].title,
           answer: questionTitle[index].answer,
+          choices: questionTitle[index].choices,
+          type: questionTitle[index].type,
           point: pointPerQuestion,
         };
       }) as Question[];
@@ -174,6 +206,7 @@ export default function Page({
       if (quizName === "") {
         throw new Error("Quiz name is required");
       }
+      console.log(newQuestions)
       
       const res = await createQuizUseCase({
         course_id: course_id,
