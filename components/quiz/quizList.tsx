@@ -41,7 +41,7 @@ export const QuizList = memo(
                 key={question.no}
                 no={question.no}
                 id={question.id}
-                title="Essay"
+                title={question.title}
                 answer={question.id ? quizAnswer[question.id] : []}
               />
             );
