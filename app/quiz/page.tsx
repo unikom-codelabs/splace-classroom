@@ -1,34 +1,28 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
-import { quiz } from "@/config/data-dummy";
-import {
-  Table as T,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-  getKeyValue,
-  Button,
-  useDisclosure,
-  Input,
-  Select,
-  SelectItem,
-} from "@nextui-org/react";
-import { Icon } from "@iconify/react";
 import Modal from "@/components/modal";
-import { useRouter } from "next/navigation";
-import Swal from "sweetalert2";
 import FormQuizAI from "@/components/quiz/formQuizAI";
-import fetchApi from "@/utils/fetchApi";
 import FormQuizManual from "@/components/quiz/formQuizManual";
-import { showFormattedDate, showFormattedDateOnly } from "@/utils/timeStamp";
-import { Spinner } from "@nextui-org/react";
-import { getQuizUseCase } from "@/core/usecase/getQuizUseCase";
-import { getCourseUseCase } from "@/core/usecase/getCourseUseCase";
-import { Quiz } from "@/core/entity/Quiz";
 import { Course } from "@/core/entity/Course";
+import { Quiz } from "@/core/entity/Quiz";
+import { getCourseUseCase } from "@/core/usecase/getCourseUseCase";
+import { getQuizUseCase } from "@/core/usecase/getQuizUseCase";
+import { showFormattedDate } from "@/utils/timeStamp";
+import {
+  Button,
+  Spinner,
+  Table as T,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+  getKeyValue,
+  useDisclosure
+} from "@nextui-org/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import Swal from "sweetalert2";
 
 export default function page() {
   const modal1 = useDisclosure();
@@ -172,11 +166,12 @@ export default function page() {
       <section className="flex gap-3 items-center">
         {/* GENERATE QUIZ BY AI */}
         <Button
+          as={Link}
+          href="/quiz/generator"
           size="sm"
           className="bg-dark-blue text-white font-bold px-6"
           radius="sm"
           startContent={<img src="/shinning.png" alt="icon" />}
-          onPress={modal1.onOpen}
         >
           Quiz Generator
         </Button>
