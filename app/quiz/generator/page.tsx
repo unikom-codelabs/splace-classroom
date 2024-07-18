@@ -1,10 +1,12 @@
 "use client";
 import { Course } from "@/core/entity/Course";
 import { GenerateQuizRequest } from "@/core/entity/GenerateQuizRequest";
+import { Module } from "@/core/entity/Module";
 import { QuestionType } from "@/core/entity/QuestionType";
 import { QuizType } from "@/core/entity/QuizType";
 import { generateQuizUseCase } from "@/core/usecase/generateQuizUseCase";
 import { getCourseUseCase } from "@/core/usecase/getCourseUseCase";
+import { getModuleUseCase } from "@/core/usecase/getModuleUseCase";
 import { Icon } from "@iconify/react";
 import {
   Button,
@@ -16,6 +18,7 @@ import {
   Input,
   Select,
   SelectItem,
+  Spinner,
 } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
@@ -27,6 +30,7 @@ export default function page() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [quizName, setQuizName] = useState("");
   const [quizCourses, setQuizCourses] = useState("");
+  const [quizModule, setQuizModule] = useState("");
   const [quizQuery, setQuizQuery] = useState("");
   const [quizDeadlineDate, setQuizDeadlineDate] = useState<CalendarDate | null>(
     null
@@ -41,6 +45,9 @@ export default function page() {
   const [numberOfQuestionEssay, setNumberOfQuestionEssay] = useState("");
 
   const { data: courses } = useSWR<Course[]>("courses", getCourseUseCase);
+  const { data: modules } = useSWR<Module[]>(["modules", quizCourses], () =>
+    getModuleUseCase(quizCourses)
+  );
 
   const typeChecked = useMemo(() => {
     const choice = questionType.includes(QuestionType.Choice);
@@ -59,7 +66,6 @@ export default function page() {
   }, [questionType]);
 
   const quizDeadline = useCallback(() => {
-    console.log(quizDeadlineDate);
     return `${quizDeadlineDate?.toString()} ${quizDeadlineHours || 0}:${
       quizDeadlineMinutes || 0
     }:00`;
@@ -68,6 +74,7 @@ export default function page() {
   const validate = () => {
     if (!quizName) throw new Error("Quiz name is required");
     if (!quizCourses) throw new Error("Quiz course is required");
+    if (!quizModule) throw new Error("Quiz module is required");
     if (!quizQuery) throw new Error("Quiz query is required");
     if (!quizDeadlineHours) throw new Error("Quiz deadline hours is required");
     if (!quizDeadlineMinutes)
@@ -77,6 +84,13 @@ export default function page() {
     if (!quizDurationHours) throw new Error("Quiz duration hours is required");
     if (!quizDurationMinutes)
       throw new Error("Quiz duration minutes is required");
+
+    if (typeChecked.choice && !numberOfQuestionChoice)
+      throw new Error("Number of choice question is required");
+    if (typeChecked.multiple && !numberOfQuestionMultiple)
+      throw new Error("Number of multiple question is required");
+    if (typeChecked.essay && !numberOfQuestionEssay)
+      throw new Error("Number of essay question is required");
   };
 
   const onGenerateClick = async () => {
@@ -85,7 +99,7 @@ export default function page() {
       const generateQuizRequest: GenerateQuizRequest = {
         name: quizName,
         course_id: parseInt(quizCourses),
-        module_id: 0,
+        module_id: parseInt(quizModule),
         query: quizQuery,
         deadline: quizDeadline(),
         start_at: quizDeadlineDate?.toString() || "",
@@ -94,22 +108,45 @@ export default function page() {
         duration:
           (parseInt(quizDurationHours) || 0) * 60 +
           (parseInt(quizDurationMinutes) || 0),
-        count_type: {
+        count_types: {
           choices: parseInt(numberOfQuestionChoice) || 0,
           essay: parseInt(numberOfQuestionEssay) || 0,
           multiple: parseInt(numberOfQuestionMultiple) || 0,
         },
       };
-      setIsGenerating(true);
-      const res = await generateQuizUseCase(generateQuizRequest);
-      if (res) {
-        setIsGenerating(false);
-        Swal.fire({
-          icon: "success",
-          title: "Success",
-          text: "Quiz generated successfully",
-        });
-      }
+      console.log(generateQuizRequest);
+      Swal.fire({
+        title: "Do you want to generate this quiz?",
+        text: "You are about to generate a quiz. Make sure all the information is correct before proceeding.",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonText: "Generate",
+        cancelButtonText: "Cancel",
+      }).then(async (response) => {
+        if (response.isConfirmed) {
+          setIsGenerating(true);
+          const res = await generateQuizUseCase(generateQuizRequest);
+          console.log(res);
+          if (res) {
+            setIsGenerating(false);
+            Swal.fire({
+              icon: "success",
+              title: "Success",
+              text: "Quiz generated successfully",
+            }).then((response) => {
+              response.isConfirmed && router.push("/quiz");
+            });
+          }
+          if (!res) {
+            setIsGenerating(false);
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: "Failed to generate quiz",
+            });
+          }
+        }
+      });
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -121,6 +158,9 @@ export default function page() {
 
   return (
     <section className="p-5 w-screen lg:max-w-6xl lg:mx-auto space-y-5">
+      {isGenerating && (
+        <Spinner className="fixed w-full text-center h-screen top-0 left-0 bg-black bg-opacity-10 z-[999]" />
+      )}
       <header className="bg-white p-4 shadow-md">
         <div className="flex items-center gap-1 ">
           <Button
@@ -150,18 +190,40 @@ export default function page() {
         <FormQuizGroup>
           <FormQuizLabel label="Course" />
           <Select
+            id="courses"
             name="course"
             aria-label="Course"
             onChange={(e) => setQuizCourses(e.target.value)}
             placeholder="Select the quiz course"
             variant="bordered"
             value={quizCourses}
+            disabledKeys={[""]}
           >
             {courses?.map((course) => (
               <SelectItem key={course.id} value={course.id}>
                 {course.name}
               </SelectItem>
-            )) || []}
+            )) || <SelectItem key="">No course available</SelectItem>}
+          </Select>
+        </FormQuizGroup>
+        <FormQuizGroup>
+          <FormQuizLabel label="Module" />
+          <Select
+            id="modules"
+            name="module"
+            aria-label="Module"
+            onChange={(e) => setQuizModule(e.target.value)}
+            placeholder="Select the quiz module"
+            variant="bordered"
+            value={quizModule}
+            selectedKeys={quizModule}
+            disabledKeys={[""]}
+          >
+            {modules?.map((module) => (
+              <SelectItem key={module.id} value={module.id}>
+                {module.name}
+              </SelectItem>
+            )) || <SelectItem key="">No module available</SelectItem>}
           </Select>
         </FormQuizGroup>
         <FormQuizGroup>

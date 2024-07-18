@@ -8,7 +8,7 @@ export interface GenerateQuizRequest  {
     end_at: string;
     type: string;
     duration: number;
-    count_type: {
+    count_types: {
         choices: number;
         essay: number;
         multiple: number;
