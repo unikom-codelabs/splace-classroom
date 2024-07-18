@@ -91,7 +91,12 @@ export default function Page({
     choices: string[];
     type: QuestionType;
   }[] => {
-    let result: { title: string | undefined | null; answer: string[], choices: string[], type: QuestionType }[] = [];
+    let result: {
+      title: string | undefined | null;
+      answer: string[];
+      choices: string[];
+      type: QuestionType;
+    }[] = [];
 
     questionsRef.current?.querySelectorAll(".question-card").forEach((el) => {
       let title: string | undefined | null = "";
@@ -106,25 +111,24 @@ export default function Page({
         .querySelector(".question-title")
         ?.querySelector("input")?.value;
 
-      if (!title) throw new Error("Question title is required"); 
+      if (!title) throw new Error("Question title is required");
 
       if (questionType === QuestionType.Choice) {
         type = QuestionType.Choice;
         let choicesElement = el.querySelectorAll(".question-choice");
 
-        if(choicesElement.length === 0) throw new Error("Choices is required");
-
+        if (choicesElement.length === 0) throw new Error("Choices is required");
 
         choicesElement.forEach((el: Element) => {
           const choice = el.querySelector("input")?.value;
-          console.log(choice)
+          console.log(choice);
           if (choice) {
             choices.push(choice);
           } else {
             throw new Error("Choices is required");
           }
         });
-        
+
         choicesAnswer = el
           .querySelector(".question-choice-answer:checked")
           ?.getAttribute("data-index");
@@ -138,7 +142,7 @@ export default function Page({
       } else if (questionType === QuestionType.Multiple) {
         type = QuestionType.Multiple;
         let choicesElement = el.querySelectorAll(".question-choice");
-        if(choicesElement.length === 0) throw new Error("Choices is required");
+        if (choicesElement.length === 0) throw new Error("Choices is required");
 
         choicesElement.forEach((el: Element) => {
           const choice = el.querySelector("input")?.value;
@@ -206,8 +210,8 @@ export default function Page({
       if (quizName === "") {
         throw new Error("Quiz name is required");
       }
-      console.log(newQuestions)
-      
+      console.log(newQuestions);
+
       const res = await createQuizUseCase({
         course_id: course_id,
         name: quizName,
@@ -216,7 +220,7 @@ export default function Page({
         deadline: deadline?.toString(),
         start_at: new Date().toISOString(),
         end_at: new Date().toISOString(),
-        duration: parseInt(quizDuration),
+        duration: parseInt(quizDuration) * 60,
       });
       if (res) return router.push(`/quiz`);
     } catch (error) {
@@ -290,6 +294,7 @@ export default function Page({
           <DatePicker
             value={deadline}
             label="Deadline"
+            variant="bordered"
             className="w-[160px]"
             onChange={setDeadline}
           />

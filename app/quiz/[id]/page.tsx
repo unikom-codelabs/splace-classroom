@@ -149,7 +149,7 @@ export default function page({ params: { id } }: { params: { id: any } }) {
   }, []);
 
   useEffect(() => {
-    setTimeLeft((quiz?.duration || 0) * 60);
+    setTimeLeft(quiz?.duration || 0);
     getInitialAnswer();
   }, [quiz]);
 
@@ -182,7 +182,11 @@ export default function page({ params: { id } }: { params: { id: any } }) {
             answers,
             duration: timeLeft,
           });
-          Swal.fire("Success!", "Your answer has been submitted.", "success").then((result) => {
+          Swal.fire(
+            "Success!",
+            "Your answer has been submitted.",
+            "success"
+          ).then((result) => {
             result.isConfirmed && router.push(`/quiz/${id}/result`);
           });
         }
