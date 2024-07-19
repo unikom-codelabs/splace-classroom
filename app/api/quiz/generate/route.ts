@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     question_type: questionTypeRAG.split("|").filter((item) => item !== "").join(", "),
     number_of_question: questionTypeCountRAG.split("|").filter((item) => item !== "").join(", "),
   }
-  // console.log(process.env.GENERATE_QUIZ_URL ,JSON.stringify(body));
+  console.log(process.env.GENERATE_QUIZ_URL ,JSON.stringify(body));
 
   const res = await fetch(process.env.GENERATE_QUIZ_URL as string, {
     method: "POST",

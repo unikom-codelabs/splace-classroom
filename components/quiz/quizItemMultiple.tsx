@@ -1,50 +1,80 @@
 "use client";
-import { Card,CardHeader, CardBody, CardFooter } from '@nextui-org/card';
-import { CheckboxGroup, Checkbox } from '@nextui-org/react';
-import { Button, Radio, RadioGroup } from '@nextui-org/react';
-import React from 'react'
+import { QuestionType } from "@/core/entity/QuestionType";
+import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
+import { CheckboxGroup, Checkbox } from "@nextui-org/react";
+import { Button, Radio, RadioGroup } from "@nextui-org/react";
+import React, { useEffect, useMemo } from "react";
 
-type quizItemProps = {
-  title: string,
-  choices: string[],
-}
+export default function QuizItemMultiple({
+  no,
+  title,
+  choices,
+  questionType,
+  id,
+  answer,
+}: {
+  no: number;
+  title: string;
+  choices: string[];
+  questionType: QuestionType;
+  id?: number;
+  answer?: string[];
+}) {
+  const defaultValue = useMemo(() => {
+    if (answer && answer.length > 0) {
+      return answer;
+    }
+  }, [answer]);
 
-export default function QuizItemMultiple({no,question, handleInputChange}:any){
-  const {title, choices}: quizItemProps = question
   return (
-    <div className='space-y-1'>
-      <Card id={no} className='p-4 w-full border-gray-300 border-1' radius='none' shadow='none'>
-        <h1>Question {no+1}</h1>
+    <div
+      data-question-id={`${id}`}
+      data-question-type={questionType}
+      className="quiz-container space-y-1"
+    >
+      <Card
+        id={`${no}`}
+        className="p-4 w-full border-gray-300 border-1"
+        radius="none"
+        shadow="none"
+      >
+        <h1>Question {no}</h1>
       </Card>
-      <Card id={no} className='p-2 w-full border-gray-300 border-1' radius='none' shadow='none'>
-        <CardBody className='space-y-2'>
+      <Card
+        className="p-2 w-full border-gray-300 border-1"
+        radius="none"
+        shadow="none"
+      >
+        <CardBody className="space-y-2">
           <h1>{title}</h1>
-          {question.isMultipleAnswer ?(
-          <div className="flex flex-col gap-3">
-            <CheckboxGroup
-              radius='sm'
-              color="primary"
-              value={question.answer}
-              onChange={(e)=>handleInputChange(e,question)}
-            >
+          {questionType == QuestionType.Multiple ? (
+            <div className="flex flex-col gap-3">
+              <CheckboxGroup radius="sm" color="primary" defaultValue={defaultValue}>
+                {choices.map((choice, index) => {
+                  return (
+                    <Checkbox key={index} value={choice}>
+                      {choice}
+                    </Checkbox>
+                  );
+                })}
+              </CheckboxGroup>
+            </div>
+          ) : (
+            <RadioGroup defaultValue={defaultValue && defaultValue[0]}>
               {choices.map((choice, index) => {
                 return (
-                  <Checkbox key={index} value={choice}>{choice}</Checkbox>
-                )
+                  <Radio
+                    key={index}
+                    value={choice}
+                  >
+                    {choice}
+                  </Radio>
+                );
               })}
-            </CheckboxGroup>
-          </div>
-          ):(
-          <RadioGroup onChange={(e)=>handleInputChange(e,question)}>
-            {choices.map((choice, index) => {
-              return (
-                  <Radio key={index} value={choice}>{choice}</Radio>
-              )
-            })}
-          </RadioGroup>
+            </RadioGroup>
           )}
         </CardBody>
       </Card>
     </div>
-  )
+  );
 }
