@@ -41,7 +41,6 @@ export async function POST(req: Request) {
     (acc: any, item: any) => +acc + +item.point,
     0
   );
-
   if (totalPoints !== 100)
     return getResponse(null, 'total points must be 100', 400);
   const course = await prisma.course.findUnique({
@@ -68,14 +67,12 @@ export async function POST(req: Request) {
   const questionsData = await prisma.question.createMany({
     data: questionMapped,
   });
-
   return getResponse(quiz, 'success get Create quiz', 200);
 }
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const course_id = searchParams.get('course_id');
   const filter: any = {};
-
   if (course_id) filter.course_id = +course_id;
 
   const quiz = await prisma.quiz.findMany({

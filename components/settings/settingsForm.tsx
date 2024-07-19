@@ -57,7 +57,6 @@ const colors = [
 
 const SettingForm = ({ step, steps }: any) => {
   const router = useRouter();
-
   const { settings } = useSettingsStore();
 
   const { currentStep, setCurrentStep } = step;
