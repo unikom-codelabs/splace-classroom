@@ -1,9 +1,9 @@
 import axios from "axios";
-export default async function fetchApi(
+export default async function fetchApi<T>(
   path: string,
   method: string,
   body?: any
-) {
+): Promise<T | any> {
   const url = process.env.NEXT_PUBLIC_API_URL + path;
   const headers = {
     "Content-Type": "application/json",

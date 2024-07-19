@@ -1,100 +1,265 @@
 "use client";
-import QuizItem from "@/components/quiz/quizItemMultiple";
-import QuizList from "@/components/quiz/quizList";
+import { QuizList } from "@/components/quiz/quizList";
 import QuizNavigation from "@/components/quiz/quizNavigation";
+import { QuizReview } from "@/components/quiz/quizReview";
+import { Answer } from "@/core/entity/Answer";
+import { QuestionType } from "@/core/entity/QuestionType";
+import { Quiz } from "@/core/entity/Quiz";
+import { finishAnswerQuizUseCase } from "@/core/usecase/finishAnswerQuizUseCase";
+import { getUserQuizUseCase } from "@/core/usecase/getUserQuizUseCase";
 import fetchApi from "@/utils/fetchApi";
 import { Button } from "@nextui-org/button";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { Spinner } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Swal from "sweetalert2";
-type dataProps = {
-  name: string,
-  question: {
-    title: string,
-    choices: string[]
-  }[]
-}
 
-async function getQuizDetail(id: any) {
-  const res = await fetchApi(`/quiz/${id}`, "GET");
-  return res.data
-}
+const QUESTION_PER_PAGE = 5;
 
-export default function page({params: { id }}: {params: { id: any }}) {
+export default function page({ params: { id } }: { params: { id: any } }) {
   const router = useRouter();
-  const [data, setData] = useState<dataProps>({ name: '', question: [{ title: '', choices: [''] }] })
-  const [formData, setFormData] = useState<{ title: string, answer: string[] }[]>([]);
+
+  const [quiz, setQuiz] = useState<Quiz>();
+
+  const [answers, setAnswers] = useState<Answer[]>([]);
+
   const [loading, setLoading] = useState(true);
 
-  const handleInputChange = (e: any, question: any) => {
-    const updatedFormData = [...formData];
-    const questionIndex = updatedFormData.findIndex((data) => data.title === question.title);
-    if (questionIndex !== -1) {
-      updatedFormData[questionIndex] = {
-        ...updatedFormData[questionIndex],
-        answer: question.isMultipleAnswer ? e:[e.target.value] 
-      };
-    } else {
-      updatedFormData.push({
-        title: question.title,
-        answer: question.isMultipleAnswer ? e:[e.target.value]
-      });
+  const quizListRef = useRef<HTMLDivElement>(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const [timeLeft, setTimeLeft] = useState(0);
+
+  const [isFinishAttempt, setIsFinishAttempt] = useState(false);
+
+  const pageNumber = useMemo(() => {
+    if (quiz?.questions) {
+      return Math.ceil(quiz.questions.length / QUESTION_PER_PAGE);
     }
-    setFormData(updatedFormData);
-  };
+    return 0;
+  }, [quiz]);
 
   useEffect(() => {
-    getQuizDetail(id).then((res) => {
-      setData(res);
-      setLoading(false);
+    const input = quizListRef.current?.querySelectorAll("input");
+    input?.forEach((item) => {
+      item.addEventListener("change", handleSaveAnswer);
     });
-  }, []);
-  async function handleSubmit(e: any) {
-    e.preventDefault();
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, submit it!",
-      cancelButtonText: "No, cancel!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        const res = await fetchApi(`/quiz/${id}`, "POST", formData);
-        if (!res.data) {
-          Swal.fire("Failed!", res.message, "error");
-        } else {
-          Swal.fire("Success!", "Your answer has been submitted.", "success");
-          router.push(`/quiz/${id}/result`);
+    return () => {
+      input?.forEach((item) => {
+        item.removeEventListener("change", handleSaveAnswer);
+      });
+    };
+  });
+
+  const handleSaveAnswer = useCallback(async () => {
+    const listOfQuizContainer =
+      quizListRef.current?.querySelectorAll(".quiz-container");
+
+    listOfQuizContainer?.forEach((quizContainer, index) => {
+      const questionId = quizContainer.getAttribute("data-question-id");
+      const questionType = quizContainer.getAttribute("data-question-type");
+      let questionAnswer: string[] = [];
+
+      const quizInput = quizContainer.querySelectorAll("input");
+
+      if (questionType == QuestionType.Essay) {
+        if (quizInput[0].value) {
+          questionAnswer.push(quizInput[0].value);
         }
+      } else if (questionType == QuestionType.Choice) {
+        const checkedInput = quizContainer.querySelector(
+          "input:checked"
+        ) as HTMLInputElement;
+        if (checkedInput?.value) {
+          questionAnswer.push(checkedInput?.value);
+        }
+      } else if (questionType == QuestionType.Multiple) {
+        quizInput.forEach((input) => {
+          if (input.checked) {
+            if (input.value) {
+              questionAnswer.push(input.value);
+            }
+          }
+        });
+      }
+      if (questionId) {
+        setAnswers((prev) => {
+          const newAnswer = prev.filter(
+            (item) => item.id !== parseInt(questionId)
+          );
+          return [
+            ...newAnswer,
+            {
+              id: parseInt(questionId),
+              answer: questionAnswer,
+            },
+          ];
+        });
       }
     });
-  }
+  }, []);
 
-  if (loading) return <Spinner className="w-full text-center" />
+  const handleNextPage = () => {
+    setCurrentPage((prev) => prev + 1);
+    handleSaveAnswer();
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage((prev) => prev - 1);
+    handleSaveAnswer();
+  };
+
+  const currentQuestions = useMemo(() => {
+    const start = (currentPage - 1) * QUESTION_PER_PAGE;
+    return (
+      quiz?.questions
+        ?.slice(start, start + QUESTION_PER_PAGE)
+        .map((item, i) => ({
+          ...item,
+          no: start + i + 1,
+        })) || []
+    );
+  }, [currentPage, pageNumber]);
+
+  const handleNavigationPageClick = (page: number) => {
+    const navigationPage = Math.ceil(page / QUESTION_PER_PAGE);
+    setIsFinishAttempt(false);
+    setCurrentPage(navigationPage);
+    handleSaveAnswer();
+  };
+
+  const getUserQuiz = async () => {
+    const quiz = await getUserQuizUseCase(id);
+    setQuiz(quiz);
+  };
+
+  const getInitialAnswer = useCallback(() => {
+    if (quiz?.questions) {
+      const answer = quiz.questions.map((question) => ({
+        id: question.id || 0,
+        answer: [],
+      }));
+      setAnswers(answer);
+    }
+  }, [quiz]);
+
+  useEffect(() => {
+    getUserQuiz().then(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    setTimeLeft(quiz?.duration || 0);
+    getInitialAnswer();
+  }, [quiz]);
+
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      return;
+    }
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => prevTime - 1);
+    }, 1000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [timeLeft]);
+
+  const onSubmitAllAndFinish = async () => {
+    try {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, submit it!",
+        cancelButtonText: "No, cancel!",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          await handleSaveAnswer();
+          await finishAnswerQuizUseCase(id, {
+            answers,
+            duration: timeLeft,
+          });
+          Swal.fire(
+            "Success!",
+            "Your answer has been submitted.",
+            "success"
+          ).then((result) => {
+            result.isConfirmed && router.push(`/quiz/${id}/result`);
+          });
+        }
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error instanceof Error ? error.message : "Something went wrong",
+      });
+      console.error(error);
+    }
+  };
+
+  if (loading) return <Spinner className="w-full text-center" />;
   return (
     <>
+      <style>{"html { scroll-padding: 74px; scroll-behavior: smooth}"}</style>
       <header className="bg-white p-4 px-10">
-        <h1 className="font-bold text-dark-blue text-xl">{data.name}</h1>
+        <h1 className="font-bold text-dark-blue text-xl">{quiz?.name}</h1>
       </header>
       <section>
         <div className="flex flex-col md:grid p-5 lg:px-28 gap-3 md:grid-cols-[1fr_400px]">
-          <QuizList 
-            question={data.question} 
-            handleInputChange={handleInputChange} 
-            className='space-y-4 container order-2 md:order-1'
-          />
-          <QuizNavigation 
-            handleSubmit={handleSubmit} 
-            question={data.question} 
-            formData={formData} 
-            className='order-1 md:order-2 h-fit px-5 py-2 md:sticky md:top-20 bg-[#E7F1F9]'
+          {isFinishAttempt ? (
+            <QuizReview
+              questions={quiz?.questions || []}
+              answers={answers}
+              onSubmit={onSubmitAllAndFinish}
+            />
+          ) : (
+            <div className=" container order-2 md:order-1">
+              <QuizList
+                questions={currentQuestions}
+                quizListRef={quizListRef}
+                answer={answers}
+              />
+              <div className="flex flex-row justify-between py-5">
+                {currentPage > 1 && (
+                  <Button
+                    radius="sm"
+                    variant="bordered"
+                    className="font-bold text-gray-500"
+                    onClick={handlePrevPage}
+                  >
+                    Previous Page
+                  </Button>
+                )}
+                {currentPage < pageNumber && (
+                  <Button
+                    radius="sm"
+                    variant="flat"
+                    className="text-white font-bold bg-dark-blue"
+                    onClick={handleNextPage}
+                  >
+                    Next Page
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+          <QuizNavigation
+            handleNavigationPageClick={handleNavigationPageClick}
+            isFinishAttempt={isFinishAttempt}
+            toggleFinishAttempt={() => {
+              handleSaveAnswer();
+              setIsFinishAttempt(!isFinishAttempt);
+            }}
+            questions={quiz?.questions || []}
+            answers={answers}
+            duration={timeLeft}
           />
         </div>
       </section>
     </>
-      
-    
   );
 }

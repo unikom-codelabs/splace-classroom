@@ -22,13 +22,18 @@ export async function POST(req: Request, { params }: any) {
     },
     select:{questions:true}
   }) ;
-  if (!quiz) return getResponse(null, 'quiz not found', 400);
+  if (!quiz) return getResponse(null, 'quiz not found', 404);
   if(quiz.questions.length !==answers.length) return getResponse(null,"Question And Answer isnt Matching", 400);
   const questionQuiz = quiz.questions
   let totalPoints = 0
  
-  const questionsAnswerUser = answers.map((answer:any,index:number) => {
-    if (questionQuiz.find((q) => q.id === +answer.id)) totalPoints += questionQuiz[index].point;
+  const questionsAnswerUser = answers.map((answer: any, index: number) => {
+    const questionisExsist = questionQuiz.find((q) => q.id === +answer.id)
+    const answerOfQuestion: any = questionisExsist?.answer as [];
+    const isAnswerCorrect = answerOfQuestion.filter((ans:any, i: number) => ans === answer.answer[i]);
+    if (questionisExsist) totalPoints +=
+		(isAnswerCorrect.length / answerOfQuestion.length) *
+		questionQuiz[index].point;
     return {
       ...answer,
       point: questionQuiz[index].point
@@ -93,6 +98,7 @@ export async function GET(req: Request, { params }: any) {
           user_id: session?.id
         }
       },
+      questions:true
     },
   })
   return getResponse(quiz, 'success get quiz', 200);
