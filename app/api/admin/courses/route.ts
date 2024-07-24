@@ -41,28 +41,18 @@ export async function POST(req: Request) {
   if (!name|| !user_ids ||!instructor_id) return getResponse(null, 'please fill all inputs', 400);
   
   const newName =  name.split(' ').join('-')
-  const indexName = `${new Date().getTime()}-${newName}-index`.toLowerCase()
   const containerName = `${new Date().getTime()}-${newName}-container`.toLowerCase()
-  const dataSourceName = `${new Date().getTime()}-${newName}-datasource`.toLowerCase()
-  const indexerName = `${new Date().getTime()}-${newName}-indexer`.toLowerCase()
-  
-  await createIndex(indexName)
   await createContainer(containerName)
-  await craateDatasource(dataSourceName,containerName) 
-  await createIndexer(indexerName, dataSourceName, indexName)
   
   const courses = await prisma.course.create({
     data: {
       name,
       azure_container_name: containerName,
-      azure_index_name: indexName,
-      azure_indexer_name: indexerName,
-      azure_datasource_name: dataSourceName
     }
   })
   await prisma.user_course.createMany({
 		data: user_ids.map((item:any) => ({
-			user_id: item,
+			user_id: +item,
 			course_id: courses.id,
 		})),
   });
