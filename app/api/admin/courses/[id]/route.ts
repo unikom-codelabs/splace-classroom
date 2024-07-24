@@ -69,9 +69,6 @@ export async function DELETE(req: Request, { params }: any) {
   })
   if (!course) return getResponse(null, 'course not found', 400);
   
-  await deleteIndexer(course.azure_indexer_name)
-  await deleteIndexer(course.azure_index_name)
-  await deleteDatasource(course.azure_datasource_name)
   await deleteContainer(course.azure_container_name)
 
   await prisma.user_course.deleteMany({
