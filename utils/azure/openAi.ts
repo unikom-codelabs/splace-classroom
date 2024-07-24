@@ -27,8 +27,18 @@ export const getChatCompletions : any = async (indexName: string, message: strin
  );
 
 }
-export const GetCompletions: any = async (prompt: string) => {
-	return await openAiClient.getCompletions(modelName, [
-		
-	]);
-}
+export const getChatResponse: any = async (course_id:number,messages:Array<any>,prompt: string) => {
+	const config = {
+		prompt,
+		course_id,
+		messages,
+		threshold: 0.5,
+		limit: 5,
+	};
+	return await fetch(process.env.CHATBOT_URL as string, {
+		method: 'POST',
+		body: JSON.stringify(config),
+		headers: { 'Content-Type': 'application/json' }
+	}).then(res => res.json());
+	
+};
