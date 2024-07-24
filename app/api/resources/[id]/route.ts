@@ -15,9 +15,6 @@ export async function DELETE(req: Request, { params }: any) {
     }
   })
   if (!resource) return getResponse(null, 'resource not found', 404);
-  const containerName = resource.course.azure_container_name
-  await deleteBlob(containerName, resource.path)
-  await runIndexer(resource.course.azure_indexer_name)
   await prisma.resource.delete({
     where: {
       id: +id

@@ -6,7 +6,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function PUT(req: Request ,{params}: any) {
-  const { course: name ,class_ids,instructor_id} = await req.json();
+  const { course: name ,user_ids} = await req.json();
   const { id } = params
   const updatedCourse = await prisma.course.update({
     where: {
@@ -23,8 +23,8 @@ export async function PUT(req: Request ,{params}: any) {
   })
   const users = await prisma.user.findMany({
     where: {
-      class_id: {
-        in: class_ids.map((item: any) => +item)
+      id: {
+        in: user_ids.map((item: any) => +item)
       }
     },
     select: {
@@ -36,13 +36,6 @@ export async function PUT(req: Request ,{params}: any) {
       user_id: item.id,
       course_id: +id
     }))
-  })
-  await prisma.user_course.create({
-    data: {
-      user_id: +instructor_id,
-      course_id: +id
-    }
-  
   })
   return getResponse(updatedCourse, 'success update course', 200);
 }

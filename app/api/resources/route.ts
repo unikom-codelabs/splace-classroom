@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   const course_id = data.get('course_id') as string;
   const name = data.get('name') as string;
   const description = data.get('description') as string;
-  const file: File | null = data.get('file') as unknown as File;
+  const file: any = data.get('file');
   const session = await getSessionUser() as User  
   // const user_id = 3
   if (!session || !course_id || !file || !name) return getResponse(null, ' please fill all data!', 400);
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
 
   const containerName = course.azure_container_name
   const { request } = await upload(containerName, `${date.getTime()}-${file.name}`, buffer)
-  await runIndexer(course.azure_indexer_name)
+  
   const resource = await prisma.resource.create({
     data: {
       name,
@@ -40,6 +40,16 @@ export async function POST(req: Request) {
     }
   })
 
-
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('course_id', course_id)
+  formData.append('module_id', resource.id.toString())
+  console.log(file, course_id, resource.id.toString())
+  console.log(process.env.GENERATE_UPLOAD_URL)
+  const res = await fetch(process.env.GENERATE_UPLOAD_URL as string, {
+    method: 'POST',
+    body:formData
+  });
+  console.log(await res.text())
   return getResponse(resource, 'success get create new resource', 200);
 }

@@ -56,6 +56,7 @@ const colors = [
 ];
 
 const SettingForm = ({ step, steps }: any) => {
+  const router = useRouter();
   const { settings } = useSettingsStore();
 
   const { currentStep, setCurrentStep } = step;
@@ -107,7 +108,8 @@ const SettingForm = ({ step, steps }: any) => {
     if (res.ok) {
       toast.success("Settings Updated");
       setTimeout(function () {
-        location.reload();
+        router.push("/welcome");
+        router.refresh();
       }, 1000);
     } else {
       toast.error("Update Settings Error");

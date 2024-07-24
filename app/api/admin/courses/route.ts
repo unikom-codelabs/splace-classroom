@@ -11,11 +11,10 @@ export async function GET(req: Request, response: Response) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get('id');
   if (id) {
-    const data:any[] = await prisma.$queryRaw`SELECT DISTINCT \`User\`.class_id,\`Course\`.name,\`User\`.Role,CASE WHEN \`User\`.Role = 'INSTRUCTOR' THEN \`User\`.id END AS instructor_id FROM \`Course\` JOIN \`User_course\` ON \`Course\`.id = \`User_course\`.course_id JOIN \`User\` ON \`User\`.id = \`User_course\`.user_id WHERE \`Course\`.id = ${id}`
+    const data:any[] = await prisma.$queryRaw`SELECT DISTINCT \`Course\`.name,\`User\`.Role,CASE WHEN \`User\`.Role = 'INSTRUCTOR' THEN \`User\`.id END AS instructor_id FROM \`Course\` JOIN \`User_course\` ON \`Course\`.id = \`User_course\`.course_id JOIN \`User\` ON \`User\`.id = \`User_course\`.user_id WHERE \`Course\`.id = ${id}`
     const result = data.map(item => ({
       name: item.name,
       role: item.Role,
-      class_id: item.class_id,
       instructor_id: item.instructor_id && parseInt(item.instructor_id)
       })) 
     return getResponse(result, 'success get course', 200);
@@ -38,45 +37,25 @@ const processedResult = result.map(row => ({
 }
 
 export async function POST(req: Request) {
-  const { name, class_ids, instructor_id } = await req.json();
-  if (!name|| !class_ids ||!instructor_id) return getResponse(null, 'please fill all inputs', 400);
-  const userIds = (await prisma.user.findMany({
-    where: {
-      class_id: {
-        in: class_ids
-      }
-    },
-    select: {
-      id: true
-    }
-  })).map(item=>item.id)
+  const { name, user_ids, instructor_id } = await req.json();
+  if (!name|| !user_ids ||!instructor_id) return getResponse(null, 'please fill all inputs', 400);
   
   const newName =  name.split(' ').join('-')
-  const indexName = `${new Date().getTime()}-${newName}-index`.toLowerCase()
   const containerName = `${new Date().getTime()}-${newName}-container`.toLowerCase()
-  const dataSourceName = `${new Date().getTime()}-${newName}-datasource`.toLowerCase()
-  const indexerName = `${new Date().getTime()}-${newName}-indexer`.toLowerCase()
-  
-  await createIndex(indexName)
   await createContainer(containerName)
-  await craateDatasource(dataSourceName,containerName) 
-  await createIndexer(indexerName, dataSourceName, indexName)
   
   const courses = await prisma.course.create({
     data: {
       name,
       azure_container_name: containerName,
-      azure_index_name: indexName,
-      azure_indexer_name: indexerName,
-      azure_datasource_name: dataSourceName
     }
   })
   await prisma.user_course.createMany({
-    data: userIds.map(item=>({
-      user_id: item,
-      course_id: courses.id
-    }))
-  })
+		data: user_ids.map((item:any) => ({
+			user_id: +item,
+			course_id: courses.id,
+		})),
+  });
   await prisma.user_course.create({
     data: {
       user_id: +instructor_id,
