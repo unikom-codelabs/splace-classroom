@@ -101,7 +101,9 @@ const SettingForm = ({ step, steps }: any) => {
 
     setUploading(true);
 
-    const res = await fetch("/api/settings", {
+    const apiServer = process.env.NEXT_PUBLIC_API_URL;
+
+    const res = await fetch(apiServer + "/settings", {
       method: "POST",
       body: datas,
     });
