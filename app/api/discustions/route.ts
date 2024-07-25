@@ -117,6 +117,9 @@ export async function GET(req: Request) {
             },
           },
         },
+        where: {
+          reply_id: null,
+        },
       },
       discustion_bookmark: true,
     },
