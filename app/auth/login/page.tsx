@@ -75,13 +75,15 @@ const Login = () => {
         </div>
         <div className="w-full bg-black/5 p-5 rounded-xl justify-start items-center gap-2.5 inline-flex mt-20">
           <div className=" text-black text-base font-normal">
-            For Students, please log in using the username (NIM) and password as
+            {/* For Students, please log in using the username (NIM) and password as
             used at https://my.university.ac.id
             <br />
             <br />
             For Lecturers, please log in using the university Email account
             (@email.university.ac.id) by clicking the Log in Lecturer Using
-            university Email button located below the Log in form.
+            university Email button located below the Log in form. */}
+            Please log in using the username and password provided by the
+            university. For default password please contact the university.
           </div>
         </div>
         <form onSubmit={handleSubmit} className="w-full my-5">
@@ -137,11 +139,11 @@ const Login = () => {
             </Button>
           </div>
         </form>
-        <div className="text-center text-sm font-medium text-gray-400">
+        {/* <div className="text-center text-sm font-medium text-gray-400">
           <Link href="/auth/forgot-password">
             Forgotten your username or password?
           </Link>
-        </div>
+        </div> */}
       </div>
     </div>
   );

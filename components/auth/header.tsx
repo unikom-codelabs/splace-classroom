@@ -38,7 +38,7 @@ const HeaderHomepage = ({ siteConfig }: any) => {
             {siteConfig.name}
           </h1>
         </Link>
-        <UsageGuide learnMore={learnMore} guide={true} />
+        <UsageGuide learnMore={learnMore} guide={true} disable={true} />
       </div>
 
       <div className="flex flex-row gap-2">
