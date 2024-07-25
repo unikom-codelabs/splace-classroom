@@ -91,11 +91,7 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             echo "Starting deployment..."
-            echo "Current PATH: $PATH"
-            which bash
-            which git
-            which yarn
-            cd educlass/
+            cd educlass_v2/
             echo "Current directory: $(pwd)"
             git pull origin educlass
             yarn install
