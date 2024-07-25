@@ -97,7 +97,7 @@ jobs:
             which yarn
             cd educlass/
             echo "Current directory: $(pwd)"
-            git pull origin master
+            git pull origin educlass
             yarn install
             yarn prisma:migrate
             yarn build
