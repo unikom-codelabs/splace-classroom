@@ -17,6 +17,10 @@ export async function POST(req: Request, { params }: any) {
    formData.append("file_url", resource.path);
    formData.append("course_id", resource.course_id.toString());
    formData.append("module_id", resource.id.toString());
+  formData.append(
+  "callback_url",
+  `${process.env.NEXT_PUBLIC_API_URL}/api/resources/update-status`
+  );
    await fetch(process.env.GENERATE_UPLOAD_URL as string, {
 		method: "POST",
 		body: formData,
