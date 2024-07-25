@@ -41,15 +41,12 @@ export async function POST(req: Request) {
   })
 
   const formData = new FormData()
-  formData.append('file', file)
+  formData.append("file_url", request.url);
   formData.append('course_id', course_id)
   formData.append('module_id', resource.id.toString())
-  console.log(file, course_id, resource.id.toString())
-  console.log(process.env.GENERATE_UPLOAD_URL)
-  const res = await fetch(process.env.GENERATE_UPLOAD_URL as string, {
+  await fetch(process.env.GENERATE_UPLOAD_URL as string, {
     method: 'POST',
     body:formData
   });
-  console.log(await res.text())
   return getResponse(resource, 'success get create new resource', 200);
 }

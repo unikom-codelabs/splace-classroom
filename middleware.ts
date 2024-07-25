@@ -21,7 +21,7 @@ export const config = {
   matcher: [
     "/api/admin/(.*)",
     "/admin/(.*)",
-    "/api/resources/(.*)",
+    // "/api/resources/(.*)",
     "/api/users/(.*)",
     "/api/courses/(.*)",
     "/auth/register",
