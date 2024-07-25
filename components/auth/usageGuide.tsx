@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDown, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { useSettingsStore } from "@/utils/useSettingsStore";
 
-const UsageGuide = ({ learnMore, guide }: any) => {
+const UsageGuide = ({ learnMore, guide, disable = false }: any) => {
   const { settings } = useSettingsStore();
 
   return (
@@ -21,11 +21,15 @@ const UsageGuide = ({ learnMore, guide }: any) => {
           <Button
             variant="light"
             endContent={<FontAwesomeIcon icon={faAngleDown} />}
+            isDisabled={disable}
           >
             LMS Usage Guide
           </Button>
         ) : (
-          <Button className="border-dark-blue border-2 bg-transparent text-dark-blue font-semibold">
+          <Button
+            className="border-dark-blue border-2 bg-transparent text-dark-blue font-semibold"
+            isDisabled={disable}
+          >
             Learn More
           </Button>
         )}

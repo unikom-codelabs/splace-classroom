@@ -6,7 +6,7 @@ name: Build and deploy NextJs app to Azure Web App - splaceclassroom
 on:
   push:
     branches:
-      - master
+      - educlass
   workflow_dispatch:
 
 jobs:
@@ -95,11 +95,11 @@ jobs:
             which bash
             which git
             which yarn
-            cd splace-classroom/
+            cd educlass/
             echo "Current directory: $(pwd)"
-            git pull origin master
+            git pull origin educlass
             yarn install
             yarn prisma:migrate
             yarn build
-            npx pm2 restart splaceclassroom
+            npx pm2 restart educlass
 

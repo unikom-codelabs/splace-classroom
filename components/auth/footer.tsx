@@ -1,7 +1,12 @@
+"use client";
+
+import { useSettingsStore } from "@/utils/useSettingsStore";
 import { Button, Divider } from "@nextui-org/react";
 import React from "react";
 
 const FooterHomepage = ({ siteConfig }: any) => {
+  const { settings, loading } = useSettingsStore();
+
   return (
     <footer className="bg-white border-t py-6 shadow-md">
       <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
@@ -12,12 +17,12 @@ const FooterHomepage = ({ siteConfig }: any) => {
             className="h-10 mr-3"
           />
 
-          <h1 className="text-xl font-bold">{siteConfig.name}</h1>
+          <h1 className="text-xl font-bold">{settings.university_name}</h1>
         </div>
         <div className="flex items-center mb-4 md:mb-0">
           <Button
             className="bg-dark-blue text-white font-bold"
-            href="mailto:lms@email.com"
+            href={`mailto:${settings.contact_us[0].email}`}
           >
             Contact Us
           </Button>
@@ -27,7 +32,7 @@ const FooterHomepage = ({ siteConfig }: any) => {
         <p className="text-sm">
           &copy; 2024 Edu Class AI. All rights reserved.
         </p>
-        <div className="mt-2">
+        {/* <div className="mt-2">
           <a href="#" className="text-sm mx-2">
             Terms
           </a>
@@ -37,7 +42,7 @@ const FooterHomepage = ({ siteConfig }: any) => {
           <a href="#" className="text-sm mx-2">
             Cookies
           </a>
-        </div>
+        </div> */}
       </div>
     </footer>
   );

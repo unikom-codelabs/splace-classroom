@@ -63,7 +63,11 @@ model Course {
   user_course User_course[]
 
 }
-
+enum STATUS_RAG {
+  on_progress
+  success
+  failed
+}
 model Resource {
   id                Int      @id @default(autoincrement())
   name              String
@@ -71,6 +75,8 @@ model Resource {
   path              String
   user_id           Int
   course_id         Int
+  status_rag        STATUS_RAG @default(on_progress)
+  error_message     String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   deletedAt         DateTime?

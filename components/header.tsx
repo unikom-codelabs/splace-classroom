@@ -7,7 +7,6 @@ import {
 } from "@nextui-org/navbar";
 import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
-import { siteConfig } from "@/config/site";
 import { usePathname } from "next/navigation";
 import NextLink from "next/link";
 
@@ -105,7 +104,7 @@ export const Header = ({ toggle }: any) => {
             />
           </NextLink>
         </NavbarBrand>
-        <UsageGuide learnMore={learnMore} guide={true} />
+        <UsageGuide learnMore={learnMore} guide={true} disable={true} />
       </NavbarContent>
 
       <NavbarContent as="div" justify="end" className="flex flex-row gap-4">
@@ -175,11 +174,11 @@ export const Header = ({ toggle }: any) => {
                   key="dashboard"
                   startContent={<FontAwesomeIcon icon={faHouse} />}
                 >
-                  Dashboard
+                  <NextLink href="/">Dashboard</NextLink>
                 </DropdownItem>
               </DropdownSection>
 
-              <DropdownSection aria-label="Preferences" showDivider>
+              {/* <DropdownSection aria-label="Preferences" showDivider>
                 <DropdownItem
                   key="Profile"
                   startContent={<FontAwesomeIcon icon={faUser} />}
@@ -198,7 +197,7 @@ export const Header = ({ toggle }: any) => {
                 >
                   Preference
                 </DropdownItem>
-              </DropdownSection>
+              </DropdownSection> */}
 
               <DropdownSection aria-label="Log Out">
                 <DropdownItem
