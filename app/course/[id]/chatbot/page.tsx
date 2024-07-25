@@ -47,9 +47,8 @@ export default function page({ params }: any) {
       };
     });
 
-    // const res = await fetchApi(`/courses/${params.id}/chat`, "POST", {
     try {
-      const res = await fetchApi(`/courses/101/chat`, "POST", {
+      const res = await fetchApi(`/courses/${params.id}/chat`, "POST", {
         query: message,
         messages: dataMessage,
       });
