@@ -90,9 +90,10 @@ export default function AddDiscuss({
     formData.attachments.forEach((file) => {
       data.append("attachments", file.file);
     });
+    const apiServer = process.env.NEXT_PUBLIC_API_URL;
 
     setUploading(true);
-    const res = await fetch("/api/discustions", {
+    const res = await fetch(apiServer + "/discustions", {
       method: "POST",
       body: data,
     });
