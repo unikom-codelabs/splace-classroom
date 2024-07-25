@@ -53,21 +53,21 @@ export const siteConfig = {
       icon: faFileImport,
       href: "/admin/import",
     },
-    {
-      label: "Users",
-      icon: faUsers,
-      href: "/admin/users",
-    },
+    // {
+    //   label: "Users",
+    //   icon: faUsers,
+    //   href: "/admin/users",
+    // },
     // {
     //   label: "Class",
     //   icon: faSwatchbook,
     //   href: "/admin/classes",
     // },
-    {
-      label: "Course",
-      icon: faBook,
-      href: "/admin/courses",
-    },
+    // {
+    //   label: "Course",
+    //   icon: faBook,
+    //   href: "/admin/courses",
+    // },
     {
       label: "Settings",
       icon: faGear,

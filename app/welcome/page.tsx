@@ -105,7 +105,11 @@ const Page = () => {
               {settings.university_name}
             </p>
             <div className="flex space-x-4">
-              <UsageGuide learnMore={learnMore} settings={settings} />
+              <UsageGuide
+                learnMore={learnMore}
+                settings={settings}
+                disable={true}
+              />
 
               {session == null ? (
                 <Button
