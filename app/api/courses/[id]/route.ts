@@ -40,6 +40,8 @@ export async function GET(req: Request, { params }: any) {
     name: item.name,
     description: item.description,
     path: item.path,
+    status: item.status,
+    error_message: item.error_message,
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
     isAnswered: item.isAnswered
