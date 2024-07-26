@@ -23,7 +23,7 @@ export const config = {
     "/admin/(.*)",
     // "/api/resources/(.*)",
     "/api/users/(.*)",
-    "/api/courses/(.*)",
+    // "/api/courses/(.*)",
     "/auth/register",
     "/course/(.*)",
     "/quiz/(.*)",
