@@ -18,7 +18,7 @@ export default function Imports() {
   async function handleSubmit(e: any) {
     e.preventDefault();
 
-    const uploads = [];
+    const apiServer = process.env.NEXT_PUBLIC_API_URL;
 
     try {
       setLoading(true);
@@ -26,42 +26,51 @@ export default function Imports() {
       if (fileAccount?.[0]) {
         const fileAccounts = new FormData();
         fileAccounts.append("file", fileAccount[0]);
-        uploads.push(
-          fetch("/api/admin/users/import", {
-            method: "POST",
-            body: fileAccounts,
-          })
-        );
+        const responseUsers = await fetch(apiServer + "/admin/users/import", {
+          method: "POST",
+          body: fileAccounts,
+        });
+
+        if (!responseUsers.ok) {
+          throw new Error("Failed to import users");
+        }
       }
 
       if (fileCourses?.[0]) {
         const fileCoursess = new FormData();
         fileCoursess.append("file", fileCourses[0]);
-        uploads.push(
-          fetch("/api/admin/courses/import", {
+        const responseCourses = await fetch(
+          apiServer + "/admin/courses/import",
+          {
             method: "POST",
             body: fileCoursess,
-          })
+          }
         );
+
+        if (!responseCourses.ok) {
+          throw new Error("Failed to import courses");
+        }
       }
 
       if (fileAssign?.[0]) {
         const fileAssigns = new FormData();
         fileAssigns.append("file", fileAssign[0]);
-        uploads.push(
-          fetch("/api/admin/courses/assign", {
+        const responseAssign = await fetch(
+          apiServer + "/admin/courses/assign",
+          {
             method: "POST",
             body: fileAssigns,
-          })
+          }
         );
-      }
 
-      // Await all fetch requests in parallel
-      await Promise.all(uploads);
+        if (!responseAssign.ok) {
+          throw new Error("Failed to assign courses");
+        }
+      }
 
       toast.success("Import data successfully");
     } catch (error) {
-      toast.error("Import data failed");
+      toast.error("Import data failed: ");
     } finally {
       setLoading(false);
     }
@@ -94,7 +103,7 @@ export default function Imports() {
         />
         <div className="ml-auto">
           <Button
-            color="primary"
+            className="bg-dark-blue text-white px-5"
             type="submit"
             isLoading={loading}
             isDisabled={

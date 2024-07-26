@@ -60,10 +60,10 @@ const AddComment = ({
       data.append("attachments", file.file);
     });
 
-    console.log(data);
+    const apiServer = process.env.NEXT_PUBLIC_API_URL;
 
     setLoading(true);
-    const res = await fetch(`/api/discustions/${id}/comment`, {
+    const res = await fetch(apiServer + `/discustions/${id}/comment`, {
       method: "POST",
       body: data,
     });

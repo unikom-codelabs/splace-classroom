@@ -72,7 +72,7 @@ const CommentList = ({
                   comment.like_comments.find(
                     (item: any) => item.user_id === session?.user?.id
                   )
-                    ? "text-primary font-bold"
+                    ? "text-dark-blue font-bold"
                     : "text-gray-500"
                 }`}
                 onClick={() => handleVote({ id: comment.id, c_id: comment.id })}

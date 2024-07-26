@@ -56,7 +56,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ label, link, store }) => {
     <div className="mb-4 flex flex-row justify-between gap-6">
       <div className="flex flex-col gap-1 text-gray-700 text-sm font-bold mb-2 w-[130px]">
         {label}
-        <Link href={link} className="text-xs text-blue-400">
+        <Link href={link} className="text-xs text-dark-blue">
           Template
         </Link>
       </div>
