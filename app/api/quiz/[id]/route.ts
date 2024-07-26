@@ -15,7 +15,7 @@ export async function POST(req: Request, { params }: any) {
       quiz_id: +id
     }
   })
-  if (isAlreadyAnswered) return getResponse(null, "user already answered this quiz", 400)
+  // if (isAlreadyAnswered) return getResponse(null, "user already answered this quiz", 400)
   const quiz = await prisma.quiz.findUnique({
     where: {
       id: +id
@@ -96,10 +96,40 @@ export async function GET(req: Request, { params }: any) {
       user_quiz: {
         where: {
           user_id: session?.id
+        },
+        include: {
+          users: {
+            select: {
+              name: true,
+              username: true,
+              id: true
+            }
+          },
         }
       },
       questions:true
     },
   })
+  if (!quiz) return getResponse(null, 'quiz not found', 404);
+  const userQuizMapped = quiz.user_quiz.map((uq) => {
+    const answer = uq.answer as any
+    const questions = quiz.questions
+    const correctAnswer = questions.map((q, index) => {
+      const answerOfQuestion: any = q.answer as [];
+      const isAnswerCorrect = answerOfQuestion.filter((ans:any, i: number) => ans === answer[index].answer[i]);
+      return {
+        ...q,
+        isCorrect: isAnswerCorrect.length === answerOfQuestion.length
+      }
+    })
+    // console.log()
+    return {
+      user: uq.users,
+      correct_answer: correctAnswer.filter((c) => c.isCorrect).length,
+      total_question: questions.length,
+    };
+  })
+  console.log()
+  return getResponse({ ...quiz, user_quiz: userQuizMapped }, 'success get quiz', 200);
   return getResponse(quiz, 'success get quiz', 200);
 }
