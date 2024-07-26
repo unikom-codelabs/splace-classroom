@@ -41,12 +41,8 @@ export default function page({ params }: any) {
   useEffect(() => {
     if (data) {
       const modulesWithPath = data.data.module.filter((mod: any) => mod.path);
-
-      const lastModuleWithPath = modulesWithPath[0];
-
-      if (lastModuleWithPath) {
-        setModuleStatus(lastModuleWithPath.status);
-      }
+      const lastModuleWithPath = modulesWithPath[modulesWithPath.length - 1];
+      setModuleStatus(lastModuleWithPath.status);
     }
   }, [data]);
 
