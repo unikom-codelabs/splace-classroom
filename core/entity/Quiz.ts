@@ -1,5 +1,6 @@
 import { Question } from "./Question";
 import { QuizType } from "./QuizType";
+import { UserQuiz } from "./UserQuiz";
 
 export interface Quiz {
   id: number;
@@ -13,7 +14,6 @@ export interface Quiz {
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
-  user_quiz: any[] | null,
+  user_quiz: UserQuiz[] | null;
   questions: Question[] | null;
 }
-

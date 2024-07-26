@@ -1,5 +1,8 @@
 "use client";
 
+import { Quiz } from "@/core/entity/Quiz";
+import { getQuizReviewUseCase } from "@/core/usecase/getQuizReviewUseCase";
+import { showFormattedDate } from "@/utils/timeStamp";
 import { Icon } from "@iconify/react";
 import {
   Button,
@@ -14,30 +17,23 @@ import {
 } from "@nextui-org/react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import useSWR from "swr";
 
 export default function page({
   params: { id: quizId },
 }: {
   params: { id: number };
 }) {
-  const [isLoading, setIsLoading] = useState(true);
+  const { data, isLoading } = useSWR<Quiz>(["quiz-review"], () =>
+    getQuizReviewUseCase(quizId)
+  );
 
   const tableBodyItem = useMemo(() => {
-    setIsLoading(false);
-    return Array(20)
-      .fill(null)
-      .map((_, i) => {
-        return {
-          id: i + 1,
-          nim: "123456789",
-          class: "A",
-          correctAnswer: "10",
-          wrongAnswer: "10",
-          score: "50",
-        };
-      });
-  }, []);
+    if (!data) return [];
+    return data.user_quiz || [];
+  }, [data, isLoading]);
 
+  if (isLoading) return <Spinner className="w-full text-center" />;
   return (
     <>
       <section className="p-5 w-screen lg:max-w-6xl lg:mx-auto space-y-5">
@@ -49,15 +45,19 @@ export default function page({
             <div className="sticky top-[72px] flex flex-col bg-white p-5 rounded-xl border-[0.5px] border-[#BFBFBF] gap-4 md:max-w-72 md:min-w-72">
               <div>
                 <ReviewQuizDetailTitleItem title="Jumlah Soal" />
-                <ReviewQuizDetailDescItem desc="20" />
+                <ReviewQuizDetailDescItem
+                  desc={`${data?.questions?.length || 0}`}
+                />
               </div>
               <div>
                 <ReviewQuizDetailTitleItem title="Materi" />
-                <ReviewQuizDetailDescItem desc="Visualisasi Data" />
+                <ReviewQuizDetailDescItem desc={data?.name} />
               </div>
               <div>
                 <ReviewQuizDetailTitleItem title="Modify" />
-                <ReviewQuizDetailDescItem desc="12 Juni" />
+                <ReviewQuizDetailDescItem
+                  desc={showFormattedDate(data?.updatedAt || "")}
+                />
               </div>
             </div>
           </div>
@@ -113,25 +113,21 @@ const ReviewQuizDetailTitleItem = ({ title }: { title: string }) => {
   return <h4 className="text-lg font-normal text-[#404040] mb-1">{title}</h4>;
 };
 
-const ReviewQuizDetailDescItem = ({ desc }: { desc: string }) => {
-  return <p className="text-base font-bold text-dark-blue">{desc}</p>;
+const ReviewQuizDetailDescItem = ({ desc }: { desc?: string }) => {
+  return <p className="text-base font-bold text-dark-blue">{desc || "-"}</p>;
 };
 
 const TABLE_COLUMN = [
   {
-    key: "nim",
+    key: "username",
     label: "NIM",
   },
   {
-    key: "class",
-    label: "Class",
-  },
-  {
-    key: "correctAnswer",
+    key: "correct_answer",
     label: "Correct Answer",
   },
   {
-    key: "wrongAnswer",
+    key: "wrong_answer",
     label: "Wrong Answer",
   },
   {
