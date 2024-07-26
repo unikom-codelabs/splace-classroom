@@ -19,7 +19,7 @@ const CustomRadio = (props: any) => {
         base: cn(
           "inline-flex m-0 bg-content1 hover:bg-content2 items-center justify-between",
           "flex-row-reverse max-w-[300px] cursor-pointer rounded-lg gap-4 p-4 border-1 border-gray-200",
-          "data-[selected=true]:border-primary"
+          "data-[selected=true]:border-dark-blue"
         ),
       }}
     >

@@ -46,7 +46,7 @@ const DiscussInteract = ({ data, comment }: any) => {
         >
           <FontAwesomeIcon
             icon={faComments}
-            className={comment.showComment ? " text-primary" : ""}
+            className={comment.showComment ? " text-dark-blue" : ""}
           />
           <span>{data.comments.length}</span>
         </button>

@@ -15,7 +15,7 @@ const Comment = ({ data, handleVote, session }: any) => {
           data.like_comments.find(
             (item: any) => item.user_id === session?.user?.id
           )
-            ? "text-primary font-bold"
+            ? "text-dark-blue font-bold"
             : "text-gray-500"
         }`}
         onClick={() => handleVote({ c_id: data.id })}

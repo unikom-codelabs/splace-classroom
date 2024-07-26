@@ -93,12 +93,6 @@ export const Header = ({ toggle }: any) => {
           : null}
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1 " href="/">
-            {/* <Image
-              src={settings.logo}
-              alt={settings.university_name}
-              height={40}
-              width={40}
-            /> */}
             <h1 className="font-bold text-dark-blue text-md">
               {settings.university_name}
             </h1>
