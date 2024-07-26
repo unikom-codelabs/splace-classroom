@@ -46,6 +46,7 @@ export default function page({ params }: any) {
       if (lastModuleWithPath) {
         setModuleStatus(lastModuleWithPath.status);
       }
+
     }
   }, [data]);
 
