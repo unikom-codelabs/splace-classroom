@@ -42,7 +42,10 @@ export default function page({ params }: any) {
     if (data) {
       const modulesWithPath = data.data.module.filter((mod: any) => mod.path);
       const lastModuleWithPath = modulesWithPath[modulesWithPath.length - 1];
-      setModuleStatus(lastModuleWithPath.status);
+
+      if (lastModuleWithPath) {
+        setModuleStatus(lastModuleWithPath.status);
+      }
     }
   }, [data]);
 
