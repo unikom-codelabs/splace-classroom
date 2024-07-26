@@ -6,7 +6,7 @@ name: Build and deploy NextJs app to Azure Web App - splaceclassroom
 on:
   push:
     branches:
-      - educlass
+      - master
   workflow_dispatch:
 
 jobs:
@@ -91,12 +91,11 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             echo "Starting deployment..."
-            cd educlass_v3/
-
+            cd splace-classroom/
             echo "Current directory: $(pwd)"
-            git pull origin educlass
+            git pull origin master
             yarn install
             yarn prisma:migrate
             yarn build
-            npx pm2 restart educlass
+            npx pm2 restart splaceclassroom
 
