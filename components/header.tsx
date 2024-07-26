@@ -97,7 +97,7 @@ export const Header = ({ toggle }: any) => {
               {settings.project_name}
             </h1> */}
             <Image
-              src={"/logo-brand.png"}
+              src={"/images/logo-brand.png"}
               alt={settings.university_name}
               height={20}
               width={200}
