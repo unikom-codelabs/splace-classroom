@@ -91,7 +91,7 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             echo "Starting deployment..."
-            cd educlass_v2/
+            cd educlass_v3/
             echo "Current directory: $(pwd)"
             git pull origin educlass
             yarn install

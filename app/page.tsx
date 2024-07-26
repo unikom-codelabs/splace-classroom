@@ -4,7 +4,7 @@ import { CourseList } from "@/components/course/CourseList";
 import { Course } from "@/config/data-dummy";
 import fetchApi from "@/utils/fetchApi";
 import EmptyCourse from "@/components/course/emptyCourse";
-import { Spinner } from "@nextui-org/react";
+import { Skeleton, Spinner } from "@nextui-org/react";
 import { useContext } from "react";
 import Layout from "@/layouts/layout";
 import { useSession } from "next-auth/react";
@@ -14,22 +14,33 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const { data: session } = useSession();
   const router = useRouter();
+
   async function getData() {
-    const courses = await fetchApi("/courses", "GET");
-    return courses.data;
+    try {
+      const courses = await fetchApi("/courses", "GET");
+      return courses.data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      return [];
+    } finally {
+      setLoading(false);
+    }
   }
+
   useEffect(() => {
     if (!session) {
       router.push("welcome");
     }
   }, [session]);
+
   useEffect(() => {
     getData().then((res) => {
       setData(res);
-      setLoading(false);
     });
   }, []);
+
   if (loading) return <Spinner className="w-full text-center h-screen" />;
+
   return (
     <Layout>
       <section className="flex flex-col items-start justify-center gap-4 p-8">

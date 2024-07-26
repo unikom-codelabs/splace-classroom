@@ -103,7 +103,7 @@ export default function Imports() {
         />
         <div className="ml-auto">
           <Button
-            color="primary"
+            className="bg-dark-blue text-white px-5"
             type="submit"
             isLoading={loading}
             isDisabled={
