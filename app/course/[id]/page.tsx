@@ -16,20 +16,35 @@ import ResourceList from "@/components/resource/resourceList";
 import EmptyResource from "@/components/resource/emptyResource";
 import Modal from "@/components/modal";
 import FormResource from "@/components/resource/formResource";
+import Loading from "./loading";
+import { Icon } from "@iconify/react";
+import useSWR, { mutate } from "swr";
 
 export default function page({ params }: any) {
   const modal = useDisclosure();
   const { data: session } = useSession();
   const userData = session?.user as User;
-  const [data, setData] = useState([]) as any;
-  const [canUpload, setCanUpload] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [loadingSubmit, setLoadingSubmit] = useState(false);
 
-  async function getData() {
-    const courses = await fetchApi(`/courses/${params.id}`, "GET");
-    return courses.data;
-  }
+  const [canUpload, setCanUpload] = useState(false);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [moduleStatus, setModuleStatus] = useState("");
+  const fetcher = (url: any) => fetch(url).then((res) => res.json());
+
+  const { data, error, isLoading } = useSWR(
+    `/api/courses/${params.id}`,
+    fetcher,
+    {
+      refreshInterval: 10000,
+    }
+  );
+
+  useEffect(() => {
+    if (data) {
+      const modulesWithPath = data.data.module.filter((mod: any) => mod.path);
+      const lastModuleWithPath = modulesWithPath[modulesWithPath.length - 1];
+      setModuleStatus(lastModuleWithPath.status);
+    }
+  }, [data]);
 
   async function handleUpload(e: any) {
     e.preventDefault();
@@ -44,9 +59,7 @@ export default function page({ params }: any) {
       body: formData,
     });
     if (res) {
-      getData().then((res) => {
-        setData(res);
-      });
+      mutate(`/courses/${params.id}`);
     }
     setLoadingSubmit(false);
     modal.onClose();
@@ -57,13 +70,7 @@ export default function page({ params }: any) {
     else setCanUpload(false);
   }, [session]);
 
-  useEffect(() => {
-    getData().then((res) => {
-      setData(res);
-      setLoading(false);
-    });
-  }, []);
-  if (loading) return <Spinner className="w-full text-center" />;
+  if (isLoading) return <Spinner className="w-full text-center" />;
   return (
     <section className="w-full flex flex-col gap-5">
       <Card className="w-full h-60 col-span-12 sm:col-span-7 rounded-t-none">
@@ -74,8 +81,8 @@ export default function page({ params }: any) {
           src="/liquid-cheese.svg"
         />
         <CardFooter className="absolute bottom-0 z-10 text-white px-5 flex flex-col items-start">
-          <h1 className="text-3xl font-semibold">{data?.name}</h1>
-          <p>{data?.instructor}</p>
+          <h1 className="text-3xl font-semibold">{data?.data.name}</h1>
+          <p>{data?.data.instructor}</p>
         </CardFooter>
       </Card>
       {canUpload && (
@@ -103,8 +110,30 @@ export default function page({ params }: any) {
         </>
       )}
       <section>
-        {data?.module?.length > 0 ? (
-          <ResourceList userRole={userData?.role} module={data?.module} />
+        {moduleStatus === "on_progress" && (
+          <div className="flex justify-between p-4 bg-primary/25 rounded-lg  items-center mb-3">
+            <div className="flex justify-start gap-4">
+              <Spinner />
+
+              <div>
+                <h2 className="text-md font-semibold">
+                  Newly uploaded modules are being processed
+                </h2>
+                <span className="text-sm text-red-500/80">
+                  (You cannot use the new module for chatbot & quiz generator
+                  until the module process is complete)
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {data.data.module.length > 0 ? (
+          <ResourceList
+            userRole={userData?.role}
+            module={data.data.module}
+            params={params}
+          />
         ) : (
           <EmptyResource />
         )}
