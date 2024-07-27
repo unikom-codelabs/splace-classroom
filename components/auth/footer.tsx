@@ -12,7 +12,7 @@ const FooterHomepage = ({ siteConfig }: any) => {
       <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
         <div className="flex items-center mb-4 md:mb-0">
           <img
-            src="/unikom.png"
+            src={settings.logo}
             alt="Universitas Prasetiya Mulya Logo"
             className="h-10 mr-3"
           />
@@ -30,7 +30,7 @@ const FooterHomepage = ({ siteConfig }: any) => {
       </div>
       <div className="container flex flex-row justify-between items-center mx-auto px-6 text-center border-t pt-4 mt-6">
         <p className="text-sm">
-          &copy; 2024 Edu Class AI. All rights reserved.
+          &copy; 2024 LMS | {settings.university_name}. All rights reserved.
         </p>
         {/* <div className="mt-2">
           <a href="#" className="text-sm mx-2">

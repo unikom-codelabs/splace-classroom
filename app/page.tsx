@@ -1,11 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
 import { CourseList } from "@/components/course/CourseList";
-import { Course } from "@/config/data-dummy";
+
 import fetchApi from "@/utils/fetchApi";
 import EmptyCourse from "@/components/course/emptyCourse";
-import { Skeleton, Spinner } from "@nextui-org/react";
-import { useContext } from "react";
+import { Spinner } from "@nextui-org/react";
 import Layout from "@/layouts/layout";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
