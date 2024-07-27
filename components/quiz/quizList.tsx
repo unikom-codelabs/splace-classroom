@@ -10,19 +10,19 @@ export interface CurrentQuestion {
   id?: number;
   title: string;
   choices: string[];
-  point: number;
+  point?: number;
   answer: string[];
   type: QuestionType;
 }
 
 export const QuizList = memo(
   ({
-    questions,
     quizListRef,
+    questions,
     answer,
   }: {
-    questions: CurrentQuestion[];
     quizListRef: MutableRefObject<any>;
+    questions: CurrentQuestion[];
     answer: Answer[];
   }) => {
     const quizAnswer = useMemo(() => {
