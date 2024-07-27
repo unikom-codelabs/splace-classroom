@@ -7,7 +7,6 @@ import { QuestionType } from "@/core/entity/QuestionType";
 import { Quiz } from "@/core/entity/Quiz";
 import { finishAnswerQuizUseCase } from "@/core/usecase/finishAnswerQuizUseCase";
 import { getUserQuizUseCase } from "@/core/usecase/getUserQuizUseCase";
-import fetchApi from "@/utils/fetchApi";
 import { Button } from "@nextui-org/button";
 import { Spinner } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
@@ -219,9 +218,9 @@ export default function page({ params: { id } }: { params: { id: any } }) {
           ) : (
             <div className=" container order-2 md:order-1">
               <QuizList
-                questions={currentQuestions}
-                quizListRef={quizListRef}
                 answer={answers}
+                quizListRef={quizListRef}
+                questions={currentQuestions}
               />
               <div className="flex flex-row justify-between py-5">
                 {currentPage > 1 && (

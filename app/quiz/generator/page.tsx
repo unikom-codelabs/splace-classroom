@@ -1,11 +1,11 @@
 "use client";
+import CreatePage from "@/components/page/createPage";
 import { Course } from "@/core/entity/Course";
 import { GenerateQuizRequest } from "@/core/entity/GenerateQuizRequest";
 import { Module } from "@/core/entity/Module";
 import { QuestionType } from "@/core/entity/QuestionType";
 import { QuizType } from "@/core/entity/QuizType";
 import { generateQuizRAGUseCase } from "@/core/usecase/generateQuizRAGUseCase";
-import { generateQuizUseCase } from "@/core/usecase/generateQuizUseCase";
 import { getCourseUseCase } from "@/core/usecase/getCourseUseCase";
 import { getModuleUseCase } from "@/core/usecase/getModuleUseCase";
 import { Icon } from "@iconify/react";
@@ -26,7 +26,6 @@ import { useCallback, useMemo, useState } from "react";
 import Swal from "sweetalert2";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
-import CreatePage from "../create/page";
 
 export default function page() {
   const router = useRouter();
@@ -76,8 +75,9 @@ export default function page() {
     }:00`;
   }, [quizDeadlineDate, quizDeadlineHours, quizDeadlineMinutes]);
 
-  const { data, trigger: generate } = useSWRMutation("generateQuiz", (_, { arg }) =>
-    generateQuizRAGUseCase(arg)
+  const { data, trigger: generate } = useSWRMutation(
+    "generateQuiz",
+    (_, { arg }) => generateQuizRAGUseCase(arg)
   );
 
   const validate = () => {

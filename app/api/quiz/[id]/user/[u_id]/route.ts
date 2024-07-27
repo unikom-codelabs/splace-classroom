@@ -37,10 +37,8 @@ export async function GET(req: Request, { params }: any) {
   });
 
   const correctAnswer = quiz?.map((q, index) => {
-    const answerOfQuestion = q.answer as [];
-    const trueAnswer = q.true_answer as [];
-
-    // is methode above can detect a multipe choice question with multiple correct answer
+    const answerOfQuestion: any[] = q.answer as any[];
+    const trueAnswer: any[] = q.true_answer as any[];
 
     const isCorrect =
       answerOfQuestion?.filter((a: any) => trueAnswer?.includes(a)).length ===
