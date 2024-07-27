@@ -77,6 +77,12 @@ export default function page() {
     }:00`;
   }, [quizDeadlineDate, quizDeadlineHours, quizDeadlineMinutes]);
 
+
+  const { data, trigger: generate } = useSWRMutation(
+    "generateQuiz",
+    (_, { arg }) => generateQuizRAGUseCase(arg)
+  );
+
   const validate = () => {
     if (!quizName) throw new Error("Quiz name is required");
     if (!quizCourses) throw new Error("Quiz course is required");
