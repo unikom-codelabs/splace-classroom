@@ -3,6 +3,7 @@ import CreatePage from "@/components/page/createPage";
 import { Course } from "@/core/entity/Course";
 import { GenerateQuizRequest } from "@/core/entity/GenerateQuizRequest";
 import { Module } from "@/core/entity/Module";
+import { Question } from "@/core/entity/Question";
 import { QuestionType } from "@/core/entity/QuestionType";
 import { QuizType } from "@/core/entity/QuizType";
 import { generateQuizRAGUseCase } from "@/core/usecase/generateQuizRAGUseCase";
@@ -46,6 +47,7 @@ export default function page() {
   const [numberOfQuestionMultiple, setNumberOfQuestionMultiple] = useState("");
   const [numberOfQuestionEssay, setNumberOfQuestionEssay] = useState("");
 
+  const [generatedQuestions, setGeneratedQuestions] = useState<Question[]>([]);
   const [isGenerated, setIsGenerated] = useState(false);
 
   const { data: courses } = useSWR<Course[]>("courses", getCourseUseCase);
@@ -74,6 +76,7 @@ export default function page() {
       quizDeadlineMinutes || 0
     }:00`;
   }, [quizDeadlineDate, quizDeadlineHours, quizDeadlineMinutes]);
+
 
   const { data, trigger: generate } = useSWRMutation(
     "generateQuiz",
@@ -104,7 +107,7 @@ export default function page() {
 
   const onGenerateClick = async () => {
     try {
-      // validate();
+      validate();
       const generateQuizRequest: GenerateQuizRequest = {
         name: quizName,
         course_id: parseInt(quizCourses),
@@ -123,7 +126,6 @@ export default function page() {
           multiple: parseInt(numberOfQuestionMultiple) || 0,
         },
       };
-      console.log(generateQuizRequest);
       Swal.fire({
         title: "Do you want to generate this quiz?",
         text: "You are about to generate a quiz. Make sure all the information is correct before proceeding.",
@@ -134,10 +136,9 @@ export default function page() {
       }).then(async (response) => {
         if (response.isConfirmed) {
           setIsGenerating(true);
-          // const res = await generateQuizRAGUseCase(generateQuizRequest);
-          const res = await generate();
-          console.log(res);
+          const res = await generateQuizRAGUseCase(generateQuizRequest);
           if (res) {
+            setGeneratedQuestions(res);
             setIsGenerating(false);
             setIsGenerated(true);
             Swal.fire({
@@ -169,7 +170,7 @@ export default function page() {
     return (
       <CreatePage
         searchParams={{ course_id: parseInt(quizCourses), qname: quizName }}
-        pageQuestions={data || []}
+        pageQuestions={generatedQuestions}
       />
     );
 
@@ -249,7 +250,7 @@ export default function page() {
             value={quizQuery}
             variant="bordered"
             onChange={(e) => setQuizQuery(e.target.value)}
-            placeholder="Enter the query to be commanded"
+            placeholder="Enter the title of the material that will be used as a quiz"
           />
         </FormQuizGroup>
         <FormQuizGroup>

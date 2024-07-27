@@ -168,7 +168,7 @@ const ReviewQuizDetailDescItem = ({
 const TABLE_COLUMN = [
   {
     key: "nim",
-    label: "NIM",
+    label: "Username",
   },
   {
     key: "class",
