@@ -11,7 +11,7 @@ import { QUIZ_DURATION } from "@/app/quiz/create/data";
 import { createQuizUseCase } from "@/core/usecase/createQuizUseCase";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import Swal from "sweetalert2";
 import { QuestionType } from "@/core/entity/QuestionType";
