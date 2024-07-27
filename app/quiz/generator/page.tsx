@@ -249,7 +249,7 @@ export default function page() {
             value={quizQuery}
             variant="bordered"
             onChange={(e) => setQuizQuery(e.target.value)}
-            placeholder="Enter the query to be commanded"
+            placeholder="Enter the title of the material that will be used as a quiz"
           />
         </FormQuizGroup>
         <FormQuizGroup>
