@@ -2,6 +2,8 @@
 import { QuizCreator } from "@/components/quiz/QuizCreator";
 import { Question } from "@/core/entity/Question";
 import { QuestionType } from "@/core/entity/QuestionType";
+import { QuizType } from "@/core/entity/QuizType";
+import { createQuizUseCase } from "@/core/usecase/createQuizUseCase";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "@nextui-org/button";
@@ -13,11 +15,9 @@ import {
   SelectItem,
 } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Swal from "sweetalert2";
 import { QUIZ_DURATION } from "./data";
-import { createQuizUseCase } from "@/core/usecase/createQuizUseCase";
-import { QuizType } from "@/core/entity/QuizType";
 
 const MULTIPLE_QUESTION_DEFAULT = {
   title: "",
@@ -35,16 +35,36 @@ const ESSAY_QUESTION_DEFAULT = {
   type: QuestionType.Essay,
 };
 
+const DUMMY_PAGE_QUESTION: Question[] = [
+  {
+    title: "Silahkan piliha salah satu",
+    choices: ["a", "b", "c", "d"],
+    answer: ["a"],
+    type: QuestionType.Choice,
+  },
+  {
+    title: "Esasay",
+    choices: [],
+    answer: ["jawaban essay"],
+    type: QuestionType.Essay,
+  },
+  {
+    title: "Silahkan Pilih Semua Yang Menurut Anda Benar",
+    choices: ["1", "2", "3", "4"],
+    answer: ["1", "4"],
+    type: QuestionType.Multiple,
+  },
+];
+
 export default function Page({
   searchParams,
-  pageQuestions = []
+  pageQuestions = DUMMY_PAGE_QUESTION,
 }: {
   searchParams: {
     course_id: number;
     qname: string;
-  },
-  pageQuestions: Question[]
-  ;
+  };
+  pageQuestions: Question[];
 }) {
   const { course_id, qname } = searchParams;
   const router = useRouter();
@@ -61,10 +81,12 @@ export default function Page({
   const questionsRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const listOfQuestions: Question[] = [];
-    listOfQuestions.push(MULTIPLE_QUESTION_DEFAULT);
-    listOfQuestions.push(ESSAY_QUESTION_DEFAULT);
-    setQuestions(listOfQuestions);
+    if (pageQuestions.length == 0) {
+      const listOfQuestions: Question[] = [];
+      listOfQuestions.push(MULTIPLE_QUESTION_DEFAULT);
+      listOfQuestions.push(ESSAY_QUESTION_DEFAULT);
+      setQuestions(listOfQuestions);
+    }
     setQuestionFormLoading(false);
   }, []);
 
@@ -124,7 +146,6 @@ export default function Page({
 
         choicesElement.forEach((el: Element) => {
           const choice = el.querySelector("input")?.value;
-          console.log(choice);
           if (choice) {
             choices.push(choice);
           } else {
@@ -213,7 +234,6 @@ export default function Page({
       if (quizName === "") {
         throw new Error("Quiz name is required");
       }
-      console.log(newQuestions);
 
       const res = await createQuizUseCase({
         course_id: course_id,
@@ -227,7 +247,6 @@ export default function Page({
       });
       if (res) return router.push(`/quiz`);
     } catch (error) {
-      console.log(error);
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -247,7 +266,6 @@ export default function Page({
   };
 
   const onRemoveQuestion = (index: number) => {
-    console.log(index);
     const newQuestions = questions.filter((_, i) => i !== index);
     setQuestions(newQuestions);
   };
