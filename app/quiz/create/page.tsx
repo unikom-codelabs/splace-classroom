@@ -37,11 +37,14 @@ const ESSAY_QUESTION_DEFAULT = {
 
 export default function Page({
   searchParams,
+  pageQuestions = []
 }: {
   searchParams: {
     course_id: number;
     qname: string;
-  };
+  },
+  pageQuestions: Question[]
+  ;
 }) {
   const { course_id, qname } = searchParams;
   const router = useRouter();
@@ -51,7 +54,7 @@ export default function Page({
   const [quizDuration, setQuizDuration] = useState("45");
   const [deadline, setDeadline] = useState<CalendarDate | null>(null);
 
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [questions, setQuestions] = useState<Question[]>(pageQuestions);
 
   const [questionFormLoading, setQuestionFormLoading] = useState(true);
 

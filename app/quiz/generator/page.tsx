@@ -4,6 +4,7 @@ import { GenerateQuizRequest } from "@/core/entity/GenerateQuizRequest";
 import { Module } from "@/core/entity/Module";
 import { QuestionType } from "@/core/entity/QuestionType";
 import { QuizType } from "@/core/entity/QuizType";
+import { generateQuizRAGUseCase } from "@/core/usecase/generateQuizRAGUseCase";
 import { generateQuizUseCase } from "@/core/usecase/generateQuizUseCase";
 import { getCourseUseCase } from "@/core/usecase/getCourseUseCase";
 import { getModuleUseCase } from "@/core/usecase/getModuleUseCase";
@@ -24,6 +25,8 @@ import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import Swal from "sweetalert2";
 import useSWR from "swr";
+import useSWRMutation from "swr/mutation";
+import CreatePage from "../create/page";
 
 export default function page() {
   const router = useRouter();
@@ -43,6 +46,8 @@ export default function page() {
   const [numberOfQuestionChoice, setNumberOfQuestionChoice] = useState("");
   const [numberOfQuestionMultiple, setNumberOfQuestionMultiple] = useState("");
   const [numberOfQuestionEssay, setNumberOfQuestionEssay] = useState("");
+
+  const [isGenerated, setIsGenerated] = useState(false);
 
   const { data: courses } = useSWR<Course[]>("courses", getCourseUseCase);
   const { data: modules } = useSWR<Module[]>(["modules", quizCourses], () =>
@@ -71,6 +76,10 @@ export default function page() {
     }:00`;
   }, [quizDeadlineDate, quizDeadlineHours, quizDeadlineMinutes]);
 
+  const { data, trigger: generate } = useSWRMutation("generateQuiz", (_, { arg }) =>
+    generateQuizRAGUseCase(arg)
+  );
+
   const validate = () => {
     if (!quizName) throw new Error("Quiz name is required");
     if (!quizCourses) throw new Error("Quiz course is required");
@@ -95,7 +104,7 @@ export default function page() {
 
   const onGenerateClick = async () => {
     try {
-      validate();
+      // validate();
       const generateQuizRequest: GenerateQuizRequest = {
         name: quizName,
         course_id: parseInt(quizCourses),
@@ -125,16 +134,16 @@ export default function page() {
       }).then(async (response) => {
         if (response.isConfirmed) {
           setIsGenerating(true);
-          const res = await generateQuizUseCase(generateQuizRequest);
+          // const res = await generateQuizRAGUseCase(generateQuizRequest);
+          const res = await generate();
           console.log(res);
           if (res) {
             setIsGenerating(false);
+            setIsGenerated(true);
             Swal.fire({
               icon: "success",
               title: "Success",
               text: "Quiz generated successfully",
-            }).then((response) => {
-              response.isConfirmed && router.push("/quiz");
             });
           }
           if (!res) {
@@ -155,6 +164,14 @@ export default function page() {
       });
     }
   };
+
+  if (isGenerated)
+    return (
+      <CreatePage
+        searchParams={{ course_id: parseInt(quizCourses), qname: quizName }}
+        pageQuestions={data || []}
+      />
+    );
 
   return (
     <section className="p-5 w-screen lg:max-w-6xl lg:mx-auto space-y-5">
