@@ -1,42 +1,37 @@
 "use client";
 
-import { Icon } from "@iconify/react";
+import { QuestionType } from "@/core/entity/QuestionType";
+import { getQuizReviewUserUseCase } from "@/core/usecase/getQuizReviewUserUseCase";
 import {
-  Button,
-  getKeyValue,
+  Checkbox,
+  CheckboxGroup,
+  Input,
+  Radio,
+  RadioGroup,
   Spinner,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
+  Textarea,
 } from "@nextui-org/react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
+import useSWR from "swr";
 
 export default function page({
   params: { id: quizId, studentId },
 }: {
   params: { id: number; studentId: number };
 }) {
-  const [isLoading, setIsLoading] = useState(true);
+  const { data, isLoading } = useSWR(["quiz", "user"], () =>
+    getQuizReviewUserUseCase(quizId, studentId)
+  );
 
-  const tableBodyItem = useMemo(() => {
-    setIsLoading(false);
-    return Array(20)
-      .fill(null)
-      .map((_, i) => {
-        return {
-          id: i + 1,
-          nim: "123456789",
-          class: "A",
-          correctAnswer: "10",
-          wrongAnswer: "10",
-          score: "50",
-        };
-      });
-  }, []);
+  const quiz = useMemo(() => {
+    return data?.quiz || [];
+  }, [data, isLoading]);
 
+  useEffect(() => {
+    console.log(quiz);
+  }, [quiz]);
+
+  if (isLoading) return <Spinner className="w-full text-center" />;
   return (
     <>
       <section className="p-5 w-screen lg:max-w-6xl lg:mx-auto space-y-5">
@@ -48,45 +43,95 @@ export default function page({
             <div className="sticky top-[72px] flex flex-col bg-white p-5 rounded-xl border-[0.5px] border-[#BFBFBF] gap-4 md:max-w-72 md:min-w-72">
               <div>
                 <ReviewQuizDetailTitleItem title="Student ID" />
-                <ReviewQuizDetailDescItem desc="1021338" />
+                <ReviewQuizDetailDescItem desc={data?.username} />
               </div>
               <div>
                 <ReviewQuizDetailTitleItem title="Class" />
-                <ReviewQuizDetailDescItem desc="IF-1" />
+                <ReviewQuizDetailDescItem desc={data?.course_name} />
               </div>
               <div>
                 <ReviewQuizDetailTitleItem title="Correct Answer" />
-                <ReviewQuizDetailDescItem desc="8" stateColor="green" />
+                <ReviewQuizDetailDescItem
+                  desc={`${data?.correct_answer}`}
+                  stateColor="green"
+                />
               </div>
               <div>
                 <ReviewQuizDetailTitleItem title="Wrong Answer" />
-                <ReviewQuizDetailDescItem desc="2" stateColor="red" />
+                <ReviewQuizDetailDescItem
+                  desc={`${data?.wrong_answer}`}
+                  stateColor="red"
+                />
               </div>
               <div>
                 <ReviewQuizDetailTitleItem title="Score" />
-                <ReviewQuizDetailDescItem desc="80" />
+                <ReviewQuizDetailDescItem desc={`${data?.score}`} />
               </div>
             </div>
           </div>
-          <div className="flex-1">
-            <div>
-              <div className="flex justify-between">
-                <h5>Question 1</h5>
-                <select name="" id="">
-                    <option value="">2</option>
-                    <option value="">5</option>
-                </select>
-              </div>
-              <div className="flex flex-col">
-                <p>Definition of Data Science</p>
-                <p>Answer: </p>
-                <input type="text" />
-                <div>
-                  <p>Key Answer: </p>
-                  <p>Data is number</p>
+          <div className="flex-1 flex flex-col gap-4">
+            {quiz.map((q, i) => (
+              <div key={q.id} className="flex flex-col gap-2">
+                <div className="border flex justify-between items-center px-4 py-5 bg-white">
+                  <h5 className="font-medium">Question {i + 1}</h5>
+                  <div className="flex items-center gap-3">
+                    <select name="point" id={`questionValue-${i}`}>
+                      <option value="0">0</option>
+                      <option value="2">2</option>
+                      <option value="5">5</option>
+                      <option value={q.point} selected>
+                        {q.point}
+                      </option>
+                    </select>
+                    <label htmlFor={`questionValue-${i}`}>Points</label>
+                  </div>
+                </div>
+                <div className="flex flex-col border p-3 bg-white">
+                  <p className="text-lg mb-3">{q.title}</p>
+                  <p className="mb-2 font-medium">Answer: </p>
+                  {q.type === QuestionType.Essay && (
+                    <Textarea
+                      className="mb-3"
+                      defaultValue={q.answer[0]}
+                      readOnly
+                    />
+                  )}
+                  {q.type === QuestionType.Choice && (
+                    <RadioGroup defaultValue={q.answer[0]} isReadOnly>
+                      {q.choices.map((choice, i) => (
+                        <Radio key={i} value={choice}>
+                          {choice}
+                        </Radio>
+                      ))}
+                    </RadioGroup>
+                  )}
+
+                  {q.type === QuestionType.Multiple && (
+                    <CheckboxGroup value={q.answer} isReadOnly>
+                      {q.choices.map((choice, i) => (
+                        <Checkbox
+                          key={i}
+                          value={choice}
+                          checked={q.answer.includes(choice)}
+                        >
+                          {choice}
+                        </Checkbox>
+                      ))}
+                    </CheckboxGroup>
+                  )}
+                  <div>
+                    <p className="text-dark-blue mt-3 mb-1 font-medium">
+                      Key Answer:{" "}
+                    </p>
+                    <p className="font-semibold">
+                      {q.answer.map(
+                        (a, i) => `${a} ${i + 1 !== q.answer.length ? "," : ""}`
+                      )}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -102,7 +147,7 @@ const ReviewQuizDetailDescItem = ({
   desc,
   stateColor,
 }: {
-  desc: string;
+  desc?: string;
   stateColor?: "green" | "red";
 }) => {
   return (
@@ -115,7 +160,7 @@ const ReviewQuizDetailDescItem = ({
           : "text-dark-blue"
       }`}
     >
-      {desc}
+      {desc || "-"}
     </p>
   );
 };

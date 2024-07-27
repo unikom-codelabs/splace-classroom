@@ -1,11 +1,11 @@
-import { QuestionType } from "./QuestionType"
-
+import { QuestionType } from "./QuestionType";
 
 export interface Question {
-  id?: number
-  title: string
-  choices: string[]
-  point: number
-  answer: string[]
-  type: QuestionType
+  id?: number;
+  title: string;
+  choices: string[];
+  point?: number;
+  answer: string[];
+  type: QuestionType;
+  true_answer?: string;
 }

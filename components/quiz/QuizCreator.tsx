@@ -6,7 +6,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "@nextui-org/button";
 import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/card";
 import { Input } from "@nextui-org/input";
-import { Spinner } from "@nextui-org/react";
+import {
+  Checkbox,
+  CheckboxGroup,
+  Radio,
+  RadioGroup,
+  Spinner,
+} from "@nextui-org/react";
 import { Switch } from "@nextui-org/switch";
 import {
   memo,
@@ -184,6 +190,7 @@ const QuestionMultiple = ({
                   required
                   className="w-4 h-4 question-choice-answer"
                   data-index={choiceIndex}
+                  defaultChecked={question.answer.includes(choice)}
                 />
                 <Input
                   key={choiceIndex}
