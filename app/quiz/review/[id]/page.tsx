@@ -120,7 +120,7 @@ const ReviewQuizDetailDescItem = ({ desc }: { desc?: string }) => {
 const TABLE_COLUMN = [
   {
     key: "username",
-    label: "NIM",
+    label: "Username",
   },
   {
     key: "correct_answer",
