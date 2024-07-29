@@ -38,10 +38,10 @@ export default function page() {
   const [quizDeadlineDate, setQuizDeadlineDate] = useState<CalendarDate | null>(
     null
   );
-  const [quizDeadlineHours, setQuizDeadlineHours] = useState("");
-  const [quizDeadlineMinutes, setQuizDeadlineMinutes] = useState("");
-  const [quizDurationHours, setQuizDurationHours] = useState("");
-  const [quizDurationMinutes, setQuizDurationMinutes] = useState("");
+  const [quizDeadlineHours, setQuizDeadlineHours] = useState("00");
+  const [quizDeadlineMinutes, setQuizDeadlineMinutes] = useState("00");
+  const [quizDurationHours, setQuizDurationHours] = useState("1");
+  const [quizDurationMinutes, setQuizDurationMinutes] = useState("00");
   const [questionType, setQuestionType] = useState<string[]>([]);
   const [numberOfQuestionChoice, setNumberOfQuestionChoice] = useState("");
   const [numberOfQuestionMultiple, setNumberOfQuestionMultiple] = useState("");
@@ -250,7 +250,7 @@ export default function page() {
             value={quizQuery}
             variant="bordered"
             onChange={(e) => setQuizQuery(e.target.value)}
-            placeholder="Enter the title of the material that will be used as a quiz"
+            placeholder="Enter the title of the material that will be used as a quiz, separate with ',' if more than one material"
           />
         </FormQuizGroup>
         <FormQuizGroup>
