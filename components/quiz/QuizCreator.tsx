@@ -5,7 +5,7 @@ import { faPlus, faTrashCan, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "@nextui-org/button";
 import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/card";
-import { Input } from "@nextui-org/input";
+import { Input, Textarea } from "@nextui-org/input";
 import {
   Checkbox,
   CheckboxGroup,
@@ -200,7 +200,7 @@ const QuestionMultiple = ({
                   variant="bordered"
                   radius="sm"
                   size="sm"
-                  className="w-fit question-choice"
+                  className=" w-full question-choice"
                   value={choice}
                   onChange={(e) => onChoiceValueChange(e, choiceIndex)}
                 />
@@ -245,7 +245,7 @@ const QuestionEssay = ({
   onRemoveQuestion: any;
 }) => {
   const [questionTitle, setQuestionTitle] = useState(question.title);
-  const [questionAnswer, setQuestionAnswer] = useState(question.answer[0]);
+  const [questionAnswer, setQuestionAnswer] = useState(question.answer);
 
   useEffect(() => {
     console.log(question);
@@ -303,7 +303,7 @@ const QuestionEssay = ({
           size="sm"
           variant="bordered"
           placeholder="Write A Answer Here"
-          className="question-answer"
+          className="question-answer w-full leading-5"
           required
         />
       </CardBody>
