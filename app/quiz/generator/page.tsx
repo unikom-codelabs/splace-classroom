@@ -78,6 +78,7 @@ export default function page() {
     }:00`;
   }, [quizDeadlineDate, quizDeadlineHours, quizDeadlineMinutes]);
 
+
   const { data, trigger: generate } = useSWRMutation(
     "generateQuiz",
     (_, { arg }) => generateQuizRAGUseCase(arg)
