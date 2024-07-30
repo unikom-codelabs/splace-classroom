@@ -79,7 +79,7 @@ const Page = () => {
             />
           )}
         </div>
-        <div className="relative -mt-16 bg-white shadow-md rounded-lg overflow-hidden">
+        <div className="relative -mt-16 bg-white shadow-md rounded-lg overflow-hidden mx-3 lg:mx-12">
           {loading ? (
             <Skeleton className="rounded-lg">
               <div className="w-[80rem] h-[35rem] rounded-lg bg-default-300"></div>
@@ -95,8 +95,8 @@ const Page = () => {
             />
           )}
 
-          <div className="absolute mt-36 w-[45rem] h-[25rem] px-4 self-center mx-auto text-center rounded-lg inset-0 flex flex-col gap-4 justify-center items-center bg-white/10 border-3 border-white backdrop-blur-sm">
-            <h1 className="text-white text-3xl md:text-5xl font-bold mb-4">
+          <div className="absolute mt-36 w-[30rem] h-[20rem] lg:w-[45rem] lg:h-[25rem] px-4 self-center mx-auto text-center rounded-lg inset-0 flex flex-col gap-4 justify-center items-center bg-white/10 border-3 border-white backdrop-blur-sm">
+            <h1 className="text-white text-2xl md:text-5xl font-bold mb-4">
               Welcome to LMS
             </h1>
             <p className="text-white text-center mb-6">

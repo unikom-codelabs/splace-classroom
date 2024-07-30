@@ -125,7 +125,8 @@ export default function page({
                     </p>
                     <p className="font-semibold">
                       {q.answer.map(
-                        (a:any, i:any) => `${a} ${i + 1 !== q.answer.length ? "," : ""}`
+                        (a: any, i: any) =>
+                          `${a} ${i + 1 !== q.answer.length ? "," : ""}`
                       )}
                     </p>
                   </div>

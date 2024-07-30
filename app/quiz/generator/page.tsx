@@ -22,6 +22,7 @@ import {
   SelectItem,
   Spinner,
 } from "@nextui-org/react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import Swal from "sweetalert2";
@@ -177,7 +178,18 @@ export default function page() {
   return (
     <section className="p-5 w-screen lg:max-w-6xl lg:mx-auto space-y-5">
       {isGenerating && (
-        <Spinner className="fixed w-full text-center h-screen top-0 left-0 bg-black bg-opacity-10 z-[999]" />
+        <div className="fixed w-full text-center h-screen top-0 left-0 my-auto bg-black backdrop-blur-[2px] bg-opacity-10 z-[999]">
+          <Image
+            alt="loading quiz"
+            className="mx-auto mt-80"
+            src={"/animation/LoadingQuiz.gif"}
+            width={150}
+            height={150}
+          />
+          <span className="text-lg font-medium text-black">
+            Generating quiz...
+          </span>
+        </div>
       )}
       <header className="bg-white p-4 shadow-md">
         <div className="flex items-center gap-1 ">
@@ -230,12 +242,15 @@ export default function page() {
             id="modules"
             name="module"
             aria-label="Module"
-            onChange={(e) => setQuizModule(e.target.value)}
+            onChange={(e) => {
+              setQuizModule(e.target.value), console.log(e.target.value);
+            }}
             placeholder="Select the quiz module"
             variant="bordered"
             value={quizModule}
             selectedKeys={quizModule}
             disabledKeys={[""]}
+            selectionMode={"single"}
           >
             {modules?.map((module) => (
               <SelectItem key={module.id} value={module.id}>
@@ -255,11 +270,12 @@ export default function page() {
         </FormQuizGroup>
         <FormQuizGroup>
           <FormQuizLabel label="Quiz Deadline" />
-          <div className="flex items-center gap-16">
+          <div className="flex items-center gap-5">
             <DatePicker
               aria-labelledby="Deadline"
               variant="bordered"
               value={quizDeadlineDate}
+              className="w-56"
               placeholder="Select a date for the quiz deadline"
               onChange={setQuizDeadlineDate}
             />
@@ -272,7 +288,7 @@ export default function page() {
                 variant="bordered"
                 value={quizDeadlineHours}
                 placeholder="00"
-                className="w-24"
+                className=" w-16"
                 onChange={(e) => {
                   if (e.target.value.length > 2) return;
                   if (parseInt(e.target.value || "0") > 23) return;
@@ -288,7 +304,7 @@ export default function page() {
                 variant="bordered"
                 value={quizDeadlineMinutes}
                 placeholder="00"
-                className="w-24"
+                className="w-16"
                 onChange={(e) => {
                   if (e.target.value.length > 2) return;
                   if (parseInt(e.target.value || "0") > 59) return;
@@ -348,7 +364,7 @@ export default function page() {
                 variant="bordered"
                 id="Hours"
                 placeholder="00"
-                className="w-24"
+                className="w-16"
                 min={0}
                 onChange={(e) => setQuizDurationHours(e.target.value)}
                 value={quizDurationHours}
@@ -367,7 +383,7 @@ export default function page() {
                 max={59}
                 min={0}
                 placeholder="00"
-                className="w-24"
+                className="w-16"
                 onChange={(e) => {
                   if (e.target.value.length > 2) return;
                   if (parseInt(e.target.value || "0") > 59) return;
