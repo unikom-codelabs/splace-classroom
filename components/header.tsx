@@ -101,12 +101,13 @@ export const Header = ({ toggle }: any) => {
         <UsageGuide learnMore={learnMore} guide={true} disable={true} />
       </NavbarContent>
 
-      <NavbarContent as="div" justify="end" className="flex flex-row gap-4">
+      <NavbarContent as="div" justify="end" className="flex flex-row gap-4 ">
         {/* <ThemeSwitch /> */}
         <Button
           as={Link}
           variant="light"
           href={`mailto:${settings.contact_us[0].email}`}
+          className="hidden lg:flex"
         >
           <span className="font-bold">Contact LMS:</span>{" "}
           {settings.contact_us[0].email}

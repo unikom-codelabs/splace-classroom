@@ -11,7 +11,7 @@ export const generateQuizRAGUseCase = async (
     threshold: 0.1,
     limit: 4,
     question_type: `Multiple Choice with One Answer, Multiple Choice with Multiple Answer, Essay`,
-    number_of_question: `${request.count_types.multiple} for Multiple Choice with One Answer, ${request.count_types.choices} for Multiple Choice with Multiple Answer, ${request.count_types.essay} for Essay`,
+    number_of_question: `${request.count_types.choices} for Multiple Choice with One Answer, ${request.count_types.multiple} for Multiple Choice with Multiple Answer, ${request.count_types.essay} for Essay`,
   };
   const response = fetch("https://rag-classroom.unikomcodelabs.id/quiz", {
     method: "POST",
