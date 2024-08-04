@@ -26,7 +26,9 @@ import {
   Spinner,
   Tooltip,
 } from "@nextui-org/react";
+
 import { Slider } from "@nextui-org/slider";
+
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -350,6 +352,10 @@ export default function page() {
             id="modules"
             name="module"
             aria-label="Module"
+            onChange={(e) => {
+              setQuizModule(e.target.value), console.log(e.target.value);
+            }}
+
             placeholder="Select the quiz module"
             variant="bordered"
             onChange={(e) => setQuizModule(e.target.value)}
