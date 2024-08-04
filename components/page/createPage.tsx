@@ -33,6 +33,7 @@ const MULTIPLE_QUESTION_DEFAULT = {
   answer: [""],
   point: 0,
   type: QuestionType.Choice,
+  percentage: 0,
 };
 
 const ESSAY_QUESTION_DEFAULT = {
@@ -41,6 +42,7 @@ const ESSAY_QUESTION_DEFAULT = {
   answer: [""],
   point: 0,
   type: QuestionType.Essay,
+  percentage: 0,
 };
 
 const DUMMY_PAGE_QUESTION: Question[] = [
@@ -49,18 +51,21 @@ const DUMMY_PAGE_QUESTION: Question[] = [
     choices: ["a", "b", "c", "d"],
     answer: ["a"],
     type: QuestionType.Choice,
+    percentage: 0,
   },
   {
     title: "Esasay",
     choices: [],
     answer: ["jawaban essay"],
     type: QuestionType.Essay,
+    percentage: 0,
   },
   {
     title: "Silahkan Pilih Semua Yang Menurut Anda Benar",
     choices: ["1", "2", "3", "4"],
     answer: ["1", "4"],
     type: QuestionType.Multiple,
+    percentage: 0,
   },
 ];
 
@@ -224,17 +229,56 @@ const CreatePage = ({
     setLoading(true);
     try {
       const questionTitle = extractQuestionsTitleAnswer();
-      const pointPerQuestion = 100 / questions.length;
+      // const pointPerQuestion = 100 / questions.length;
+      // get total question by type
+      let choice = 0;
+      let multipleChoice = 0;
+      let essay = 0;
+
+      questionTitle.forEach((question) => {
+        if (question.type === QuestionType.Choice) {
+          choice++;
+        } else if (question.type === QuestionType.Multiple) {
+          multipleChoice++;
+        } else {
+          essay++;
+        }
+      });
+
+      //   quizzes.forEach(quiz => {
+      //     const quizPoints = (totalPoints * quiz.percentage) / 100;
+      //     points[quiz.type] = quizPoints / quiz.count;
+      //   });
+
+      //   return points;
+      // }
+
+      // const totalPoints = 100;
+      // const points = calculatePoints(quizzes, totalPoints);
+
       const newQuestions = questions.map((question, index) => {
+        const countQuizType =
+          question.type === QuestionType.Choice
+            ? choice
+            : question.type === QuestionType.Multiple
+            ? multipleChoice
+            : essay;
         return {
           ...question,
           title: questionTitle[index].title,
           answer: questionTitle[index].answer,
           choices: questionTitle[index].choices,
           type: questionTitle[index].type,
-          point: pointPerQuestion,
+          point:
+            (100 * ((question.percentage || questions.length) * 100)) /
+            100 /
+            countQuizType,
         };
       }) as Question[];
+
+      newQuestions.forEach((question) => {
+        delete question.percentage;
+      });
 
       if (newQuestions.length === 0) {
         throw new Error("Question is required");

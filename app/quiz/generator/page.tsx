@@ -240,7 +240,19 @@ export default function page() {
     }
   };
 
-  if (isGenerated)
+  if (isGenerated) {
+    generatedQuestions.forEach((question) => {
+      if (question.type === QuestionType.Choice) {
+        question.percentage = choicePointPercentage;
+      }
+      if (question.type === QuestionType.Multiple) {
+        question.percentage = multiplePointPercentage;
+      }
+      if (question.type === QuestionType.Essay) {
+        question.percentage = essayPointPercentage;
+      }
+    });
+
     return (
       <CreatePage
         searchParams={{ course_id: parseInt(quizCourses), qname: quizName }}
@@ -261,6 +273,7 @@ export default function page() {
         quizDurationMinutes={parseInt(quizDurationMinutes)}
       />
     );
+  }
 
   return (
     <section className="p-5 w-screen lg:max-w-6xl lg:mx-auto space-y-5">
