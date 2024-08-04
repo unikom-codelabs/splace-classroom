@@ -8,4 +8,5 @@ export interface Question {
   answer: any;
   type: QuestionType;
   true_answer?: string;
+  percentage?: number;
 }

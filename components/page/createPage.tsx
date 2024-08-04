@@ -1,24 +1,31 @@
-import {
-  Button,
-  CalendarDate,
-  DatePicker,
-  Input,
-  Select,
-  SelectItem,
-} from "@nextui-org/react";
-import { QuizCreator } from "../quiz/QuizCreator";
 import { QUIZ_DURATION } from "@/app/quiz/create/data";
 import { createQuizUseCase } from "@/core/usecase/createQuizUseCase";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { DatePicker } from "@nextui-org/date-picker";
+import {
+  Button,
+  Input,
+  Select,
+  SelectItem,
+  TimeInput,
+} from "@nextui-org/react";
+import { QuizCreator } from "../quiz/QuizCreator";
 
 import { useRouter } from "next/navigation";
 
-import { useState, useRef, useEffect } from "react";
-import Swal from "sweetalert2";
-import { QuestionType } from "@/core/entity/QuestionType";
 import { Question } from "@/core/entity/Question";
+import { QuestionType } from "@/core/entity/QuestionType";
 import { QuizType } from "@/core/entity/QuizType";
+import { parseDeadlineDateTime } from "@/utils/dateUtils";
+import {
+  CalendarDate,
+  CalendarDateTime,
+  Time,
+  ZonedDateTime,
+} from "@internationalized/date";
+import { useEffect, useRef, useState } from "react";
+import Swal from "sweetalert2";
 
 const MULTIPLE_QUESTION_DEFAULT = {
   title: "",
@@ -26,6 +33,7 @@ const MULTIPLE_QUESTION_DEFAULT = {
   answer: [""],
   point: 0,
   type: QuestionType.Choice,
+  percentage: 0,
 };
 
 const ESSAY_QUESTION_DEFAULT = {
@@ -34,6 +42,7 @@ const ESSAY_QUESTION_DEFAULT = {
   answer: [""],
   point: 0,
   type: QuestionType.Essay,
+  percentage: 0,
 };
 
 const DUMMY_PAGE_QUESTION: Question[] = [
@@ -42,38 +51,51 @@ const DUMMY_PAGE_QUESTION: Question[] = [
     choices: ["a", "b", "c", "d"],
     answer: ["a"],
     type: QuestionType.Choice,
+    percentage: 0,
   },
   {
     title: "Esasay",
     choices: [],
     answer: ["jawaban essay"],
     type: QuestionType.Essay,
+    percentage: 0,
   },
   {
     title: "Silahkan Pilih Semua Yang Menurut Anda Benar",
     choices: ["1", "2", "3", "4"],
     answer: ["1", "4"],
     type: QuestionType.Multiple,
+    percentage: 0,
   },
 ];
 
 const CreatePage = ({
   searchParams,
   pageQuestions = DUMMY_PAGE_QUESTION,
+  quizDeadline,
+  quizDurationHours,
+  quizDurationMinutes,
 }: {
   searchParams: {
     course_id: number;
     qname: string;
   };
   pageQuestions: Question[];
+  quizDeadline?: CalendarDateTime;
+  quizDurationHours?: number;
+  quizDurationMinutes?: number;
 }) => {
   const { course_id, qname } = searchParams;
   const router = useRouter();
   const [changeQuizName, setChangeQuizName] = useState(false);
   const [quizName, setQuizName] = useState(qname);
   const [loading, setLoading] = useState(false);
-  const [quizDuration, setQuizDuration] = useState("45");
-  const [deadline, setDeadline] = useState<CalendarDate | null>(null);
+  const [duration, setDuration] = useState(
+    new Time(quizDurationHours, quizDurationMinutes)
+  );
+  const [deadline, setDeadline] = useState<
+    ZonedDateTime | CalendarDate | CalendarDateTime | null
+  >(quizDeadline || null);
 
   const [questions, setQuestions] = useState<Question[]>(pageQuestions);
 
@@ -97,13 +119,6 @@ const CreatePage = ({
 
   const handleChangeQuizName = (value: string) => {
     setQuizName(value);
-  };
-
-  const handleChangeQuizDuration = (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const quizDuration = e.target.value;
-    setQuizDuration(quizDuration);
   };
 
   const handleToggleChangeQuizName = () => {
@@ -214,18 +229,60 @@ const CreatePage = ({
     setLoading(true);
     try {
       const questionTitle = extractQuestionsTitleAnswer();
-      const pointPerQuestion = 100 / questions.length;
+      // const pointPerQuestion = 100 / questions.length;
+      // get total question by type
+      let choice = 0;
+      let multipleChoice = 0;
+      let essay = 0;
+
+      questionTitle.forEach((question) => {
+        if (question.type === QuestionType.Choice) {
+          choice++;
+        } else if (question.type === QuestionType.Multiple) {
+          multipleChoice++;
+        } else {
+          essay++;
+        }
+      });
+
+      //   quizzes.forEach(quiz => {
+      //     const quizPoints = (totalPoints * quiz.percentage) / 100;
+      //     points[quiz.type] = quizPoints / quiz.count;
+      //   });
+
+      //   return points;
+      // }
+
+      // const totalPoints = 100;
+      // const points = calculatePoints(quizzes, totalPoints);
+
       const newQuestions = questions.map((question, index) => {
+        const countQuizType =
+          question.type === QuestionType.Choice
+            ? choice
+            : question.type === QuestionType.Multiple
+            ? multipleChoice
+            : essay;
         return {
           ...question,
           title: questionTitle[index].title,
           answer: questionTitle[index].answer,
           choices: questionTitle[index].choices,
           type: questionTitle[index].type,
-          point: pointPerQuestion,
+          point:
+            (100 * ((question.percentage || questions.length) * 100)) /
+            100 /
+            countQuizType,
         };
       }) as Question[];
 
+      newQuestions.forEach((question) => {
+        delete question.percentage;
+      });
+
+      if (newQuestions.length === 0) {
+        throw new Error("Question is required");
+      }
       if (deadline === null) {
         throw new Error("Deadline is required");
       }
@@ -235,18 +292,29 @@ const CreatePage = ({
       if (quizName === "") {
         throw new Error("Quiz name is required");
       }
+      if (duration.hour === 0 && duration.minute === 0) {
+        throw new Error("Quiz duration is not valid");
+      }
 
       const res = await createQuizUseCase({
         course_id: course_id,
         name: quizName,
         type: QuizType.PUBLISHED,
         questions: newQuestions,
-        deadline: deadline?.toString(),
-        start_at: new Date().toISOString(),
-        end_at: new Date().toISOString(),
-        duration: parseInt(quizDuration) * 60,
+        deadline: parseDeadlineDateTime(deadline.toString()),
+        start_at: parseDeadlineDateTime(deadline.toString()),
+        end_at: parseDeadlineDateTime(deadline.toString()),
+        duration: duration.hour * 60 + duration.minute,
       });
-      if (res) return router.push(`/quiz`);
+      if (res) {
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: "Quiz has been created",
+        }).then((e) => {
+          e.isConfirmed && router.push("/quiz");
+        });
+      }
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -300,25 +368,26 @@ const CreatePage = ({
           <h1>{quizName}</h1>
         )}
         <div className="ml-auto flex flex-row gap-2">
-          <Select
+          <TimeInput
             label="Quiz Duration"
-            placeholder="Select Quiz Duration"
+            placeholder="Enter Quiz Duration"
             className="w-56"
-            selectedKeys={[quizDuration]}
-            onChange={handleChangeQuizDuration}
-          >
-            {QUIZ_DURATION.map((item) => (
-              <SelectItem key={item.value} value={item.value}>
-                {item.label}
-              </SelectItem>
-            ))}
-          </Select>
+            granularity="minute"
+            variant="bordered"
+            hourCycle={24}
+            value={duration}
+            onChange={setDuration}
+          />
           <DatePicker
             value={deadline}
             label="Deadline"
             variant="bordered"
-            className="w-[160px]"
+            className="w-56"
+            hideTimeZone
             onChange={setDeadline}
+            showMonthAndYearPickers
+            hourCycle={24}
+            granularity="minute"
           />
         </div>
       </header>
