@@ -38,7 +38,7 @@ export default function page() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [quizName, setQuizName] = useState("");
   const [quizCourses, setQuizCourses] = useState("");
-  const [quizModule, setQuizModule] = useState<Selection>(new Set([]));
+  const [quizModule, setQuizModule] = useState("");
   const [quizQuery, setQuizQuery] = useState("");
   const [quizDeadlineDate, setQuizDeadlineDate] = useState<CalendarDate | null>(
     null
@@ -144,7 +144,7 @@ export default function page() {
       const generateQuizRequest: GenerateQuizRequest = {
         name: quizName,
         course_id: parseInt(quizCourses),
-        module_id: Array.from(quizModule),
+        module_id: parseInt(quizModule),
         query: quizQuery,
         deadline: quizDeadline(),
         start_at: quizDeadlineDate?.toString() || "",
@@ -339,10 +339,10 @@ export default function page() {
             aria-label="Module"
             placeholder="Select the quiz module"
             variant="bordered"
-            onSelectionChange={setQuizModule}
+            onChange={(e) => setQuizModule(e.target.value)}
             selectedKeys={quizModule}
             disabledKeys={[""]}
-            selectionMode={"multiple"}
+            selectionMode={"single"}
           >
             {isGettingModules ? (
               <SelectItem key="">

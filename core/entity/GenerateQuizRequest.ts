@@ -1,8 +1,6 @@
-import { Key } from "react";
-
 export interface GenerateQuizRequest {
   name: string;
-  module_id: Key[];
+  module_id: number;
   course_id: number;
   query: string;
   deadline: string;
