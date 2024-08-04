@@ -72,9 +72,18 @@ export default function page() {
     const multiple = questionType.includes(QuestionType.Multiple);
     const essay = questionType.includes(QuestionType.Essay);
 
-    if (!choice) setNumberOfQuestionChoice("");
-    if (!multiple) setNumberOfQuestionMultiple("");
-    if (!essay) setNumberOfQuestionEssay("");
+    if (!choice) {
+      setNumberOfQuestionChoice("");
+      setChoicePointPercentage(0);
+    }
+    if (!multiple) {
+      setNumberOfQuestionMultiple("");
+      setMultiplePointPercentage(0);
+    }
+    if (!essay) {
+      setNumberOfQuestionEssay("");
+      setEssayPointPercentage(0);
+    }
 
     return {
       choice: choice,
@@ -103,23 +112,29 @@ export default function page() {
     if (!quizDurationMinutes)
       throw new Error("Quiz duration minutes is required");
 
-    if (typeChecked.choice && !numberOfQuestionChoice)
-      throw new Error("Number of choice question is required");
-    else {
-      if (choicePointPercentage === 0)
+    if (typeChecked.choice) {
+      if (!numberOfQuestionChoice) {
+        throw new Error("Number of choice question is required");
+      }
+      if (choicePointPercentage === 0) {
         throw new Error("Choice Point percentage not valid");
+      }
     }
-    if (typeChecked.multiple && !numberOfQuestionMultiple)
-      throw new Error("Number of multiple question is required");
-    else {
-      if (multiplePointPercentage === 0)
+    if (typeChecked.multiple) {
+      if (!numberOfQuestionMultiple) {
+        throw new Error("Number of multiple question is required");
+      }
+      if (multiplePointPercentage === 0) {
         throw new Error("Multiple Point percentage not valid");
+      }
     }
-    if (typeChecked.essay && !numberOfQuestionEssay)
-      throw new Error("Number of essay question is required");
-    else {
-      if (essayPointPercentage === 0)
+    if (typeChecked.essay) {
+      if (!numberOfQuestionEssay) {
+        throw new Error("Number of essay question is required");
+      }
+      if (essayPointPercentage === 0) {
         throw new Error("Essay Point percentage not valid");
+      }
     }
   };
 
