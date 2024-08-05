@@ -352,10 +352,6 @@ export default function page() {
             id="modules"
             name="module"
             aria-label="Module"
-            onChange={(e) => {
-              setQuizModule(e.target.value), console.log(e.target.value);
-            }}
-
             placeholder="Select the quiz module"
             variant="bordered"
             onChange={(e) => setQuizModule(e.target.value)}
