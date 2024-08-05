@@ -79,7 +79,7 @@ export default function Imports() {
   return (
     <AdminLayout
       title="Import Data"
-      subtitle="Import data from your university to EduClassAI"
+      subtitle="Import data from your university to Splace Classroom"
     >
       <form
         onSubmit={handleSubmit}

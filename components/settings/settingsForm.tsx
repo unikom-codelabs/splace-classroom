@@ -85,7 +85,7 @@ const SettingForm = ({ step, steps }: any) => {
     ];
 
     const datas = new FormData(e.target as HTMLFormElement);
-    datas.append("project_name", "EduClassAI");
+    datas.append("project_name", "Splace Classroom");
     datas.append("university_name", nameUniversity);
     datas.append("contact_us", JSON.stringify(contacts));
     datas.append(

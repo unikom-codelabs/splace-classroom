@@ -28,7 +28,7 @@ const UsageGuide = ({ learnMore, guide, disable = false }: any) => {
             </Button>
           ) : (
             <Button
-              className="border-dark-blue border-2 bg-transparent text-dark-blue font-semibold"
+              className="border-white border-2 bg-transparent text-white font-semibold"
               isDisabled={disable}
             >
               Learn More
