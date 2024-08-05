@@ -1,13 +1,17 @@
 "use client";
+import CreatePage from "@/components/page/createPage";
 import { Course } from "@/core/entity/Course";
 import { GenerateQuizRequest } from "@/core/entity/GenerateQuizRequest";
 import { Module } from "@/core/entity/Module";
+import { Question } from "@/core/entity/Question";
 import { QuestionType } from "@/core/entity/QuestionType";
 import { QuizType } from "@/core/entity/QuizType";
-import { generateQuizUseCase } from "@/core/usecase/generateQuizUseCase";
+import { generateQuizRAGUseCase } from "@/core/usecase/generateQuizRAGUseCase";
 import { getCourseUseCase } from "@/core/usecase/getCourseUseCase";
 import { getModuleUseCase } from "@/core/usecase/getModuleUseCase";
+import { parseDayDate, parseMonthDate, parseYearDate } from "@/utils/dateUtils";
 import { Icon } from "@iconify/react";
+import { CalendarDateTime } from "@internationalized/date";
 import {
   Button,
   CalendarDate,
@@ -17,11 +21,17 @@ import {
   DatePicker,
   Input,
   Select,
+  Selection,
   SelectItem,
   Spinner,
+  Tooltip,
 } from "@nextui-org/react";
+
+import { Slider } from "@nextui-org/slider";
+
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Swal from "sweetalert2";
 import useSWR from "swr";
 
@@ -35,18 +45,28 @@ export default function page() {
   const [quizDeadlineDate, setQuizDeadlineDate] = useState<CalendarDate | null>(
     null
   );
-  const [quizDeadlineHours, setQuizDeadlineHours] = useState("");
-  const [quizDeadlineMinutes, setQuizDeadlineMinutes] = useState("");
-  const [quizDurationHours, setQuizDurationHours] = useState("");
-  const [quizDurationMinutes, setQuizDurationMinutes] = useState("");
+  const [quizDeadlineHours, setQuizDeadlineHours] = useState("00");
+  const [quizDeadlineMinutes, setQuizDeadlineMinutes] = useState("00");
+  const [quizDurationHours, setQuizDurationHours] = useState("00");
+  const [quizDurationMinutes, setQuizDurationMinutes] = useState("00");
   const [questionType, setQuestionType] = useState<string[]>([]);
   const [numberOfQuestionChoice, setNumberOfQuestionChoice] = useState("");
   const [numberOfQuestionMultiple, setNumberOfQuestionMultiple] = useState("");
   const [numberOfQuestionEssay, setNumberOfQuestionEssay] = useState("");
+  const [choicePointPercentage, setChoicePointPercentage] = useState(0);
+  const [multiplePointPercentage, setMultiplePointPercentage] = useState(0);
+  const [essayPointPercentage, setEssayPointPercentage] = useState(0);
 
-  const { data: courses } = useSWR<Course[]>("courses", getCourseUseCase);
-  const { data: modules } = useSWR<Module[]>(["modules", quizCourses], () =>
-    getModuleUseCase(quizCourses)
+  const [generatedQuestions, setGeneratedQuestions] = useState<Question[]>([]);
+  const [isGenerated, setIsGenerated] = useState(false);
+
+  const { data: courses, isValidating: isGettingCourses } = useSWR<Course[]>(
+    "courses",
+    getCourseUseCase
+  );
+  const { data: modules, isValidating: isGettingModules } = useSWR<Module[]>(
+    ["modules", quizCourses],
+    () => getModuleUseCase(quizCourses)
   );
 
   const typeChecked = useMemo(() => {
@@ -54,9 +74,18 @@ export default function page() {
     const multiple = questionType.includes(QuestionType.Multiple);
     const essay = questionType.includes(QuestionType.Essay);
 
-    if (!choice) setNumberOfQuestionChoice("");
-    if (!multiple) setNumberOfQuestionMultiple("");
-    if (!essay) setNumberOfQuestionEssay("");
+    if (!choice) {
+      setNumberOfQuestionChoice("");
+      setChoicePointPercentage(0);
+    }
+    if (!multiple) {
+      setNumberOfQuestionMultiple("");
+      setMultiplePointPercentage(0);
+    }
+    if (!essay) {
+      setNumberOfQuestionEssay("");
+      setEssayPointPercentage(0);
+    }
 
     return {
       choice: choice,
@@ -85,12 +114,30 @@ export default function page() {
     if (!quizDurationMinutes)
       throw new Error("Quiz duration minutes is required");
 
-    if (typeChecked.choice && !numberOfQuestionChoice)
-      throw new Error("Number of choice question is required");
-    if (typeChecked.multiple && !numberOfQuestionMultiple)
-      throw new Error("Number of multiple question is required");
-    if (typeChecked.essay && !numberOfQuestionEssay)
-      throw new Error("Number of essay question is required");
+    if (typeChecked.choice) {
+      if (!numberOfQuestionChoice) {
+        throw new Error("Number of choice question is required");
+      }
+      if (choicePointPercentage === 0) {
+        throw new Error("Choice Point percentage not valid");
+      }
+    }
+    if (typeChecked.multiple) {
+      if (!numberOfQuestionMultiple) {
+        throw new Error("Number of multiple question is required");
+      }
+      if (multiplePointPercentage === 0) {
+        throw new Error("Multiple Point percentage not valid");
+      }
+    }
+    if (typeChecked.essay) {
+      if (!numberOfQuestionEssay) {
+        throw new Error("Number of essay question is required");
+      }
+      if (essayPointPercentage === 0) {
+        throw new Error("Essay Point percentage not valid");
+      }
+    }
   };
 
   const onGenerateClick = async () => {
@@ -113,8 +160,10 @@ export default function page() {
           essay: parseInt(numberOfQuestionEssay) || 0,
           multiple: parseInt(numberOfQuestionMultiple) || 0,
         },
+        choicesPerception: choicePointPercentage,
+        essayPerception: essayPointPercentage,
+        multiplePerception: multiplePointPercentage,
       };
-      console.log(generateQuizRequest);
       Swal.fire({
         title: "Do you want to generate this quiz?",
         text: "You are about to generate a quiz. Make sure all the information is correct before proceeding.",
@@ -125,16 +174,15 @@ export default function page() {
       }).then(async (response) => {
         if (response.isConfirmed) {
           setIsGenerating(true);
-          const res = await generateQuizUseCase(generateQuizRequest);
-          console.log(res);
+          const res = await generateQuizRAGUseCase(generateQuizRequest);
           if (res) {
+            setGeneratedQuestions(res);
             setIsGenerating(false);
+            setIsGenerated(true);
             Swal.fire({
               icon: "success",
               title: "Success",
               text: "Quiz generated successfully",
-            }).then((response) => {
-              response.isConfirmed && router.push("/quiz");
             });
           }
           if (!res) {
@@ -156,10 +204,94 @@ export default function page() {
     }
   };
 
+  const handleChangeChoicePointPercentage = (value: number) => {
+    const totalPercentage = 1;
+    const remainingPercentage =
+      totalPercentage - multiplePointPercentage - essayPointPercentage;
+    if (remainingPercentage - value >= 0) {
+      setChoicePointPercentage(value);
+      return;
+    } else {
+      setChoicePointPercentage(remainingPercentage);
+    }
+  };
+
+  const handleChangeMultiplePointPercentage = (value: number) => {
+    const totalPercentage = 1;
+    const remainingPercentage =
+      totalPercentage - choicePointPercentage - essayPointPercentage;
+
+    if (remainingPercentage - value >= 0) {
+      setMultiplePointPercentage(value);
+      return;
+    } else {
+      setMultiplePointPercentage(remainingPercentage);
+    }
+  };
+
+  const handleChangeEssayPointPercentage = (value: number) => {
+    const totalPercentage = 1;
+    const remainingPercentage =
+      totalPercentage - choicePointPercentage - multiplePointPercentage;
+
+    if (remainingPercentage - value >= 0) {
+      setEssayPointPercentage(value);
+      return;
+    } else {
+      setEssayPointPercentage(remainingPercentage);
+    }
+  };
+
+  if (isGenerated) {
+    generatedQuestions.forEach((question) => {
+      if (question.type === QuestionType.Choice) {
+        question.percentage = choicePointPercentage;
+      }
+      if (question.type === QuestionType.Multiple) {
+        question.percentage = multiplePointPercentage;
+      }
+      if (question.type === QuestionType.Essay) {
+        question.percentage = essayPointPercentage;
+      }
+    });
+
+    return (
+      <CreatePage
+        searchParams={{ course_id: parseInt(quizCourses), qname: quizName }}
+        pageQuestions={generatedQuestions}
+        quizDeadline={
+          new CalendarDateTime(
+            parseInt(parseYearDate(quizDeadline())),
+            parseInt(
+              parseMonthDate(quizDeadline()),
+              parseInt(parseDayDate(quizDeadline()))
+            ),
+            parseInt(quizDeadlineHours),
+            parseInt(quizDeadlineMinutes),
+            0
+          )
+        }
+        quizDurationHours={parseInt(quizDurationHours)}
+        quizDurationMinutes={parseInt(quizDurationMinutes)}
+      />
+    );
+  }
+
   return (
     <section className="p-5 w-screen lg:max-w-6xl lg:mx-auto space-y-5">
       {isGenerating && (
-        <Spinner className="fixed w-full text-center h-screen top-0 left-0 bg-black bg-opacity-10 z-[999]" />
+        <div className="fixed w-full text-center h-screen top-0 left-0 my-auto bg-black backdrop-blur-[2px] bg-opacity-10 z-[999]">
+          <Image
+            alt="loading quiz"
+            className="mx-auto mt-80"
+            src={"/animation/LoadingQuiz.gif"}
+            width={150}
+            height={150}
+          />
+          <span className="text-lg font-medium text-black">
+            Generating quiz...
+          </span>
+        </div>
       )}
       <header className="bg-white p-4 shadow-md">
         <div className="flex items-center gap-1 ">
@@ -199,11 +331,19 @@ export default function page() {
             value={quizCourses}
             disabledKeys={[""]}
           >
-            {courses?.map((course) => (
-              <SelectItem key={course.id} value={course.id}>
-                {course.name}
+            {isGettingCourses ? (
+              <SelectItem key="">
+                <div className="flex w-full items-center justify-center">
+                  <Spinner />
+                </div>
               </SelectItem>
-            )) || <SelectItem key="">No course available</SelectItem>}
+            ) : (
+              courses?.map((course) => (
+                <SelectItem key={course.id} value={course.id}>
+                  {course.name}
+                </SelectItem>
+              )) || <SelectItem key="">No course available</SelectItem>
+            )}
           </Select>
         </FormQuizGroup>
         <FormQuizGroup>
@@ -212,18 +352,34 @@ export default function page() {
             id="modules"
             name="module"
             aria-label="Module"
-            onChange={(e) => setQuizModule(e.target.value)}
+            onChange={(e) => {
+              setQuizModule(e.target.value), console.log(e.target.value);
+            }}
+
             placeholder="Select the quiz module"
             variant="bordered"
-            value={quizModule}
+            onChange={(e) => setQuizModule(e.target.value)}
             selectedKeys={quizModule}
             disabledKeys={[""]}
+            selectionMode={"single"}
           >
-            {modules?.map((module) => (
-              <SelectItem key={module.id} value={module.id}>
-                {module.name}
+            {isGettingModules ? (
+              <SelectItem key="">
+                <div className="flex w-full items-center justify-center">
+                  <Spinner />
+                </div>
               </SelectItem>
-            )) || <SelectItem key="">No module available</SelectItem>}
+            ) : (
+              modules?.map((module) => (
+                <SelectItem key={module.id}>{module.name}</SelectItem>
+              )) || (
+                <SelectItem key="">
+                  {!quizCourses
+                    ? "Select the quiz course"
+                    : "No course available"}
+                </SelectItem>
+              )
+            )}
           </Select>
         </FormQuizGroup>
         <FormQuizGroup>
@@ -232,16 +388,17 @@ export default function page() {
             value={quizQuery}
             variant="bordered"
             onChange={(e) => setQuizQuery(e.target.value)}
-            placeholder="Enter the query to be commanded"
+            placeholder="Enter the title of the material that will be used as a quiz, separate with ',' if more than one material"
           />
         </FormQuizGroup>
         <FormQuizGroup>
           <FormQuizLabel label="Quiz Deadline" />
-          <div className="flex items-center gap-16">
+          <div className="flex items-center gap-5">
             <DatePicker
               aria-labelledby="Deadline"
               variant="bordered"
               value={quizDeadlineDate}
+              className="w-56"
               placeholder="Select a date for the quiz deadline"
               onChange={setQuizDeadlineDate}
             />
@@ -254,7 +411,7 @@ export default function page() {
                 variant="bordered"
                 value={quizDeadlineHours}
                 placeholder="00"
-                className="w-24"
+                className=" w-16"
                 onChange={(e) => {
                   if (e.target.value.length > 2) return;
                   if (parseInt(e.target.value || "0") > 23) return;
@@ -270,7 +427,7 @@ export default function page() {
                 variant="bordered"
                 value={quizDeadlineMinutes}
                 placeholder="00"
-                className="w-24"
+                className="w-16"
                 onChange={(e) => {
                   if (e.target.value.length > 2) return;
                   if (parseInt(e.target.value || "0") > 59) return;
@@ -292,31 +449,129 @@ export default function page() {
                 Choices
               </Checkbox>
               {typeChecked.choice && (
-                <NumberOfQuestionsInput
-                  label="Choice"
-                  value={numberOfQuestionChoice}
-                  onChange={(e) => setNumberOfQuestionChoice(e.target.value)}
-                />
+                <div className="bg-slate-500  p-4 rounded-lg bg-opacity-5 w-fit">
+                  <NumberOfQuestionsInput
+                    label="Choice"
+                    value={numberOfQuestionChoice}
+                    onChange={(e) => setNumberOfQuestionChoice(e.target.value)}
+                  />
+                  <div className="flex flex-col gap-2 mt-2">
+                    <p>
+                      Question Point Percentage{" "}
+                      {Math.round(choicePointPercentage * 100)}%
+                    </p>
+                    <Slider
+                      showTooltip
+                      marks={[
+                        { value: 0, label: "0%" },
+                        { value: 0.2, label: "20%" },
+                        { value: 0.4, label: "40%" },
+                        { value: 0.6, label: "60%" },
+                        { value: 0.8, label: "80%" },
+                        { value: 1, label: "100%" },
+                      ]}
+                      className="max-w-md"
+                      value={choicePointPercentage}
+                      maxValue={1}
+                      minValue={0}
+                      step={0.01}
+                      formatOptions={{ style: "percent" }}
+                      tooltipProps={{ placement: "right" }}
+                      onChange={(value) => {
+                        value instanceof Array
+                          ? handleChangeChoicePointPercentage(value[0])
+                          : handleChangeChoicePointPercentage(value);
+                      }}
+                      aria-label="Choice Question Point Percentage"
+                    />
+                  </div>
+                </div>
               )}
               <Checkbox id="multiple" value={QuestionType.Multiple}>
                 Multiple Answer Choice
               </Checkbox>
               {typeChecked.multiple && (
-                <NumberOfQuestionsInput
-                  label="Multiple"
-                  value={numberOfQuestionMultiple}
-                  onChange={(e) => setNumberOfQuestionMultiple(e.target.value)}
-                />
+                <div className="bg-slate-500  p-4 rounded-lg bg-opacity-5 w-fit">
+                  <NumberOfQuestionsInput
+                    label="Multiple"
+                    value={numberOfQuestionMultiple}
+                    onChange={(e) =>
+                      setNumberOfQuestionMultiple(e.target.value)
+                    }
+                  />
+                  <div className="flex flex-col gap-2 mt-2">
+                    <p>
+                      Question Point Percentage{" "}
+                      {Math.round(multiplePointPercentage * 100)}%
+                    </p>
+                    <Slider
+                      showTooltip
+                      marks={[
+                        { value: 0, label: "0%" },
+                        { value: 0.2, label: "20%" },
+                        { value: 0.4, label: "40%" },
+                        { value: 0.6, label: "60%" },
+                        { value: 0.8, label: "80%" },
+                        { value: 1, label: "100%" },
+                      ]}
+                      className="max-w-md"
+                      value={multiplePointPercentage}
+                      maxValue={1}
+                      minValue={0}
+                      step={0.01}
+                      formatOptions={{ style: "percent" }}
+                      tooltipProps={{ placement: "right" }}
+                      onChange={(value) => {
+                        value instanceof Array
+                          ? handleChangeMultiplePointPercentage(value[0])
+                          : handleChangeMultiplePointPercentage(value);
+                      }}
+                      aria-label="Multiple Question Point Percentage"
+                    />
+                  </div>
+                </div>
               )}
               <Checkbox id="essay" value={QuestionType.Essay}>
                 Essay
               </Checkbox>
               {typeChecked.essay && (
-                <NumberOfQuestionsInput
-                  label="Essay"
-                  value={numberOfQuestionEssay}
-                  onChange={(e) => setNumberOfQuestionEssay(e.target.value)}
-                />
+                <div className="bg-slate-500  p-4 rounded-lg bg-opacity-5 w-fit">
+                  <NumberOfQuestionsInput
+                    label="Essay"
+                    value={numberOfQuestionEssay}
+                    onChange={(e) => setNumberOfQuestionEssay(e.target.value)}
+                  />
+                  <div className="flex flex-col gap-2 mt-2">
+                    <p>
+                      Question Point Percentage{" "}
+                      {Math.round(essayPointPercentage * 100)}%
+                    </p>
+                    <Slider
+                      showTooltip
+                      marks={[
+                        { value: 0, label: "0%" },
+                        { value: 0.2, label: "20%" },
+                        { value: 0.4, label: "40%" },
+                        { value: 0.6, label: "60%" },
+                        { value: 0.8, label: "80%" },
+                        { value: 1, label: "100%" },
+                      ]}
+                      className="max-w-md"
+                      value={essayPointPercentage}
+                      maxValue={1}
+                      minValue={0}
+                      step={0.01}
+                      formatOptions={{ style: "percent" }}
+                      tooltipProps={{ placement: "right" }}
+                      onChange={(value) => {
+                        value instanceof Array
+                          ? handleChangeEssayPointPercentage(value[0])
+                          : handleChangeEssayPointPercentage(value);
+                      }}
+                      aria-label="Choice Question Point Percentage"
+                    />
+                  </div>
+                </div>
               )}
             </CheckboxGroup>
           </div>
@@ -330,7 +585,7 @@ export default function page() {
                 variant="bordered"
                 id="Hours"
                 placeholder="00"
-                className="w-24"
+                className="w-16"
                 min={0}
                 onChange={(e) => setQuizDurationHours(e.target.value)}
                 value={quizDurationHours}
@@ -349,7 +604,7 @@ export default function page() {
                 max={59}
                 min={0}
                 placeholder="00"
-                className="w-24"
+                className="w-16"
                 onChange={(e) => {
                   if (e.target.value.length > 2) return;
                   if (parseInt(e.target.value || "0") > 59) return;

@@ -12,7 +12,7 @@ import {
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "EduClass.AI",
+  name: "Learning Management System",
   navMenuItems: [
     {
       label: "Dashboard",
