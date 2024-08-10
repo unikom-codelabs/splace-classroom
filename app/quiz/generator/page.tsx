@@ -21,17 +21,15 @@ import {
   DatePicker,
   Input,
   Select,
-  Selection,
   SelectItem,
   Spinner,
-  Tooltip,
 } from "@nextui-org/react";
 
 import { Slider } from "@nextui-org/slider";
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Swal from "sweetalert2";
 import useSWR from "swr";
 
@@ -243,18 +241,6 @@ export default function page() {
   };
 
   if (isGenerated) {
-    generatedQuestions.forEach((question) => {
-      if (question.type === QuestionType.Choice) {
-        question.percentage = choicePointPercentage;
-      }
-      if (question.type === QuestionType.Multiple) {
-        question.percentage = multiplePointPercentage;
-      }
-      if (question.type === QuestionType.Essay) {
-        question.percentage = essayPointPercentage;
-      }
-    });
-
     return (
       <CreatePage
         searchParams={{ course_id: parseInt(quizCourses), qname: quizName }}
@@ -273,6 +259,11 @@ export default function page() {
         }
         quizDurationHours={parseInt(quizDurationHours)}
         quizDurationMinutes={parseInt(quizDurationMinutes)}
+        percentage={{
+          choice: choicePointPercentage,
+          multiple: multiplePointPercentage,
+          essay: essayPointPercentage,
+        }}
       />
     );
   }

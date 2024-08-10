@@ -75,6 +75,7 @@ const CreatePage = ({
   quizDeadline,
   quizDurationHours,
   quizDurationMinutes,
+  percentage,
 }: {
   searchParams: {
     course_id: number;
@@ -84,6 +85,11 @@ const CreatePage = ({
   quizDeadline?: CalendarDateTime;
   quizDurationHours?: number;
   quizDurationMinutes?: number;
+  percentage: {
+    choice: number;
+    essay: number;
+    multiple: number;
+  };
 }) => {
   const { course_id, qname } = searchParams;
   const router = useRouter();
@@ -229,64 +235,14 @@ const CreatePage = ({
     setLoading(true);
     try {
       const questionTitle = extractQuestionsTitleAnswer();
-      // const pointPerQuestion = 100 / questions.length;
-      // get total question by type
-      let choice = 0;
-      let multipleChoice = 0;
-      let essay = 0;
 
-      questionTitle.forEach((question) => {
-        if (question.type === QuestionType.Choice) {
-          choice++;
-        } else if (question.type === QuestionType.Multiple) {
-          multipleChoice++;
-        } else {
-          essay++;
-        }
-      });
-
-      //   quizzes.forEach(quiz => {
-      //     const quizPoints = (totalPoints * quiz.percentage) / 100;
-      //     points[quiz.type] = quizPoints / quiz.count;
-      //   });
-
-      //   return points;
-      // }
-
-      // const totalPoints = 100;
-      // const points = calculatePoints(quizzes, totalPoints);
-
-      const newQuestions = questions.map((question, index) => {
-        const countQuizType =
-          question.type === QuestionType.Choice
-            ? choice
-            : question.type === QuestionType.Multiple
-            ? multipleChoice
-            : essay;
-        return {
-          ...question,
-          title: questionTitle[index].title,
-          answer: questionTitle[index].answer,
-          choices: questionTitle[index].choices,
-          type: questionTitle[index].type,
-          point:
-            (100 * ((question.percentage || questions.length) * 100)) /
-            100 /
-            countQuizType,
-        };
-      }) as Question[];
-
-      newQuestions.forEach((question) => {
-        delete question.percentage;
-      });
-
-      if (newQuestions.length === 0) {
+      if (questionTitle.length === 0) {
         throw new Error("Question is required");
       }
       if (deadline === null) {
         throw new Error("Deadline is required");
       }
-      if (newQuestions.length === 0) {
+      if (questionTitle.length === 0) {
         throw new Error("Question is required");
       }
       if (quizName === "") {
@@ -300,11 +256,12 @@ const CreatePage = ({
         course_id: course_id,
         name: quizName,
         type: QuizType.PUBLISHED,
-        questions: newQuestions,
+        questions: questionTitle,
         deadline: parseDeadlineDateTime(deadline.toString()),
         start_at: parseDeadlineDateTime(deadline.toString()),
         end_at: parseDeadlineDateTime(deadline.toString()),
         duration: duration.hour * 60 + duration.minute,
+        percentage: percentage,
       });
       if (res) {
         Swal.fire({
