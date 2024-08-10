@@ -13,7 +13,4 @@ export interface GenerateQuizRequest {
     essay: number;
     multiple: number;
   };
-  choicesPerception: number;
-  essayPerception: number;
-  multiplePerception: number;
 }

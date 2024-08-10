@@ -164,9 +164,6 @@ export default function page() {
           essay: parseInt(numberOfQuestionEssay) || 0,
           multiple: parseInt(numberOfQuestionMultiple) || 0,
         },
-        choicesPerception: choicePointPercentage,
-        essayPerception: essayPointPercentage,
-        multiplePerception: multiplePointPercentage,
       };
       Swal.fire({
         title: "Do you want to generate this quiz?",
@@ -203,8 +200,12 @@ export default function page() {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: error instanceof Error ? error.message : "Something went wrong",
+        text:
+          error instanceof Error
+            ? error.message + "Please Try Again With Correct Data"
+            : "Something went wrong",
       });
+      setIsGenerating(false);
     }
   };
 
