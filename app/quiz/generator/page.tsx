@@ -136,6 +136,12 @@ export default function page() {
         throw new Error("Essay Point percentage not valid");
       }
     }
+
+    const totalPercentage =
+      choicePointPercentage + multiplePointPercentage + essayPointPercentage;
+    if (totalPercentage !== 100) {
+      throw new Error("Total percentage question must be 100%");
+    }
   };
 
   const onGenerateClick = async () => {
