@@ -42,8 +42,8 @@ model User {
   comments  Comments[]
   like_comments LikeComments[]
   discustion_bookmark DiscustionBookmark[]
-  
-
+  UserTask UserTask[]
+   boardPartition boardPartition[]
 }
 
 model Course {
@@ -220,4 +220,57 @@ model Setting{
   description String
   color Json @default("[]")
   contact_us Json @default("[]")
+}
+
+model Board {
+  id Int @id @default(autoincrement())
+  name String
+  visibility Boolean @default(true)
+  boardPartition boardPartition[]
+  Group Group[]
+}
+
+model boardPartition {
+  id Int @id @default(autoincrement())
+  board_id Int
+  user   User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id Int
+  board   Board @relation(fields: [board_id], references: [id])
+}
+
+model Group {
+  id Int @id @default(autoincrement())
+  name String
+  position Int
+  img_url String
+  board_id Int
+  board   Board @relation(fields: [board_id], references: [id])
+  task Task?
+}
+
+model Task {
+  id Int @id @default(autoincrement())
+  name String
+  position Int
+  tags Json @default("[]")
+  deadline DateTime
+  description String
+  group_id Int @unique
+  group  Group @relation(fields: [group_id], references: [id])
+  UserTask UserTask[]
+}
+
+model UserTask {
+  id Int @id @default(autoincrement())
+  user_id Int?
+  task_id Int
+  status Boolean @default(false)
+  user User? @relation(fields: [user_id], references: [id], onDelete: SetNull)
+  task Task @relation(fields: [task_id], references: [id])
+}
+
+model Template {
+  id Int @id @default(autoincrement())
+  name String
+  groups Json @default("[]")
 }
