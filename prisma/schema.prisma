@@ -43,7 +43,7 @@ model User {
   like_comments LikeComments[]
   discustion_bookmark DiscustionBookmark[]
   UserTask UserTask[]
-   boardPartition boardPartition[]
+  boardPartition boardPartition[]
 }
 
 model Course {
@@ -225,6 +225,7 @@ model Setting{
 model Board {
   id Int @id @default(autoincrement())
   name String
+  template_id Int?
   visibility Boolean @default(true)
   boardPartition boardPartition[]
   Group Group[]
@@ -232,10 +233,18 @@ model Board {
 
 model boardPartition {
   id Int @id @default(autoincrement())
+  isOwner Boolean @default(false)
+  status Status @default(PENDING)
   board_id Int
   user   User @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id Int
-  board   Board @relation(fields: [board_id], references: [id])
+  board   Board @relation(fields: [board_id], references: [id], onDelete: Cascade)
+}
+
+enum Status {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
 
 model Group {
