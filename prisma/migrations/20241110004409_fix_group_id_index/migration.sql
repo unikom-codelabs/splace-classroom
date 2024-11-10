@@ -221,7 +221,7 @@ CREATE TABLE `Task` (
     `description` VARCHAR(191) NOT NULL,
     `group_id` INTEGER NOT NULL,
 
-    UNIQUE INDEX `Task_group_id_key`(`group_id`),
+    INDEX `Task_group_id_idx`(`group_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
