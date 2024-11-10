@@ -5,8 +5,8 @@ const prisma = new PrismaClient();
 
 
 export async function GET(req: Request) {
-    // const user = await getSessionUser();
-    const user = {id: 1}
+    const user = await getSessionUser();
+    // const user = {id: 1}
     const boardPartition = await prisma.boardPartition.findMany({
         where: {
             user_id: user.id,

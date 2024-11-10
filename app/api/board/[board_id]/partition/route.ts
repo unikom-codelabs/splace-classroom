@@ -1,5 +1,4 @@
 import getResponse from "@/utils/getResponse";
-import getSessionUser from "@/utils/session";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient()
 
@@ -17,6 +16,7 @@ export async function GET(req: Request, { params }: any) {
           }
         }
       });
+      return getResponse(boardPartition, "Get Partition", 200);
     }
 
     const boardPartition = await prisma.boardPartition.findFirst({
@@ -25,5 +25,5 @@ export async function GET(req: Request, { params }: any) {
       }
     })
     if (!boardPartition) return getResponse(null, 'Partition not found', 404);
-    return getResponse(boardPartition, "Partition", 200);
+    return getResponse(boardPartition, "Get Partition", 200);
 }

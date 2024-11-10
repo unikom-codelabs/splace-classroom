@@ -6,8 +6,8 @@ const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
     const {name,visibility, isOwner, status} = await req.json();
-    // const user = await getSessionUser();
-    const user = {id: 1}
+    const user = await getSessionUser();
+    // const user = {id: 1}
     const board = await prisma.board.create({
         data: {
             name,
