@@ -10,4 +10,9 @@ export interface CreateQuizRequest {
   start_at: string;
   end_at: string;
   duration: number;
+  percentage: {
+    choice: number;
+    multiple: number;
+    essay: number;
+  };
 }

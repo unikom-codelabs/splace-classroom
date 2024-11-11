@@ -21,17 +21,15 @@ import {
   DatePicker,
   Input,
   Select,
-  Selection,
   SelectItem,
   Spinner,
-  Tooltip,
 } from "@nextui-org/react";
 
 import { Slider } from "@nextui-org/slider";
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Swal from "sweetalert2";
 import useSWR from "swr";
 
@@ -138,6 +136,12 @@ export default function page() {
         throw new Error("Essay Point percentage not valid");
       }
     }
+
+    const totalPercentage =
+      choicePointPercentage + multiplePointPercentage + essayPointPercentage;
+    if (totalPercentage !== 100) {
+      throw new Error("Total percentage question must be 100%");
+    }
   };
 
   const onGenerateClick = async () => {
@@ -160,9 +164,6 @@ export default function page() {
           essay: parseInt(numberOfQuestionEssay) || 0,
           multiple: parseInt(numberOfQuestionMultiple) || 0,
         },
-        choicesPerception: choicePointPercentage,
-        essayPerception: essayPointPercentage,
-        multiplePerception: multiplePointPercentage,
       };
       Swal.fire({
         title: "Do you want to generate this quiz?",
@@ -199,8 +200,12 @@ export default function page() {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: error instanceof Error ? error.message : "Something went wrong",
+        text:
+          error instanceof Error
+            ? error.message + "Please Try Again With Correct Data"
+            : "Something went wrong",
       });
+      setIsGenerating(false);
     }
   };
 
@@ -243,18 +248,6 @@ export default function page() {
   };
 
   if (isGenerated) {
-    generatedQuestions.forEach((question) => {
-      if (question.type === QuestionType.Choice) {
-        question.percentage = choicePointPercentage;
-      }
-      if (question.type === QuestionType.Multiple) {
-        question.percentage = multiplePointPercentage;
-      }
-      if (question.type === QuestionType.Essay) {
-        question.percentage = essayPointPercentage;
-      }
-    });
-
     return (
       <CreatePage
         searchParams={{ course_id: parseInt(quizCourses), qname: quizName }}
@@ -273,6 +266,11 @@ export default function page() {
         }
         quizDurationHours={parseInt(quizDurationHours)}
         quizDurationMinutes={parseInt(quizDurationMinutes)}
+        percentage={{
+          choice: choicePointPercentage,
+          multiple: multiplePointPercentage,
+          essay: essayPointPercentage,
+        }}
       />
     );
   }
