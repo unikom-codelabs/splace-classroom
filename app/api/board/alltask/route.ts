@@ -1,18 +1,19 @@
-import getSessionUser from "@/utils/session";
 import { PrismaClient } from "@prisma/client";
 import getResponse from "@/utils/getResponse";
-import { get } from "http";
 const prisma = new PrismaClient();
+import getSessionUser from "@/utils/session";
 
 
 export async function GET(req: Request) {
     const user = await getSessionUser();
     // const user = {id: 1}
-    const boardPartition = await prisma.boardPartition.findMany({
+    const task = await prisma.userTask.findMany({
         where: {
             user_id: user.id
+        },
+        include: {
+            task: true
         }
-    });
-    if (!boardPartition) return getResponse(null, 'Board not found', 404);
-    return getResponse(boardPartition, "Get my board success", 200);
+    })
+    return getResponse(task, "Get my task success", 200);
 }
